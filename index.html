@@ -210,6 +210,109 @@ nav.tabbar svg{width:24px;height:24px}
 html[data-style=clarte] nav.tabbar{border-top:1px solid var(--strong)}
 html[data-style=clarte] nav.tabbar svg{display:none}
 html[data-style=clarte] nav.tabbar button{font-size:.875rem;justify-content:center}
+/* pile de cartes (Empilé) et cadran */
+html[data-mode=dark]{--page:#0A0A0A;--paper:#F4F4EF;--paperInk:#0A0A0A;--paperMuted:#55554F;--act:#C9D2FF}
+html[data-mode=light]{--page:#E2E2DE;--paper:#FFFFFF;--paperInk:#0A0A0A;--paperMuted:#55554F;--act:#C9D2FF}
+html[data-style=compteur] body{background:var(--page)}
+.stack{display:flex;flex-direction:column;gap:2px;margin-top:4px}
+.card{position:relative;border-radius:22px;padding:14px 16px 16px}
+.card+.card::before{content:"";position:absolute;top:-8px;left:50%;margin-left:-7px;width:14px;height:14px;border-radius:50%;background:var(--page);z-index:1}
+.c-lcd{background:var(--lcd);color:var(--lcdInk)}
+.c-blue{background:var(--accent);color:#FFFFFF}
+.c-paper{background:var(--paper);color:var(--paperInk)}
+.c-act{background:var(--act);padding:10px;display:flex;gap:8px}
+.c-act .btn{margin:0;flex:1;min-height:50px;border-radius:16px}
+.btn.dark{background:#0A0A0A;color:#F4F4EF}
+.cardHead{display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:.75rem;font-weight:600;letter-spacing:.05em;text-transform:uppercase}
+.cardLbl{font-size:.8125rem;font-weight:600;display:block}
+.c-paper .cardLbl{color:var(--paperMuted);font-weight:500}
+.cardTitle{font-size:1.25rem;font-weight:600;margin:0 0 10px;line-height:1.2}
+.c-paper .amountInput{color:var(--paperInk)}
+.c-paper .chip{border-color:#BDBDB7;color:var(--paperInk)}
+.c-paper .chip.sel{background:#0A0A0A;border-color:#0A0A0A;color:#F4F4EF}
+.c-paper .chip.ceil{border-color:#1F3DFF;color:#1F3DFF}
+.c-paper .chip.ceil.sel{background:#1F3DFF;color:#FFFFFF}
+.c-paper .rows{border-top:0;margin-top:0}
+.c-paper .rows .r{border-bottom-color:#DAD9D2}
+.c-paper .rows .r:last-child{border-bottom:0}
+.c-paper .rows .l,.c-paper .note{color:var(--paperMuted)}
+.explain{font-size:.875rem;line-height:1.4;margin:8px 0 0}
+.c-blue .explain,.c-blue .lead,.c-blue b,.c-blue .blue{color:#FFFFFF}
+.c-blue .lead{margin:0}
+.metaLine{font-size:.75rem;opacity:.8;margin-top:4px}
+.c-paper .metaLine{color:var(--paperMuted);opacity:1}
+.c-lcd .nudge{margin-top:8px;font-size:.8125rem}
+.c-lcd .nudge .dot{background:#1F3DFF}
+.dialWrap{position:relative;width:260px;height:250px;margin:6px auto 0}
+.dialWrap.sm{width:210px;height:200px}
+.dial{position:absolute;left:0;top:0;width:100%;height:calc(100% + 10px)}
+.dial i{position:absolute;border-radius:50%;box-sizing:border-box}
+.dialLbl{position:absolute;font-size:.6875rem;font-weight:500}
+.l0{left:26px;top:214px}.l150{left:196px;top:14px}.l250{left:220px;top:214px}
+.dialCenter{position:absolute;left:0;top:0;width:100%;height:calc(100% + 10px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px}
+.dialCenter .num{font-size:38px}
+.dialWrap.sm .dialCenter .num{font-size:33px}
+.dialCenter .unit{font-size:.875rem;font-weight:600}
+.legend{display:flex;justify-content:center;gap:14px;font-size:.75rem;margin-top:2px;flex-wrap:wrap}
+.legend span{display:flex;align-items:center;gap:6px}
+.lg{width:10px;height:10px;border-radius:50%;display:inline-block;box-sizing:border-box}
+.lg.u{background:#1F3DFF}.lg.p{background:#0B0F0A}.lg.h{border:1.6px solid #0B0F0A}
+.autoRow{display:flex;justify-content:space-between;align-items:flex-end;gap:10px}
+.bigDays{font-size:4rem;font-weight:700;letter-spacing:-.04em;line-height:1;margin-top:4px;white-space:nowrap}
+.c-blue .until{color:#FFFFFF;font-size:.8125rem;padding-bottom:.4rem}
+.stats3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.statV{font-size:1.4rem;font-weight:700;letter-spacing:-.02em;margin-top:2px;white-space:nowrap}
+.statV small{font-size:.75rem;font-weight:500}
+.num.plain .segw{display:none}
+.bigDays .num,.statV .num,.rows .v .num.plain{font-size:inherit!important;font-weight:inherit}
+.num.plain .txtw{position:static;width:auto;height:auto;overflow:visible;clip:auto}
+html[data-style=compteur] .clarteOnly{display:none!important}
+html[data-style=clarte] .compteurOnly{display:none!important}
+.bigNum{display:flex;flex-direction:column;gap:2px;margin-top:6px}
+.bigNum .num{font-size:clamp(4rem,25vw,6.5rem);font-weight:500;letter-spacing:-.045em}
+.bigNum.sm .num{font-size:clamp(2.6rem,15vw,3.6rem)}
+.bigNum .unit{color:var(--accentText);font-size:1.375rem;font-weight:500}
+.details{margin-top:14px;border-top:1px solid var(--line);padding-top:4px}
+.details summary{cursor:pointer;font-weight:600;min-height:48px;display:flex;align-items:center}
+html[data-style=clarte] .card{background:none;color:var(--text);border-radius:0;padding:16px 0;border-top:1px solid var(--strong)}
+html[data-style=clarte] .card::before{display:none}
+html[data-style=clarte] .c-blue .bigDays{color:var(--text)}
+html[data-style=clarte] .c-blue .blue{color:var(--accentText)}
+html[data-style=clarte] .c-blue .explain,html[data-style=clarte] .c-blue .until,html[data-style=clarte] .c-blue .lead,html[data-style=clarte] .c-blue b{color:var(--text)}
+html[data-style=clarte] .c-act{padding:16px 0}
+html[data-style=clarte] .cardHead{color:var(--muted);text-transform:none;letter-spacing:0;font-weight:400;font-size:.9375rem}
+html[data-style=clarte] .c-paper .cardLbl,html[data-style=clarte] .c-paper .metaLine,html[data-style=clarte] .c-paper .note,html[data-style=clarte] .c-paper .rows .l{color:var(--muted)}
+html[data-style=clarte] .c-paper .amountInput{color:var(--text)}
+html[data-style=clarte] .c-paper .chip{border-color:var(--line);color:var(--text)}
+html[data-style=clarte] .c-paper .chip.sel{background:var(--accent);border-color:var(--accent);color:#FFFFFF}
+html[data-style=clarte] .c-paper .chip.ceil{border-color:var(--accentText);color:var(--accentText)}
+html[data-style=clarte] .btn.dark{background:var(--strong);color:var(--bg)}
+html[data-style=clarte] .c-act .btn{border-radius:0}
+html[data-style=clarte] .c-lcd .nudge .dot{background:var(--accentText)}
+
+/* moment bleu après une recharge */
+#done{background:#1F3DFF;color:#FFFFFF;margin:0 -20px;padding:calc(20px + env(safe-area-inset-top)) 22px calc(28px + env(safe-area-inset-bottom));min-height:100vh;box-sizing:border-box;flex-direction:column}
+#done.active{display:flex}
+body.moment header.top,body.moment nav.tabbar{display:none}
+body.moment .app{padding-bottom:0}
+html body.moment{background:#1F3DFF}
+.momentTop{display:flex;justify-content:space-between;align-items:center;font-size:.8125rem;font-weight:600;letter-spacing:.06em}
+.mClose{width:44px;height:44px;border-radius:22px;border:1.5px solid #FFFFFF;background:none;color:#FFFFFF;display:flex;align-items:center;justify-content:center}
+.mArt{width:180px;height:170px;align-self:center;margin-top:10px;color:#FFFFFF}
+.mTitle{font-size:2.1rem;font-weight:600;letter-spacing:-.02em;line-height:1.1;margin:14px 0 0}
+.mBig{display:flex;align-items:baseline;gap:8px;margin-top:8px}
+#mKwh{font-size:4.25rem;font-weight:700;letter-spacing:-.04em;line-height:1}
+.mBig small{font-size:1.375rem;font-weight:600}
+.mRows{margin-top:16px;border-top:1px solid rgba(255,255,255,.5)}
+.mRows div{display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid rgba(255,255,255,.5);font-size:.9375rem}
+.mCheck{background:#F4F4EF;color:#0A0A0A;border-radius:16px;padding:12px 14px;margin-top:16px;display:flex;align-items:center;gap:14px;font-size:.875rem;line-height:1.35}
+.mLcd{background:#D5DACB;color:#0B0F0A;border:2px solid #050505;border-radius:10px;padding:6px 8px;flex:none}
+.mLcd .num{font-size:24px}
+html[data-style=clarte] .mLcd .num{font-size:1.1rem}
+#done .btn.mDone{background:#F4F4EF;color:#1F3DFF;border-radius:28px;margin-top:auto;font-weight:700;justify-content:center}
+#done .btn.mGhost{background:none;border:1.5px solid rgba(255,255,255,.75);color:#FFFFFF;border-radius:28px;margin-top:10px;justify-content:center}
+#done .btn::after{content:none!important}
+
 /* accueil (premier lancement) */
 body.onboarding nav.tabbar,body.onboarding header.top{display:none}
 body.onboarding main{padding-top:calc(24px + env(safe-area-inset-top))}
@@ -264,33 +367,44 @@ html[data-style=clarte] .howto .lcd{padding:0}
 
 <section id="home" aria-label="Accueil">
  <div class="banner" id="installNudge" hidden><span>Installe KËR sur ton écran d'accueil pour l'ouvrir comme une app et garder tes données.</span><span style="display:flex;gap:4px"><button onclick="show('settings')">Comment</button><button class="x" aria-label="Masquer" onclick="setPref('installDismissed',true);renderInstall()">✕</button></span></div>
- <div class="lcd" id="heroLcd">
-  <div class="lcdHead"><span>801 · Crédit restant</span><span class="lcdTag" id="balanceTag">—</span></div>
-  <div class="lcdBig"><span class="num" id="balance"></span><span class="unit">kWh</span></div>
+ <div class="stack">
+  <div class="card c-lcd" id="heroLcd">
+   <div class="cardHead"><span>801 · Crédit restant</span><span class="lcdTag" id="balanceTag">—</span></div>
+   <div class="dialWrap compteurOnly">
+    <div class="dial" id="dial" role="img" aria-label="Cadran de la tranche du mois"></div>
+    <span class="dialLbl l0">0</span><span class="dialLbl l150">150</span><span class="dialLbl l250">250</span>
+    <div class="dialCenter"><span class="num" id="balance"></span><span class="unit">kWh</span></div>
+   </div>
+   <div class="clarteOnly">
+    <div class="bigNum"><span class="num" id="balanceText"></span><span class="unit">kWh</span></div>
+   </div>
+   <p class="explain"><b id="statusPill">Tranche 1</b> : <span id="thresholdText"></span></p>
+   <div class="gauge clarteOnly" id="gauge" role="img" aria-label="Consommation du mois sur l'échelle des tranches"></div>
+   <div class="scale clarteOnly"><span>0</span><span>150 : prix fort</span><span>250 : TVA</span></div>
+   <div class="metaLine" id="balanceMeta">—</div>
+   <div class="metaLine" id="balanceValue"></div>
+   <div class="nudge" id="nudge" hidden><span class="dot"></span><span id="nudgeText"></span></div>
+  </div>
+  <div class="card c-blue">
+   <div class="autoRow">
+    <div><div class="cardLbl">Autonomie</div><div class="bigDays"><span class="num plain" id="days"></span> j</div></div>
+    <div class="until" id="untilDate"></div>
+   </div>
+   <div class="explain onBlue" id="daysBasis">—</div>
+  </div>
+  <div class="card c-paper">
+   <div class="stats3">
+    <div><div class="cardLbl">Ce mois</div><div class="statV"><span class="num plain" id="monthKwh"></span><small> kWh</small></div></div>
+    <div><div class="cardLbl">Par jour</div><div class="statV"><span class="num plain" id="dailyCost"></span><small> F</small></div></div>
+    <div><div class="cardLbl" id="roomLabel">Avant prix fort</div><div class="statV"><span class="num plain" id="roomKwh"></span><small> kWh</small></div></div>
+   </div>
+   <div class="metaLine" id="monthKwhMeta"></div>
+  </div>
+  <div class="card c-act">
+   <button class="btn dark" onclick="show('consumption')">Noter 801</button>
+   <button class="btn" onclick="show('recharge')">Recharger</button>
+  </div>
  </div>
- <div class="heroMeta"><div class="note" id="balanceMeta">—</div><div class="note" id="balanceValue"></div></div>
-
- <div class="block first">
-  <div class="label">Autonomie estimée</div>
-  <div class="autoRow"><span class="num blue" id="days"></span><span class="autoUnit">jours</span><span class="until" id="untilDate"></span></div>
-  <div class="note" id="daysBasis">—</div>
- </div>
-
- <div class="block">
-  <div class="rowx"><div class="h3"><span id="statusPill">Tranche 1</span> <span class="muted" style="font-weight:400">ce mois</span></div><div class="sm"><span class="num" id="monthKwh"></span><span class="muted">/ 150 kWh</span></div></div>
-  <div class="gauge" id="gauge" role="img" aria-label="Consommation du mois sur l'échelle des tranches"></div>
-  <div class="scale"><span>0</span><span>150 : prix fort</span><span>250 : TVA</span></div>
-  <div class="note" id="thresholdText" style="margin-top:8px"></div>
-  <div class="note" id="monthKwhMeta"></div>
- </div>
-
- <div class="facts">
-  <div class="fact"><div class="v"><span class="num" id="dailyCost"></span><span class="u">F</span></div><div class="l">par jour</div></div>
-  <div class="fact"><div class="v"><span class="num" id="roomKwh"></span><span class="u">kWh</span></div><div class="l" id="roomLabel">au meilleur prix</div></div>
- </div>
-
- <div class="nudge" id="nudge" hidden><span class="dot"></span><span id="nudgeText"></span></div>
- <button class="btn" onclick="show('consumption')">Noter mon compteur</button>
 
  <div class="sec">Analyse</div>
  <div class="mini"><div class="grow"><div class="h4">Réconciliation</div><div class="note" id="reconcileText">—</div></div></div>
@@ -300,35 +414,64 @@ html[data-style=clarte] .howto .lcd{padding:0}
 </section>
 
 <section id="recharge" aria-label="Recharge">
- <h1 class="screenTitle">Recharger</h1>
- <label class="field" for="amount" style="margin-top:0">Montant payé (F)</label>
- <input id="amount" class="amountInput" type="number" inputmode="numeric" min="1" value="10000" oninput="simulate()">
- <div class="chips">
-  <button class="chip" data-amt="5000" onclick="setAmount(5000)">5 000</button>
-  <button class="chip" data-amt="10000" onclick="setAmount(10000)">10 000</button>
-  <button class="chip" data-amt="15000" onclick="setAmount(15000)">15 000</button>
-  <button class="chip ceil" id="ceilChip" onclick="setCeiling()">Plafond</button>
+ <div class="stack">
+  <div class="card c-paper">
+   <h1 class="cardTitle">Recharger</h1>
+   <label class="cardLbl" for="amount">Montant payé (F)</label>
+   <input id="amount" class="amountInput" type="number" inputmode="numeric" min="1" value="10000" oninput="simulate()">
+   <div class="chips">
+    <button class="chip" data-amt="5000" onclick="setAmount(5000)">5 000</button>
+    <button class="chip" data-amt="10000" onclick="setAmount(10000)">10 000</button>
+    <button class="chip" data-amt="15000" onclick="setAmount(15000)">15 000</button>
+    <button class="chip ceil" id="ceilChip" onclick="setCeiling()">Plafond</button>
+   </div>
+  </div>
+  <div class="card c-lcd">
+   <div class="cardHead"><span>Tu recevras</span><span class="lcdTag">Estimé</span></div>
+   <div class="dialWrap sm compteurOnly">
+    <div class="dial" id="simDial" role="img" aria-label="Position après recharge sur le cadran"></div>
+    <div class="dialCenter"><span class="num" id="simResult"></span><span class="unit">kWh</span></div>
+   </div>
+   <div class="clarteOnly"><div class="bigNum sm"><span class="num" id="simResultText"></span><span class="unit">kWh</span></div></div>
+   <div class="legend compteurOnly"><span><i class="lg u"></i>déjà utilisé</span><span><i class="lg p"></i>cette recharge</span><span><i class="lg h"></i>prix fort</span></div>
+   <div class="gauge clarteOnly" id="simGauge" role="img" aria-label="Position après recharge sur l'échelle des tranches"></div>
+   <div class="scale clarteOnly"><span id="simUsedLbl">0</span><span>150 : prix fort</span><span>250 : TVA</span></div>
+  </div>
+  <div class="card c-blue"><p class="lead onBlue" id="simAfter"></p></div>
+  <div class="card c-paper">
+   <div class="rows">
+    <div class="r"><span class="l">Prix du kWh au départ</span><span class="v"><span class="num plain" id="rowPrice"></span> F</span></div>
+    <div class="r"><span class="l">Plafond tranche 1</span><span class="v"><span class="num plain" id="rowCeil"></span> F</span></div>
+    <div class="r"><span class="l">Retenue de début de mois</span><span class="v"><span class="num plain" id="rowFee"></span> F</span></div>
+   </div>
+   <div class="note" id="feeNote" style="margin-top:8px"></div>
+  </div>
+  <div class="card c-act"><button class="btn dark" onclick="saveRecharge()">Enregistrer la recharge</button></div>
  </div>
- <div class="lcd sm">
-  <div class="lcdHead"><span>Tu recevras</span><span class="lcdTag">Estimé</span></div>
-  <div class="lcdBig"><span class="num" id="simResult"></span><span class="unit">kWh</span></div>
+ <details class="details">
+  <summary>Détails du calcul</summary>
+  <label class="field" for="simKwh">Consommation du mois avant recharge (814, kWh)</label>
+  <input id="simKwh" type="number" inputmode="decimal" min="0" step=".1" oninput="simulate()">
+  <div class="checkline"><input type="checkbox" id="applyArrears" onchange="simulate()"><label for="applyArrears">Déduire le découvert (808), seulement si tu as confirmé qu'il est en FCFA</label></div>
+  <div class="note" id="simMessage" style="margin-top:8px"></div>
+  <div class="note" id="t1Ceiling" style="margin-top:6px"></div>
+  <p class="note" style="margin-top:10px">Barème CRSE en vigueur au 1er janvier 2026 : 82 F/kWh jusqu'à 150 kWh, 136,49 F/kWh au delà, plus 2,5 % de taxe communale, et 18 % de TVA au delà de 250 kWh. Validé sur tes reçus. La retenue de début de mois (~430 F) reste une hypothèse. Le 808 n'est jamais déduit automatiquement.</p>
+ </details>
+</section>
+
+<section id="done" aria-label="Recharge enregistrée">
+ <div class="momentTop"><span id="mWhen">KËR</span><button class="mClose" aria-label="Fermer" onclick="closeMoment()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+ <svg class="mArt" viewBox="0 0 200 190" role="img" aria-label="Prise murale qui s'allume"><rect x="44" y="40" width="112" height="112" rx="26" fill="none" stroke="currentColor" stroke-width="4"/><circle cx="100" cy="96" r="38" fill="none" stroke="currentColor" stroke-width="4"/><circle cx="86" cy="96" r="7" fill="currentColor"/><circle cx="114" cy="96" r="7" fill="currentColor"/><path d="M100 6v20M30 22l14 14M170 22l-14 14M8 96h22M170 96h22M30 170l14-14M170 170l-14-14" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round"/></svg>
+ <h1 class="mTitle">Recharge<br>enregistrée.</h1>
+ <div class="mBig"><span id="mKwh">+0</span><small>kWh</small></div>
+ <div class="mRows">
+  <div><span>Montant</span><b id="mAmount">—</b></div>
+  <div><span>Prix moyen</span><b id="mAvg">—</b></div>
+  <div><span>Retenue de début de mois</span><b id="mFee">—</b></div>
  </div>
- <div class="gauge" id="simGauge" role="img" aria-label="Position après recharge sur l'échelle des tranches"></div>
- <div class="scale"><span id="simUsedLbl">0</span><span>150 : prix fort</span><span>250 : TVA</span></div>
- <p class="lead" id="simAfter"></p>
- <div class="rows">
-  <div class="r"><span class="l">Prix du kWh au départ</span><span class="v"><span class="num" id="rowPrice"></span><span class="u">F</span></span></div>
-  <div class="r"><span class="l">Plafond tranche 1</span><span class="v"><span class="num" id="rowCeil"></span><span class="u">F</span></span></div>
-  <div class="r"><span class="l">Retenue de début de mois</span><span class="v"><span class="num" id="rowFee"></span><span class="u">F</span></span></div>
- </div>
- <div class="note" id="feeNote" style="margin-top:8px"></div>
- <div class="note" id="simMessage" style="margin-top:6px"></div>
- <div class="note" id="t1Ceiling" style="margin-top:6px"></div>
- <label class="field" for="simKwh">Consommation du mois avant recharge (814, kWh)</label>
- <input id="simKwh" type="number" inputmode="decimal" min="0" step=".1" oninput="simulate()">
- <div class="checkline"><input type="checkbox" id="applyArrears" onchange="simulate()"><label for="applyArrears">Déduire le découvert (808), seulement si tu as confirmé qu'il est en FCFA</label></div>
- <button class="btn" onclick="saveRecharge()">Enregistrer la recharge</button>
- <p class="note" style="margin-top:14px">Barème CRSE en vigueur au 1er janvier 2026 : 82 F/kWh jusqu'à 150 kWh, 136,49 F/kWh au delà, plus 2,5 % de taxe communale, et 18 % de TVA au delà de 250 kWh. Validé sur tes reçus. La retenue de début de mois (~430 F) reste une hypothèse. Le 808 n'est jamais déduit automatiquement.</p>
+ <div class="mCheck"><div>Vérifie sur le compteur : tape <b>817</b>. Il doit afficher environ :</div><div class="mLcd"><span class="num" id="m817"></span></div></div>
+ <button class="btn mDone" onclick="closeMoment()">Terminé</button>
+ <button class="btn mGhost" onclick="log817()">Noter le 817 maintenant</button>
 </section>
 
 <section id="consumption" aria-label="Relevés">
@@ -772,6 +915,8 @@ function simulate(){
  const r=rechargeKwhNet(net,u,now);
  const k=r.kwh, after=u+k;
  num('simResult',k,{dec:1,dashes:'---.-'});
+ num('simResultText',k,{dec:1});
+ renderDial('simDial',u,u+k);
  renderGauge('simGauge',u,after);
  document.getElementById('simUsedLbl').textContent=fmt1(u)+' déjà utilisés';
  document.getElementById('simAfter').innerHTML = `Tu finis à ${fmt1(after)} kWh : ` + (after<150 ? 'tu restes en <b class="blue">tranche 1</b>.' : (after<=250 ? (u<150?'une partie passe en <b>tranche 2</b>.':'tu es en <b>tranche 2</b>.') : 'tu dépasses 250 kWh, la <b>TVA</b> s\'applique.'));
@@ -821,6 +966,8 @@ function renderHome(){
  document.getElementById('headDate').innerHTML=`<span class="segw">${segSVG(String(d.getDate()).padStart(2,'0')+'.'+String(d.getMonth()+1).padStart(2,'0'))}</span><span class="txtw">${d.toLocaleDateString('fr-FR',{day:'numeric',month:'long'})}</span>`;
 
  num('balance', fresh?bal.value:null, {dec:2,dashes:'---.--',nilText:'À relever'});
+ num('balanceText', fresh?bal.value:null, {dec:2,nilText:'À relever'});
+ renderDial('dial',k,null);
  const tag=document.getElementById('balanceTag');
  tag.textContent = !bal ? 'Aucun relevé' : (stale ? 'Ancien' : confidenceTag(bal.confidence));
  tag.classList.toggle('dim',!fresh);
@@ -846,11 +993,11 @@ function renderHome(){
 
  const room = k<150 ? 150-k : (k<250 ? 250-k : null);
  num('roomKwh', room, {dec:1,dashes:'--'});
- document.getElementById('roomLabel').textContent = k<150 ? 'au meilleur prix' : (k<250 ? 'avant la TVA' : 'TVA active');
+ document.getElementById('roomLabel').textContent = k<150 ? 'Avant prix fort' : (k<250 ? 'Avant la TVA' : 'TVA active');
 
  renderGauge('gauge',k,null);
  const dv=250-k;
- document.getElementById('thresholdText').textContent = k<150 ? `${fmt1(150-k)} kWh avant le prix fort, ${fmt1(dv)} kWh avant la TVA.` : (dv>0 ? `${fmt1(dv)} kWh avant le seuil TVA.` : 'Seuil TVA dépassé ce mois-ci.');
+ document.getElementById('thresholdText').textContent = k<150 ? `${fmt1(k)} sur 150 kWh ce mois. Encore ${fmt1(150-k)} kWh à ~${fmt(unitPrice(k,today()))} F, ensuite ~${fmt(unitPrice(150,today()))} F.` : (dv>0 ? `${fmt1(k)} kWh ce mois, au prix fort. Encore ${fmt1(dv)} kWh avant la TVA.` : `${fmt1(k)} kWh ce mois : la TVA de 18 % s'applique.`);
  document.getElementById('statusPill').textContent = k<150?'Tranche 1':k<=250?'Tranche 2':'TVA active';
 
  const nudge=document.getElementById('nudge');
@@ -928,10 +1075,11 @@ function saveRecharge(){
  const r=rechargeKwhNet(net,used,nowIso());
  const k=r.kwh;
  if(r.fee>0) note=(note?note+' ':'')+`Estimation incluant une retenue de début de mois de ~${fmt(r.fee)} F (hypothèse). Compose 817 pour corriger.`;
- state.events.unshift({id:uid(),timestamp:nowIso(),type:'recharge',amountFcfa:amount,deliveredKwh:k,consumptionAtRechargeKwh:used,source:'user',confidence:'observed',note});
+ const ev={id:uid(),timestamp:nowIso(),type:'recharge',amountFcfa:amount,deliveredKwh:k,consumptionAtRechargeKwh:used,estimatedFeeFcfa:r.fee,source:'user',confidence:'observed',note};
+ state.events.unshift(ev);
  // deliveredKwh est une ESTIMATION du crédit acheté — ce n'est pas un relevé de solde observé (800),
  // donc on ne touche à aucun "solde" ici. Le prochain relevé 800 servira à réconcilier.
- save(); renderAll(); show('home');
+ save(); renderAll(); showMoment(ev);
 }
 
 function renderReadings(){
@@ -1039,7 +1187,7 @@ function importData(ev){
 function renderAll(){
  renderHome();renderReadings();renderHistory();renderAppliances();simulate();
 }
-const TAB_OF={home:'home',recharge:'recharge',consumption:'consumption',history:'consumption',appliances:'home',settings:'settings',welcome:null};
+const TAB_OF={home:'home',recharge:'recharge',consumption:'consumption',history:'consumption',appliances:'home',settings:'settings',welcome:null,done:null};
 function show(id){
  document.querySelectorAll('main > section').forEach(s=>s.classList.toggle('active',s.id===id));
  document.querySelectorAll('nav.tabbar button').forEach(b=>{const on=b.dataset.screen===TAB_OF[id]; b.classList.toggle('on',on); if(on) b.setAttribute('aria-current','page'); else b.removeAttribute('aria-current');});
@@ -1048,8 +1196,38 @@ function show(id){
  if(id==='settings') renderInstall();
  window.scrollTo(0,0);
 }
+// ---- Cadran de tranche : 25 points de 10 kWh, de 0 à 250 ----
+function renderDial(id,used,after){
+ const el=document.getElementById(id); if(!el) return;
+ const W=el.parentElement.classList.contains('sm')?210:260, c=W/2, R=W*0.415;
+ let h='';
+ for(let i=0;i<25;i++){
+  const a=(135+i*11.25)*Math.PI/180, x=c+R*Math.cos(a), y=c+R*Math.sin(a), mid=i*10+5;
+  let s=W*0.042, st;
+  if(used>=mid){ s=W*0.062; st='background:#1F3DFF'; }
+  else if(after!=null && after>=mid){ s=W*0.05; st='background:#0B0F0A'; }
+  else if(i>=15){ st='border:1.6px solid #0B0F0A'; }
+  else st= after!=null ? 'background:#9DA592' : 'background:#0B0F0A';
+  h+=`<i style="left:${(x-s/2).toFixed(1)}px;top:${(y-s/2).toFixed(1)}px;width:${s.toFixed(1)}px;height:${s.toFixed(1)}px;${st}"></i>`;
+ }
+ el.innerHTML=h;
+}
+// ---- Moment bleu : confirmation après une recharge ----
+function showMoment(ev){
+ const fee=ev.estimatedFeeFcfa||0;
+ document.getElementById('mWhen').textContent='KËR · '+fmtDateTime(ev.timestamp).toUpperCase();
+ document.getElementById('mKwh').textContent='+'+fmt1(ev.deliveredKwh);
+ document.getElementById('mAmount').textContent=fmt(ev.amountFcfa)+' F';
+ document.getElementById('mAvg').textContent=ev.deliveredKwh>0?fmt1(ev.amountFcfa/ev.deliveredKwh)+' F / kWh':'—';
+ document.getElementById('mFee').textContent=fee?('≈ '+fmt(fee)+' F (estimée)'):'0 F';
+ num('m817',ev.deliveredKwh,{dec:2});
+ document.body.classList.add('moment'); show('done');
+}
+function closeMoment(){ document.body.classList.remove('moment'); show('home'); }
+function log817(){ document.body.classList.remove('moment'); show('consumption'); const s=document.getElementById('logCode'); if(s) s.value='817'; const v=document.getElementById('logValue'); if(v) v.focus(); }
+
 // ---- Version, premier lancement, test, installation ----
-const APP_VERSION='0.7.1';
+const APP_VERSION='0.8.0';
 const TESTER_NAME='Papi';
 function parseNum(v){ v=String(v==null?'':v).trim().replace(/[\s  ]/g,'').replace(',','.'); if(v==='') return null; const n=Number(v); return isFinite(n)?n:NaN; }
 function requestPersist(){ try{ if(navigator.storage && navigator.storage.persist) navigator.storage.persist(); }catch(e){} }
