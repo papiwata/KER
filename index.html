@@ -1,0 +1,1148 @@
+<!doctype html>
+<html lang="fr" data-style="compteur" data-mode="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0A0A0A">
+<meta name="description" content="KËR suit ton compteur Woyofal : crédit, tranches, autonomie et vrai coût de chaque recharge.">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="KËR">
+<title>KËR · Enfin au courant.</title>
+<script>
+(function(){var p={};try{p=JSON.parse(localStorage.getItem('ker_prefs')||'{}')||{};}catch(e){}
+var s=p.style==='clarte'?'clarte':'compteur';
+var m=(p.mode==='light'||p.mode==='dark')?p.mode:((window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light');
+var r=document.documentElement;r.setAttribute('data-style',s);r.setAttribute('data-mode',m);if(p.largeText)r.classList.add('large');})();
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--lcd:#D5DACB;--lcdInk:#0B0F0A;--bezel:#050505;--r:14px;--rb:12px}
+html[data-mode=light]{--bg:#FAFAF7;--surface:#FFFFFF;--line:#DAD9D2;--strong:#0A0A0A;--text:#0A0A0A;--muted:#55554F;--accent:#1F3DFF;--accentText:#1F3DFF;--onAccent:#FFFFFF;--cellOff:#E3E2DB;--cellT2:#C9C8C0;--warn:#8A5300;--warnBg:#F6E7CF;--field:#FFFFFF;--navBg:rgba(250,250,247,.97);color-scheme:light}
+html[data-mode=dark]{--bg:#0A0A0A;--surface:#141414;--line:#2A2A2A;--strong:#F4F4EF;--text:#F4F4EF;--muted:#A3A39D;--accent:#1F3DFF;--accentText:#8197FF;--onAccent:#FFFFFF;--cellOff:#1F1F1F;--cellT2:#333333;--warn:#F0B441;--warnBg:#2E2410;--field:#141414;--navBg:rgba(10,10,10,.97);color-scheme:dark}
+html[data-style=clarte]{--r:0px;--rb:0px}
+html.large{font-size:118.75%}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;font-size:1rem;line-height:1.45;-webkit-font-smoothing:antialiased;-webkit-text-size-adjust:100%}
+button,input,select,label{font:inherit;color:inherit}
+button{cursor:pointer}
+[hidden]{display:none!important}
+.app{max-width:520px;margin:0 auto;min-height:100vh;padding-bottom:calc(104px + env(safe-area-inset-bottom))}
+header.top{display:flex;justify-content:space-between;align-items:center;padding:calc(18px + env(safe-area-inset-top)) 20px 6px;min-height:68px}
+.logo{display:flex;align-items:flex-end;font-weight:600;font-size:1.75rem;letter-spacing:.06em;line-height:1}
+.logo .e{position:relative;display:inline-block}
+.logo .e::before,.logo .e::after{content:"";position:absolute;top:-.3em;width:.2em;height:.2em;border-radius:50%;background:var(--accentText)}
+.logo .e::before{left:.08em}.logo .e::after{left:.4em}
+.headDate{font-size:1.05rem;color:var(--muted)}
+main{padding:0 20px}
+section{display:none}section.active{display:block}
+
+/* chiffres : segments en Compteur, texte en Clarté */
+.num{display:inline-flex;align-items:flex-end;line-height:1;white-space:nowrap}
+.seg{display:block;overflow:visible}
+.seg .on{fill:currentColor}.seg .off{fill:currentColor;opacity:.09}
+html[data-style=compteur] .txtw{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+html[data-style=clarte] .segw{display:none}
+html[data-style=clarte] .num{font-weight:600;letter-spacing:-.01em}
+html[data-style=clarte] .num.nil{color:var(--muted);font-weight:500}
+html[data-style=clarte] .lcdBig .num.nil{font-size:2.25rem;letter-spacing:0}
+.blue{color:var(--accentText)}
+
+/* fenêtre LCD */
+.lcd{background:var(--lcd);color:var(--lcdInk);border:3px solid var(--bezel);border-radius:18px;box-shadow:inset 0 0 0 1px #9AA28C;padding:14px 18px 16px;margin-top:6px}
+.lcdHead{display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:.75rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase}
+.lcdTag{border:1px solid currentColor;border-radius:4px;padding:1px 6px;font-weight:500;white-space:nowrap}
+.lcdTag.dim{opacity:.65}
+.lcdBig{display:flex;align-items:flex-end;gap:10px;margin-top:12px}
+.lcdBig .num{font-size:clamp(3rem,18.5vw,4.5rem)}
+.lcd.sm .lcdBig .num{font-size:clamp(2.4rem,14vw,3.4rem)}
+.lcdBig .unit{font-size:1.125rem;font-weight:600;padding-bottom:.2em}
+html[data-style=clarte] .lcd{background:none;border:0;box-shadow:none;border-radius:0;padding:0;color:var(--text);margin-top:26px}
+html[data-style=clarte] .lcdHead{color:var(--muted);text-transform:none;letter-spacing:0;font-size:.9375rem;font-weight:400}
+html[data-style=clarte] .lcdTag{border-color:var(--line);font-size:.75rem;letter-spacing:.04em}
+html[data-style=clarte] .lcdBig{flex-direction:column;align-items:flex-start;gap:4px;margin-top:2px}
+html[data-style=clarte] .lcdBig .num{font-size:clamp(4rem,25vw,6.5rem);font-weight:500;letter-spacing:-.045em}
+html[data-style=clarte] .lcd.sm .lcdBig .num{font-size:clamp(2.6rem,15vw,3.6rem)}
+html[data-style=clarte] .lcdBig .unit{color:var(--accentText);font-size:1.375rem;font-weight:500;padding:0}
+html[data-style=clarte] .lcd.sm{border-top:1px solid var(--strong);padding-top:16px}
+
+.heroMeta{margin-top:10px}
+.note{font-size:.8125rem;color:var(--muted);line-height:1.45}
+.lead{font-size:1.0625rem;font-weight:500;line-height:1.4;margin:10px 0 0}
+.label{font-size:.8125rem;font-weight:500;color:var(--muted)}
+.muted{color:var(--muted)}
+.h3{font-size:1rem;font-weight:600}
+.h4{font-size:.9375rem;font-weight:600}
+.block{padding:16px 0;border-top:1px solid var(--line)}
+.block.first{border-top:0;padding-top:20px}
+html[data-style=clarte] .block.first{border-top:1px solid var(--strong);margin-top:28px}
+.autoRow{display:flex;align-items:flex-end;gap:12px;margin:8px 0 8px}
+.autoRow .num{font-size:2.9rem}
+html[data-style=clarte] .autoRow .num{font-size:2.4rem;color:var(--text)}
+.autoUnit{font-size:1.375rem;font-weight:600;padding-bottom:.05em}
+.until{margin-left:auto;text-align:right;font-size:.9375rem;line-height:1.3;padding-bottom:.1em}
+.until b{font-weight:600}
+.rowx{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.rowx .sm{display:flex;align-items:flex-end;gap:6px;font-size:.875rem}
+.rowx .sm .num{font-size:1.45rem}
+html[data-style=clarte] .rowx .sm .num{font-size:1.25rem}
+
+/* jauge de tranche : 25 cases de 10 kWh */
+.gauge{display:flex;gap:3px;height:22px;margin:12px 0 8px}
+.cell{flex:1;display:flex;border-radius:2px;overflow:hidden;background:var(--cellOff)}
+.cell.t2{background:var(--cellT2)}
+.cell i{display:block;height:100%}
+.cell .u{background:var(--accentText)}
+.cell .p{background:var(--text)}
+html[data-style=clarte] .gauge{gap:0;height:6px;margin:18px 0 10px;overflow:visible}
+html[data-style=clarte] .cell{border-radius:0;background:var(--line)}
+html[data-style=clarte] .cell.t2.first{box-shadow:-2px 0 0 0 var(--strong)}
+.scale{display:flex;justify-content:space-between;gap:8px;font-size:.8125rem;color:var(--muted)}
+
+.facts{display:grid;grid-template-columns:1fr 1fr;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.fact{padding:12px 0;min-width:0}
+.fact+.fact{padding-left:16px;border-left:1px solid var(--line)}
+.fact .v{display:flex;align-items:flex-end;gap:6px}
+.fact .v .num{font-size:1.9rem}
+html[data-style=clarte] .fact .v .num{font-size:1.5rem}
+.fact .v .u{font-size:.9375rem;font-weight:600;padding-bottom:.1em}
+.fact .l{font-size:.8125rem;color:var(--muted);margin-top:4px}
+
+.nudge{display:flex;gap:10px;align-items:center;font-size:.875rem;margin:16px 0 0}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--accentText);flex:none}
+.mini{display:flex;gap:12px;align-items:flex-start;padding:14px 0;border-bottom:1px solid var(--line)}
+.mini .grow{flex:1;min-width:0}
+
+/* boutons */
+.btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;min-height:54px;border:0;border-radius:var(--rb);background:var(--accent);color:var(--onAccent);font-weight:600;font-size:1.0625rem;margin-top:16px;padding:0 18px;text-decoration:none}
+.btn.ghost{background:none;border:1px solid var(--line);color:var(--text);justify-content:space-between;font-weight:500;min-height:52px;margin-top:10px}
+html[data-style=clarte] .btn:not(.ghost){background:var(--strong);color:var(--bg);justify-content:space-between}
+html[data-style=clarte] .btn:not(.ghost)::after{content:"→";font-weight:500}
+html[data-style=clarte] .btn.ghost{border:0;border-bottom:1px solid var(--line);padding:0;margin-top:0}
+.btn:focus-visible,.chip:focus-visible,.opt:focus-visible,.styleCard:focus-visible,nav button:focus-visible{outline:2px solid var(--accentText);outline-offset:2px}
+
+/* écrans secondaires */
+.screenTitle{font-size:1.75rem;font-weight:600;margin:4px 0 14px;line-height:1.2}
+.sec{font-size:.75rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:26px 0 10px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px;margin:12px 0}
+html[data-style=clarte] .panel{background:none;border:0;border-top:1px solid var(--strong);padding:16px 0}
+.field{display:block;font-size:.8125rem;font-weight:500;color:var(--muted);margin:14px 0 6px}
+input,select{width:100%;min-height:48px;border:1px solid var(--line);border-radius:var(--rb);background:var(--field);color:var(--text);padding:11px 14px;font-size:1rem}
+input:focus,select:focus{outline:2px solid var(--accentText);outline-offset:1px;border-color:transparent}
+.amountInput{font-size:2.5rem;font-weight:500;border:0;border-bottom:2px solid var(--accentText);border-radius:0;padding:4px 0;background:transparent;min-height:60px;letter-spacing:-.01em}
+.amountInput:focus{outline:0;border-bottom-width:3px}
+.chips{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:14px 0 16px}
+.chip{min-height:44px;border:1px solid var(--line);border-radius:var(--rb);background:none;font-size:.9375rem;font-weight:500;padding:0 4px}
+.chip.sel{background:var(--accent);border-color:var(--accent);color:var(--onAccent);font-weight:600}
+.chip.ceil{border-color:var(--accentText);color:var(--accentText);font-weight:600}
+.chip.ceil.sel{color:var(--onAccent)}
+.chip:disabled{opacity:.4;cursor:default}
+.rows{border-top:1px solid var(--line);margin-top:14px}
+.rows .r{display:flex;justify-content:space-between;align-items:center;gap:10px;min-height:46px;border-bottom:1px solid var(--line);font-size:.9375rem}
+.rows .l{color:var(--muted)}
+.rows .v{display:flex;align-items:flex-end;gap:5px;font-weight:600}
+.rows .v .num{font-size:1.35rem}
+html[data-style=clarte] .rows .v .num{font-size:1.0625rem}
+.rows .v .u{font-size:.9375rem}
+.checkline{display:flex;align-items:flex-start;gap:10px;font-size:.875rem;color:var(--muted);margin:14px 0 4px}
+.checkline input{width:22px;min-height:22px;height:22px;margin:0;flex:none;accent-color:var(--accent)}
+
+.list{display:flex;flex-direction:column}
+.item{padding:14px 0;border-bottom:1px solid var(--line)}
+.item:last-child{border-bottom:0}
+.item .row{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+.item b{font-size:.9375rem;font-weight:600}
+.item small{display:block;color:var(--muted);margin-top:4px;line-height:1.45;font-size:.8125rem}
+.empty{padding:32px 10px;text-align:center;color:var(--muted)}
+.tag{display:inline-block;font-size:.625rem;font-weight:600;letter-spacing:.04em;padding:2px 6px;border-radius:4px;border:1px solid var(--line);color:var(--muted);margin-left:6px;vertical-align:middle}
+.tag.warn{border-color:transparent;background:var(--warnBg);color:var(--warn)}
+.pill{display:inline-block;font-size:.75rem;font-weight:600;padding:3px 8px;border-radius:4px;border:1px solid var(--line);white-space:nowrap}
+.pill.warn{border-color:transparent;background:var(--warnBg);color:var(--warn)}
+.codeTable{display:flex;flex-direction:column}
+.codeRow{display:flex;gap:14px;padding:10px 0;border-bottom:1px solid var(--line);font-size:.875rem}
+.codeRow b{min-width:36px;color:var(--accentText);font-weight:600}
+.appliance{display:grid;grid-template-columns:1fr 84px;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line)}
+.appliance-cycling{display:block}
+.appliance input{margin:0}
+.appliance select{margin-top:8px}
+.appliance .muted{font-size:.8125rem}
+.result{margin-top:14px;padding-top:14px;border-top:1px solid var(--strong)}
+.result .big{font-size:1.75rem;font-weight:600}
+
+/* réglages */
+.styleCards{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.styleCard{display:flex;flex-direction:column;gap:6px;text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:10px;min-width:0}
+.styleCard.sel{border:2px solid var(--accentText);padding:9px}
+.styleCard .sn{font-size:1rem;font-weight:600;margin-top:4px}
+.styleCard .sd{font-size:.8125rem;color:var(--muted)}
+.pv{height:80px;border-radius:8px;display:flex;align-items:center;justify-content:center;gap:4px}
+.pvC{background:#0A0A0A}
+.pvLcd{background:#D5DACB;color:#0B0F0A;border:2px solid #050505;border-radius:8px;padding:6px 8px;font-size:20px;line-height:1}
+.pvK{background:#FAFAF7;border:1px solid #DAD9D2;color:#0A0A0A}
+.pvK b{font-size:26px;font-weight:500;letter-spacing:-.04em}
+.pvK small{font-size:12px;font-weight:600;color:#1F3DFF;align-self:flex-end;margin-bottom:22px}
+.opt{display:flex;align-items:center;gap:14px;width:100%;background:none;border:0;border-bottom:1px solid var(--line);padding:12px 0;text-align:left;min-height:56px}
+.radio{width:22px;height:22px;border-radius:50%;border:2px solid var(--muted);flex:none;display:flex;align-items:center;justify-content:center}
+.opt.sel .radio{border-color:var(--accentText)}
+.opt.sel .radio::after{content:"";width:10px;height:10px;border-radius:50%;background:var(--accentText)}
+.opt .on{font-size:1.0625rem;font-weight:500;display:block}
+.opt .sub{font-size:.8125rem;color:var(--muted);display:block;margin-top:2px}
+.switchRow{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px 0;border-bottom:1px solid var(--line)}
+.switchRow label{display:block;cursor:pointer}
+.switch{appearance:none;-webkit-appearance:none;width:52px;min-height:30px;height:30px;border-radius:15px;background:var(--line);position:relative;border:0;padding:0;flex:none;cursor:pointer}
+.switch::before{content:"";position:absolute;left:3px;top:3px;width:24px;height:24px;border-radius:50%;background:#FFFFFF;transition:transform .15s}
+.switch:checked{background:var(--accent)}
+.switch:checked::before{transform:translateX(22px)}
+
+/* barre de navigation */
+nav.tabbar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(520px,100%);background:var(--navBg);border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(4,1fr);padding:8px 8px calc(10px + env(safe-area-inset-bottom));z-index:10}
+nav.tabbar button{background:none;border:0;color:var(--muted);display:flex;flex-direction:column;align-items:center;gap:4px;font-size:.75rem;font-weight:500;min-height:52px;padding:4px}
+nav.tabbar button.on{color:var(--accentText);font-weight:600}
+nav.tabbar svg{width:24px;height:24px}
+html[data-style=clarte] nav.tabbar{border-top:1px solid var(--strong)}
+html[data-style=clarte] nav.tabbar svg{display:none}
+html[data-style=clarte] nav.tabbar button{font-size:.875rem;justify-content:center}
+/* accueil (premier lancement) */
+body.onboarding nav.tabbar,body.onboarding header.top{display:none}
+body.onboarding main{padding-top:calc(24px + env(safe-area-inset-top))}
+body.onboarding .app{padding-bottom:40px}
+.welcomeHero{padding:18px 0 6px}
+.logo.big{font-size:3.25rem}
+.tagline{font-size:1.25rem;font-weight:500;margin:14px 0 0}
+.howto{display:flex;gap:14px;align-items:center;margin-top:18px}
+.howto .lcd{margin:0;padding:8px 12px;border-radius:10px;flex:none}
+.howto .lcd .num{font-size:1.6rem}
+html[data-style=clarte] .howto .lcd{padding:0}
+.err{color:var(--warn);font-size:.875rem;margin-top:10px;min-height:1.2em}
+.banner{display:flex;align-items:center;justify-content:space-between;gap:12px;border:1px solid var(--accentText);border-radius:var(--rb);padding:10px 12px;margin:4px 0 10px;font-size:.875rem}
+.banner button{background:none;border:0;color:var(--accentText);font-weight:600;min-height:40px;padding:0 4px}
+.banner .x{color:var(--muted);font-weight:400}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(84px + env(safe-area-inset-bottom));width:min(480px,calc(100% - 32px));background:var(--strong);color:var(--bg);border-radius:12px;padding:12px 14px;display:flex;align-items:center;justify-content:space-between;gap:12px;z-index:20;font-size:.9375rem}
+.toast button{background:var(--accent);color:#fff;border:0;border-radius:8px;min-height:40px;padding:0 14px;font-weight:600}
+.btn.danger{border-color:var(--line);color:var(--warn)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="app">
+<header class="top">
+ <div class="logo" role="img" aria-label="KËR"><span aria-hidden="true">K</span><span class="e" aria-hidden="true">E</span><span aria-hidden="true">R</span></div>
+ <div class="headDate num" id="headDate"></div>
+</header>
+<main>
+
+<section id="welcome" aria-label="Bienvenue">
+ <div class="welcomeHero">
+  <div class="logo big" role="img" aria-label="KËR"><span aria-hidden="true">K</span><span class="e" aria-hidden="true">E</span><span aria-hidden="true">R</span></div>
+  <p class="tagline">Enfin au courant.</p>
+  <p class="lead" style="font-weight:400">KËR suit ton compteur Woyofal : ton crédit, ta tranche, ton autonomie, et ce que chaque recharge te donne vraiment.</p>
+ </div>
+ <div class="howto"><div class="lcd"><span class="num" id="howtoSeg"></span></div><p class="note" style="margin:0">Sur le clavier du compteur, tape un code (par exemple 801), puis lis le nombre qui s'affiche.</p></div>
+ <div class="sec">Ton compteur aujourd'hui</div>
+ <label class="field" for="w801" style="margin-top:0">Crédit restant · code 801 (kWh)</label>
+ <input id="w801" type="text" inputmode="decimal" autocomplete="off" placeholder="Ex. 52,4">
+ <label class="field" for="w814">Consommation du mois · code 814 (kWh)</label>
+ <input id="w814" type="text" inputmode="decimal" autocomplete="off" placeholder="Ex. 20,4">
+ <label class="field" for="w800">Consommation totale · code 800 (kWh, facultatif)</label>
+ <input id="w800" type="text" inputmode="decimal" autocomplete="off" placeholder="Ex. 16 789,09">
+ <label class="field" for="wMeter">Numéro du compteur · code 804 (facultatif)</label>
+ <input id="wMeter" type="text" inputmode="numeric" autocomplete="off" placeholder="11 chiffres">
+ <div class="err" id="wError" role="alert"></div>
+ <button class="btn" onclick="finishWelcome(false)">Commencer</button>
+ <label class="btn ghost" for="importFile">J'ai déjà une sauvegarde KËR <span aria-hidden="true">↑</span></label>
+ <button class="btn ghost" onclick="finishWelcome(true)">Passer pour l'instant <span aria-hidden="true">→</span></button>
+ <p class="note" style="margin-top:16px">Tes données restent sur ce téléphone. Rien n'est envoyé sans ton accord.</p>
+</section>
+
+<section id="home" aria-label="Accueil">
+ <div class="banner" id="installNudge" hidden><span>Installe KËR sur ton écran d'accueil pour l'ouvrir comme une app et garder tes données.</span><span style="display:flex;gap:4px"><button onclick="show('settings')">Comment</button><button class="x" aria-label="Masquer" onclick="setPref('installDismissed',true);renderInstall()">✕</button></span></div>
+ <div class="lcd" id="heroLcd">
+  <div class="lcdHead"><span>801 · Crédit restant</span><span class="lcdTag" id="balanceTag">—</span></div>
+  <div class="lcdBig"><span class="num" id="balance"></span><span class="unit">kWh</span></div>
+ </div>
+ <div class="heroMeta"><div class="note" id="balanceMeta">—</div><div class="note" id="balanceValue"></div></div>
+
+ <div class="block first">
+  <div class="label">Autonomie estimée</div>
+  <div class="autoRow"><span class="num blue" id="days"></span><span class="autoUnit">jours</span><span class="until" id="untilDate"></span></div>
+  <div class="note" id="daysBasis">—</div>
+ </div>
+
+ <div class="block">
+  <div class="rowx"><div class="h3"><span id="statusPill">Tranche 1</span> <span class="muted" style="font-weight:400">ce mois</span></div><div class="sm"><span class="num" id="monthKwh"></span><span class="muted">/ 150 kWh</span></div></div>
+  <div class="gauge" id="gauge" role="img" aria-label="Consommation du mois sur l'échelle des tranches"></div>
+  <div class="scale"><span>0</span><span>150 : prix fort</span><span>250 : TVA</span></div>
+  <div class="note" id="thresholdText" style="margin-top:8px"></div>
+  <div class="note" id="monthKwhMeta"></div>
+ </div>
+
+ <div class="facts">
+  <div class="fact"><div class="v"><span class="num" id="dailyCost"></span><span class="u">F</span></div><div class="l">par jour</div></div>
+  <div class="fact"><div class="v"><span class="num" id="roomKwh"></span><span class="u">kWh</span></div><div class="l" id="roomLabel">au meilleur prix</div></div>
+ </div>
+
+ <div class="nudge" id="nudge" hidden><span class="dot"></span><span id="nudgeText"></span></div>
+ <button class="btn" onclick="show('consumption')">Noter mon compteur</button>
+
+ <div class="sec">Analyse</div>
+ <div class="mini"><div class="grow"><div class="h4">Réconciliation</div><div class="note" id="reconcileText">—</div></div></div>
+ <div class="mini"><div class="grow"><div class="h4">Découvert (808)</div><div class="note" id="decouvertText">—</div></div><span class="pill" id="decouvertPill">—</span></div>
+ <div class="mini"><div class="grow"><div class="h4">Aujourd'hui</div><div class="note" id="todayKwh">—</div><div class="note">Moyenne : <span id="avgKwh">—</span></div></div></div>
+ <button class="btn ghost" onclick="show('appliances')">Comprendre mon foyer <span aria-hidden="true">→</span></button>
+</section>
+
+<section id="recharge" aria-label="Recharge">
+ <h1 class="screenTitle">Recharger</h1>
+ <label class="field" for="amount" style="margin-top:0">Montant payé (F)</label>
+ <input id="amount" class="amountInput" type="number" inputmode="numeric" min="1" value="10000" oninput="simulate()">
+ <div class="chips">
+  <button class="chip" data-amt="5000" onclick="setAmount(5000)">5 000</button>
+  <button class="chip" data-amt="10000" onclick="setAmount(10000)">10 000</button>
+  <button class="chip" data-amt="15000" onclick="setAmount(15000)">15 000</button>
+  <button class="chip ceil" id="ceilChip" onclick="setCeiling()">Plafond</button>
+ </div>
+ <div class="lcd sm">
+  <div class="lcdHead"><span>Tu recevras</span><span class="lcdTag">Estimé</span></div>
+  <div class="lcdBig"><span class="num" id="simResult"></span><span class="unit">kWh</span></div>
+ </div>
+ <div class="gauge" id="simGauge" role="img" aria-label="Position après recharge sur l'échelle des tranches"></div>
+ <div class="scale"><span id="simUsedLbl">0</span><span>150 : prix fort</span><span>250 : TVA</span></div>
+ <p class="lead" id="simAfter"></p>
+ <div class="rows">
+  <div class="r"><span class="l">Prix du kWh au départ</span><span class="v"><span class="num" id="rowPrice"></span><span class="u">F</span></span></div>
+  <div class="r"><span class="l">Plafond tranche 1</span><span class="v"><span class="num" id="rowCeil"></span><span class="u">F</span></span></div>
+  <div class="r"><span class="l">Retenue de début de mois</span><span class="v"><span class="num" id="rowFee"></span><span class="u">F</span></span></div>
+ </div>
+ <div class="note" id="feeNote" style="margin-top:8px"></div>
+ <div class="note" id="simMessage" style="margin-top:6px"></div>
+ <div class="note" id="t1Ceiling" style="margin-top:6px"></div>
+ <label class="field" for="simKwh">Consommation du mois avant recharge (814, kWh)</label>
+ <input id="simKwh" type="number" inputmode="decimal" min="0" step=".1" oninput="simulate()">
+ <div class="checkline"><input type="checkbox" id="applyArrears" onchange="simulate()"><label for="applyArrears">Déduire le découvert (808), seulement si tu as confirmé qu'il est en FCFA</label></div>
+ <button class="btn" onclick="saveRecharge()">Enregistrer la recharge</button>
+ <p class="note" style="margin-top:14px">Barème CRSE en vigueur au 1er janvier 2026 : 82 F/kWh jusqu'à 150 kWh, 136,49 F/kWh au delà, plus 2,5 % de taxe communale, et 18 % de TVA au delà de 250 kWh. Validé sur tes reçus. La retenue de début de mois (~430 F) reste une hypothèse. Le 808 n'est jamais déduit automatiquement.</p>
+</section>
+
+<section id="consumption" aria-label="Relevés">
+ <h1 class="screenTitle">Relevés</h1>
+ <div class="panel">
+  <div class="h3">Lecture rapide (814)</div>
+  <div class="note">Tape 814 sur le clavier du compteur : consommation du mois en cours.</div>
+  <label class="field" for="reading">Valeur affichée (kWh)</label>
+  <input id="reading" type="number" inputmode="decimal" min="0" step=".1" placeholder="Ex. 20.4">
+  <button class="btn" onclick="addReading()">Enregistrer</button>
+ </div>
+ <div class="panel">
+  <div class="h3">Journal complet</div>
+  <div class="note">N'importe quel code : 801 crédit, 800 total, 817 dernière recharge, 808 découvert, 811 crédit d'urgence…</div>
+  <label class="field" for="logCode">Code</label>
+  <select id="logCode"></select>
+  <label class="field" for="logValue">Valeur affichée</label>
+  <input id="logValue" type="text" inputmode="decimal" placeholder="Ex. 113,97 ou 28-09-26">
+  <label class="field" for="logDate">Date</label>
+  <input id="logDate" type="date">
+  <label class="field" for="logNote">Note (optionnel)</label>
+  <input id="logNote" type="text">
+  <button class="btn" onclick="addLog()">Ajouter au journal</button>
+ </div>
+ <button class="btn ghost" onclick="show('history')">Historique complet <span aria-hidden="true">→</span></button>
+ <div class="sec">Codes du clavier Woyofal</div>
+ <div class="codeTable" id="codeTable"></div>
+ <div class="sec">Lectures 814 · <span id="readingCount">0</span></div>
+ <div id="readingList" class="list"></div>
+</section>
+
+<section id="history" aria-label="Historique">
+ <h1 class="screenTitle">Historique</h1>
+ <div id="historyList" class="list"></div>
+ <button class="btn ghost" onclick="show('consumption')"><span aria-hidden="true">←</span> Retour aux relevés</button>
+</section>
+
+<section id="appliances" aria-label="Mon foyer">
+ <h1 class="screenTitle">Mon foyer</h1>
+ <p class="note" style="margin-top:0">Puissance × heures par jour × 30 jours. Les appareils toujours branchés (chauffe-eau) sont estimés par cycles.</p>
+ <div id="applianceList"></div>
+ <div class="result"><div class="label">Consommation estimée</div><div class="big" id="appKwh">—</div><div class="note" id="appCost">—</div></div>
+</section>
+
+<section id="settings" aria-label="Réglages">
+ <h1 class="screenTitle">Réglages</h1>
+ <div class="sec" style="margin-top:6px">Apparence · Style</div>
+ <div class="styleCards">
+  <button class="styleCard" data-pref="style:compteur" onclick="setPref('style','compteur')">
+   <span class="pv pvC"><span class="pvLcd" id="pvSeg"></span></span>
+   <span class="sn">Compteur</span><span class="sd">Écran à chiffres</span>
+  </button>
+  <button class="styleCard" data-pref="style:clarte" onclick="setPref('style','clarte')">
+   <span class="pv pvK"><b>113,97</b><small>kWh</small></span>
+   <span class="sn">Clarté</span><span class="sd">Simple et épuré</span>
+  </button>
+ </div>
+ <div class="sec">Apparence · Mode</div>
+ <div>
+  <button class="opt" data-pref="mode:light" onclick="setPref('mode','light')"><span class="radio"></span><span><span class="on">Clair</span></span></button>
+  <button class="opt" data-pref="mode:dark" onclick="setPref('mode','dark')"><span class="radio"></span><span><span class="on">Sombre</span></span></button>
+  <button class="opt" data-pref="mode:system" onclick="setPref('mode','system')"><span class="radio"></span><span><span class="on">Système</span><span class="sub">Suit le réglage de ton téléphone</span></span></button>
+ </div>
+ <div class="switchRow">
+  <label for="largeText"><span class="h4" style="display:block;font-size:1.0625rem;font-weight:500">Texte plus grand</span><span class="note" style="display:block">Agrandit tous les textes de l'app</span></label>
+  <input type="checkbox" id="largeText" class="switch" onchange="setPref('largeText',this.checked)">
+ </div>
+ <div class="sec">Installer l'app</div>
+ <div id="installBox"></div>
+ <div class="sec">Tester KËR</div>
+ <p class="note" style="margin:0 0 4px">Tu fais partie des premiers testeurs ? Envoie tes données et ton avis à Papi sur WhatsApp. Tes reçus servent à vérifier les calculs.</p>
+ <button class="btn" onclick="sendToTester()">Envoyer mes données à Papi</button>
+ <div class="sec">Données et confidentialité</div>
+ <p class="note" style="margin:0 0 4px">Tes relevés et recharges restent uniquement sur ce téléphone : pas de compte, pas de serveur. Rien ne part sans ton accord, seulement quand tu touches « Envoyer » ou « Exporter ».</p>
+ <button class="btn ghost" onclick="exportData()">Exporter mes données <span aria-hidden="true">↓</span></button>
+ <label class="btn ghost" for="importFile">Importer un fichier <span aria-hidden="true">↑</span></label>
+ <button class="btn ghost danger" onclick="wipeData()">Effacer mes données <span aria-hidden="true">✕</span></button>
+ <div class="sec">Outils</div>
+ <button class="btn ghost" onclick="show('appliances')">Mon foyer : simulateur d'appareils <span aria-hidden="true">→</span></button>
+ <p class="note" style="margin-top:18px">KËR v<span id="appVersion"></span> · Enfin au courant.</p>
+</section>
+
+</main>
+<input type="file" id="importFile" accept="application/json,.json" hidden onchange="importData(event)">
+<div class="toast" id="updateToast" hidden role="status"><span>Nouvelle version de KËR disponible.</span><button onclick="applyUpdate()">Mettre à jour</button></div>
+<nav class="tabbar" aria-label="Navigation">
+ <button data-screen="home" class="on" onclick="show('home')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-7 9 7v9H3z"/></svg>Accueil</button>
+ <button data-screen="recharge" onclick="show('recharge')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 3L5 14h6l-1 7 8-11h-6z"/></svg>Recharge</button>
+ <button data-screen="consumption" onclick="show('consumption')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>Relevés</button>
+ <button data-screen="settings" onclick="show('settings')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/></svg>Réglages</button>
+</nav>
+</div>
+<script>
+const KEY='ker_mvp_v03';
+const APP_SCHEMA_VERSION=5;
+
+// ---- Codes du clavier Woyofal ----
+// Imprimés sur le compteur (photo du 10/10/2026, légèrement floue mais lisible) : 800 consommation totale, 801 crédit restant,
+// 804 numéro du compteur, 811 crédit d'urgence, 813 conso veille, 814 conso du mois, 820 conso mois précédent.
+// NON imprimés (liste tierce) : 808, 812, 815, 816, 817, 830. 808/815/817 répondent bien sur ce compteur ; 812/816/830 non vérifiés.
+// Correction v0.4 : v0.3 avait 800 = crédit restant (erreur issue d'une liste tierce).
+const PRINTED=['800','801','804','811','813','814','820'];
+const CODES={
+ '800':'Consommation totale du compteur (1.8.0)',
+ '801':'Crédit restant',
+ '804':'Numéro du compteur',
+ '808':'Valeur du découvert',
+ '811':"Activer le crédit d'urgence (à zéro)",
+ '812':"Désactiver l'alarme sonore",
+ '813':'Consommation de la journée précédente',
+ '814':'Consommation du mois en cours',
+ '815':'Date de la dernière recharge',
+ '816':'Heure de la dernière recharge',
+ '817':'Montant de la dernière recharge (kWh)',
+ '820':'Consommation du mois précédent',
+ '830':'Code de la dernière recharge'
+};
+
+// ---- Tariff engine — versioné, isolé de l'UI et du stockage des transactions ----
+// CRSE Décision n°2025-140 (eff. 1 janv. 2026). Une seule tranche énergie au-delà de 150 kWh :
+// le CRSE ne prévoit pas de 3e taux, la conso >250 kWh est valorisée au taux T2 + TVA.
+const TARIFF_SCHEDULES=[
+ {effectiveFrom:'2026-01-01', t1Rate:82.00, t2Rate:136.49, communalTax:0.025, vat:0.18, vatThreshold:250,
+  // Retenue observée sur la 1ère recharge de chaque mois : ~427 F (11/10/2026), ~438 F (04/09/2026, si conso≈0 ce mois-là).
+  // HYPOTHÈSE à confirmer (probablement la redevance fixe, mais 1 155 F ne colle pas) : ne jamais l'afficher comme un fait.
+  firstTopUpFee:430, firstTopUpFeeConfirmed:false}
+];
+function tariffFor(dateStr){
+ const d=new Date(dateStr||new Date().toISOString());
+ let chosen=TARIFF_SCHEDULES[0];
+ for(const s of TARIFF_SCHEDULES){ if(new Date(s.effectiveFrom)<=d) chosen=s; }
+ return chosen;
+}
+function unitPrice(cumKwh,dateStr){
+ const t=tariffFor(dateStr);
+ const base=cumKwh<150?t.t1Rate:t.t2Rate;
+ const withCommunale=base*(1+t.communalTax);
+ return cumKwh>=t.vatThreshold?withCommunale*(1+t.vat):withCommunale;
+}
+function costPerKwh(kwh,dateStr){return unitPrice(kwh,dateStr);}
+// Intègre un montant FCFA en kWh en traversant les seuils de tranche si nécessaire. Fonction pure —
+// ne connaît rien du découvert ni d'aucune autre déduction ; c'est le tarif "propre", validé sur 2 reçus réels.
+function integrateKwh(amountFcfa,usedKwh,dateStr){
+ const t=tariffFor(dateStr);
+ let remaining=Math.max(0,amountFcfa), cursor=Math.max(0,usedKwh), kwh=0, guard=0;
+ while(remaining>0.01 && guard<1000){
+  guard++;
+  const nextThreshold = cursor<150 ? 150 : (cursor<t.vatThreshold ? t.vatThreshold : Infinity);
+  const price=unitPrice(cursor+1e-6,dateStr);
+  const roomKwh=nextThreshold-cursor;
+  const roomCost=roomKwh===Infinity?Infinity:roomKwh*price;
+  if(roomCost===Infinity || remaining<=roomCost){
+   const gained=remaining/price; kwh+=gained; cursor+=gained; remaining=0;
+  } else {
+   kwh+=roomKwh; cursor+=roomKwh; remaining-=roomCost;
+  }
+ }
+ return kwh;
+}
+function rechargeKwh(amount,used,dateStr){ return integrateKwh(amount,used,dateStr); }
+// Retenue de début de mois : appliquée à la 1ère recharge du mois calendaire (aucune autre recharge du même mois dans le ledger).
+function monthOf(ts){return String(ts||'').slice(0,7);}
+function isFirstTopUpOfMonth(dateStr,excludeId){
+ const m=monthOf(dateStr);
+ // 1ère recharge du mois = aucune recharge ANTÉRIEURE dans le même mois calendaire.
+ return !state.events.some(e=>e.type==='recharge' && e.id!==excludeId && monthOf(e.timestamp)===m && String(e.timestamp)<String(dateStr));
+}
+function firstTopUpFeeFor(dateStr,excludeId){
+ const t=tariffFor(dateStr);
+ return isFirstTopUpOfMonth(dateStr,excludeId) ? t.firstTopUpFee : 0;
+}
+// kWh livrés par un montant, retenue de début de mois comprise. Retourne aussi la retenue appliquée.
+function rechargeKwhNet(amount,used,dateStr,excludeId){
+ const fee=Math.min(Math.max(0,amount),firstTopUpFeeFor(dateStr,excludeId));
+ return {kwh:integrateKwh(amount-fee,used,dateStr),fee:fee};
+}
+
+// ---- Event ledger : source de vérité unique ----
+function uid(){return 'e'+Date.now().toString(36)+Math.random().toString(36).slice(2,8);}
+const today=()=>new Date().toISOString().slice(0,10);
+const nowIso=()=>new Date().toISOString();
+
+function defaultAppliances(){
+ return [
+  {name:'Climatisation',w:1200,h:4,mode:'hours'},{name:'Réfrigérateur',w:150,h:24,mode:'hours'},{name:'TV',w:100,h:4,mode:'hours'},
+  {name:'Fer à repasser',w:1200,h:.5,mode:'hours'},{name:'Éclairage',w:80,h:5,mode:'hours'},
+  {name:'Chauffe-eau',w:1500,mode:'cycling',duty:.35,active:true}
+ ];
+}
+
+// Version publique : aucune donnée personnelle intégrée. Un nouvel utilisateur démarre vide et passe par l'accueil.
+// L'historique d'un utilisateur existant arrive par son propre stockage local ou par l'import de sa sauvegarde.
+function createInitialState(){
+ return { schemaVersion:APP_SCHEMA_VERSION, events:[], appliances: defaultAppliances(), meter:null };
+}
+function ensureEvents(s){
+ if(!Array.isArray(s.events)) s.events=[];
+ if(!Array.isArray(s.appliances)) s.appliances=defaultAppliances();
+ if(s.meter===undefined) s.meter = s.events.length ? {number:'',label:'Mon compteur'} : null;
+ return s;
+}
+// v3 -> v4 : le code 800 imprimé sur le compteur est la consommation TOTALE (1.8.0). Les relevés "800" saisis en v3
+// étaient des soldes (crédit restant) : on les recode en 801. Une valeur < 1000 ne peut pas être un registre cumulé réaliste.
+function migrateV3toV4(s){
+ s.events.forEach(e=>{
+  if(e.code==='800' && e.value!=null && e.value<1000){
+   e.code='801';
+   e.note=(e.note?e.note+' · ':'')+'recodé de 800 vers 801 (crédit restant)';
+  }
+ });
+ s.schemaVersion=4;
+ return s;
+}
+// v4 -> v5 : un écart "inexpliqué" sur une 1ère recharge du mois devient "probablement la retenue de début de mois".
+function migrateV4toV5(s){
+ s.events.forEach(e=>{
+  if(e.type==='recharge' && e.reconciliation && e.reconciliation.status==='unexplained' && Array.isArray(e.reconciliation.hypotheses) && e.reconciliation.hypotheses.includes('monthly_fee')){
+   e.reconciliation=Object.assign({},e.reconciliation,{status:'probable_monthly_fee',hypotheses:['monthly_fee','other'],confidence:'medium'});
+  }
+ });
+ s.schemaVersion=5;
+ return s;
+}
+function migrateState(raw){
+ if(!raw) return createInitialState();
+ if(raw.schemaVersion===3 && Array.isArray(raw.events)) raw=migrateV3toV4(raw);
+ if(raw.schemaVersion===4 && Array.isArray(raw.events)) raw=migrateV4toV5(raw);
+ if(raw.schemaVersion===APP_SCHEMA_VERSION && Array.isArray(raw.events)) return ensureEvents(raw);
+ const events=[];
+ (raw.readings||[]).forEach(r=>events.push({id:uid(),timestamp:(r.date||today())+'T12:00:00',type:'reading',code:'814',value:r.kwh,unit:'kWh',source:'meter',confidence:'observed'}));
+ (raw.recharges||[]).forEach(r=>events.push({id:uid(),timestamp:(r.date||today())+'T12:00:00',type:'recharge',amountFcfa:r.amount,deliveredKwh:r.kwh,consumptionAtRechargeKwh:(r.used??null),source:'receipt',confidence:'observed',note:r.note||''}));
+ (raw.logs||[]).forEach(l=>events.push({id:uid(),timestamp:(l.date||today())+'T12:00:00',type:'reading',code:(l.code==='800'?'801':l.code),value:l.value,unit:l.code==='808'?'unknown':'kWh',source:'user',confidence:l.code==='808'?'low':'observed',note:l.note||''}));
+ if(!events.length) return createInitialState();
+ return ensureEvents({schemaVersion:APP_SCHEMA_VERSION, events, appliances: raw.appliances || defaultAppliances()});
+}
+
+let state = migrateState((function(){try{return JSON.parse(localStorage.getItem(KEY)||'null')}catch(e){return null}})());
+let storageWarned=false;
+function save(){
+ try{ localStorage.setItem(KEY,JSON.stringify(state)); }
+ catch(e){ if(!storageWarned){ storageWarned=true; alert("KËR n'arrive pas à enregistrer sur ce téléphone (stockage plein ou navigation privée). Exporte tes données pour ne rien perdre."); } }
+}
+save(); // persiste l'état migré
+const fmt=n=>new Intl.NumberFormat('fr-FR').format(Math.round(n));
+function fmtDate(ts){try{return new Date(ts).toLocaleDateString('fr-FR',{day:'2-digit',month:'short'})}catch(e){return ts}}
+function fmtDateTime(ts){try{return fmtDate(ts)+' · '+new Date(ts).toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})}catch(e){return ts}}
+
+// ---- Ledger accessors ----
+function eventsOfCode(code){return state.events.filter(e=>e.code===code).sort((a,b)=>a.timestamp.localeCompare(b.timestamp));}
+function latestByCode(code){const l=eventsOfCode(code);return l.length?l[l.length-1]:null;}
+function latestBalance(){return latestByCode('801');}      // 801 = crédit restant (solde observé, autoritaire)
+function latestTotalRegister(){return latestByCode('800');} // 800 = consommation totale cumulée (1.8.0), ne se réinitialise jamais
+function latestConsumption(){return latestByCode('814');}  // 814 = consommation mensuelle observée, autoritaire
+function latestArrears(){return latestByCode('808');}       // 808 = valeur brute, non interprétée
+function currentKwh(){const c=latestConsumption();return c?c.value:0;}
+
+// ---- Vitesse de consommation (burn rate) ----
+function calculateRecentBurnRate(){
+ // Le registre cumulé 800 ne se réinitialise jamais : fiable sur n'importe quelle période. Sinon, repli sur 814 (même mois).
+ const reg=eventsOfCode('800').filter(e=>e.value!=null);
+ if(reg.length>=2){
+  const rb=reg[reg.length-1], ra=reg[reg.length-2];
+  const rd=(new Date(rb.timestamp)-new Date(ra.timestamp))/86400000;
+  if(rd>=0.5) return (rb.value-ra.value)/rd;
+ }
+ const readings=eventsOfCode('814');
+ if(readings.length<2) return null;
+ const b=readings[readings.length-1], a=readings[readings.length-2];
+ if(a.timestamp.slice(0,7)!==b.timestamp.slice(0,7)) return null; // ne compare pas across un changement de mois (814 se réinitialise)
+ const days=(new Date(b.timestamp)-new Date(a.timestamp))/86400000;
+ if(days<=0) return null;
+ return (b.value-a.value)/days;
+}
+function monthStartOf(dateStr){const d=new Date(dateStr);return new Date(d.getFullYear(),d.getMonth(),1);}
+function monthAverageBurn(){
+ const c=latestConsumption(); if(!c) return null;
+ const days=Math.max(1,Math.ceil((new Date(c.timestamp)-monthStartOf(c.timestamp))/86400000));
+ return c.value/days;
+}
+function dailyKwh(){ return calculateRecentBurnRate() ?? monthAverageBurn() ?? 0; }
+
+function balanceAgeDays(bal,nowMs){return ((nowMs??Date.now())-new Date(bal.timestamp).getTime())/86400000;}
+function calculateForecast(nowMs){
+ const bal=latestBalance();
+ let burn=calculateRecentBurnRate(), basis='basé sur les derniers relevés';
+ if(burn==null){ burn=monthAverageBurn(); basis='moyenne du mois, données limitées'; }
+ if(!bal || burn==null || burn<=0) return {status:'insufficient_data'};
+ // Un solde 801 vieux de plus de ~36 h n'est plus un fait observé : on ne projette pas dessus.
+ if(balanceAgeDays(bal,nowMs)>1.5) return {status:'stale_balance', burnRateKwhPerDay:burn, asOf:bal.timestamp};
+ return {status:'ok', remainingDays:bal.value/burn, burnRateKwhPerDay:burn, basis};
+}
+
+// ---- Solde estimé & réconciliation ----
+// Projette un solde observé (800) vers l'avant à l'aide des recharges livrées et du burn rate,
+// pour le comparer au prochain relevé 800 réel.
+function burnRateBetween(startTs,endTs){
+ const lo=new Date(startTs).getTime()-3600000, hi=new Date(endTs).getTime()+3600000;
+ const inRange=e=>{ if(e.value==null) return false; const t=new Date(e.timestamp).getTime(); return t>=lo && t<=hi; };
+ const pick=arr=>{
+  if(arr.length<2) return null;
+  const a=arr[0], b=arr[arr.length-1];
+  const d=(new Date(b.timestamp)-new Date(a.timestamp))/86400000;
+  return d>=0.25 ? (b.value-a.value)/d : null;
+ };
+ const viaRegister=pick(eventsOfCode('800').filter(inRange));
+ if(viaRegister!=null) return viaRegister;
+ const month=startTs.slice(0,7);
+ return pick(eventsOfCode('814').filter(inRange).filter(e=>e.timestamp.slice(0,7)===month));
+}
+// Projette un solde 801 observé vers l'avant (recharges livrées - consommation mesurée sur CETTE période).
+// Sans mesure de consommation sur la période, KËR ne devine pas : il renvoie null (données insuffisantes).
+function calculateEstimatedBalance(fromEvent, asOfTs){
+ if(!fromEvent) return null;
+ const burn=burnRateBetween(fromEvent.timestamp, asOfTs);
+ if(burn==null) return null;
+ let bal=fromEvent.value;
+ const base=fromEvent.timestamp;
+ state.events.filter(e=>e.type==='recharge' && e.timestamp>base && e.timestamp<=asOfTs).forEach(e=>bal+=e.deliveredKwh);
+ const days=(new Date(asOfTs)-new Date(base))/86400000;
+ return bal-burn*Math.max(0,days);
+}
+function classifyVariance(v){
+ const av=Math.abs(v);
+ if(av<0.5) return 'matched';
+ if(av<3) return 'minor_difference';
+ return 'significant_difference';
+}
+function reconcileBalance(){
+ const readings=eventsOfCode('801');
+ if(readings.length<2) return {status:'insufficient_data'};
+ const prev=readings[readings.length-2], latest=readings[readings.length-1];
+ const estimated=calculateEstimatedBalance(prev, latest.timestamp);
+ if(estimated==null) return {status:'insufficient_data'};
+ const variance=latest.value-estimated;
+ return {observedKwh:latest.value, estimatedKwh:estimated, varianceKwh:variance, status:classifyVariance(variance)};
+}
+
+// ---- UI ----
+function confidenceTag(c){
+ const map={observed:'OBSERVÉ',high:'OBSERVÉ',calculated:'CALCULÉ',estimated:'ESTIMATION',low:'À CONFIRMER'};
+ return map[c]||(c?String(c).toUpperCase():'');
+}
+function tagClass(c){return (c==='low')?'tag warn':'tag';}
+
+// ---- Préférences d'affichage : style (Compteur / Clarté), mode (clair / sombre / système), texte plus grand ----
+// Gardées à part des données (clé distincte) : changer d'apparence ne touche jamais au ledger.
+const PREF_KEY='ker_prefs';
+function loadPrefs(){
+ const d={style:'compteur',mode:'system',largeText:false};
+ try{ return Object.assign(d, JSON.parse(localStorage.getItem(PREF_KEY)||'{}')||{}); }catch(e){ return d; }
+}
+let prefs=loadPrefs();
+const darkQuery=window.matchMedia?window.matchMedia('(prefers-color-scheme: dark)'):null;
+function resolvedMode(){ return prefs.mode==='system' ? ((darkQuery&&darkQuery.matches)?'dark':'light') : prefs.mode; }
+function applyPrefs(){
+ const r=document.documentElement;
+ r.setAttribute('data-style', prefs.style==='clarte'?'clarte':'compteur');
+ r.setAttribute('data-mode', resolvedMode());
+ r.classList.toggle('large', !!prefs.largeText);
+ const m=document.querySelector('meta[name=theme-color]');
+ if(m) m.setAttribute('content', resolvedMode()==='dark'?'#0A0A0A':'#FAFAF7');
+ document.querySelectorAll('[data-pref]').forEach(b=>{
+  const [k,v]=b.dataset.pref.split(':'); const on=String(prefs[k])===v;
+  b.classList.toggle('sel',on); b.setAttribute('aria-pressed',on?'true':'false');
+ });
+ const lt=document.getElementById('largeText'); if(lt) lt.checked=!!prefs.largeText;
+}
+function setPref(k,v){ prefs[k]=v; try{localStorage.setItem(PREF_KEY,JSON.stringify(prefs));}catch(e){} applyPrefs(); }
+if(darkQuery){
+ const onSys=()=>{ if(prefs.mode==='system') applyPrefs(); };
+ if(darkQuery.addEventListener) darkQuery.addEventListener('change',onSys); else if(darkQuery.addListener) darkQuery.addListener(onSys);
+}
+
+// ---- Chiffres à segments (comme l'écran du compteur) ----
+const SEG_MAP={'0':'abcdef','1':'bc','2':'abged','3':'abgcd','4':'fgbc','5':'afgcd','6':'afgecd','7':'abc','8':'abcdefg','9':'abcdfg','-':'g','F':'afge'};
+const SEG_POLY={a:[[8,2],[36,2],[32,8],[12,8]],b:[[37,3],[37,35],[34,38],[31,35],[31,9]],c:[[37,73],[37,41],[34,38],[31,41],[31,67]],
+ d:[[8,74],[36,74],[32,68],[12,68]],e:[[7,73],[7,41],[10,38],[13,41],[13,67]],f:[[7,3],[7,35],[10,38],[13,35],[13,9]],g:[[12,38],[15,34],[29,34],[32,38],[29,42],[15,42]]};
+function segSVG(str){
+ const chars=String(str).split(''); let x=0; const parts=[];
+ chars.forEach((ch,i)=>{
+  if(ch==='.'||ch===','){ parts.push(`<rect class="on" x="${x+1}" y="65" width="8" height="8"/>`); x+=12; }
+  else if(/\s/.test(ch)){ x+=16; }
+  else {
+   const m=SEG_MAP[ch]||'';
+   for(const k in SEG_POLY) parts.push(`<polygon class="${m.indexOf(k)>=0?'on':'off'}" points="${SEG_POLY[k].map(p=>(p[0]+x)+','+p[1]).join(' ')}"/>`);
+   x+=44;
+  }
+  if(i<chars.length-1) x+=6;
+ });
+ const w=x+8;
+ return `<svg class="seg" viewBox="0 0 ${w} 76" style="width:${(w/76).toFixed(3)}em;height:1em" aria-hidden="true" focusable="false"><g transform="translate(7 0) skewX(-5)">${parts.join('')}</g></svg>`;
+}
+// Écrit un nombre : segments (style Compteur) + texte français (style Clarté et lecteurs d'écran).
+function num(target,value,opts){
+ const el=typeof target==='string'?document.getElementById(target):target; if(!el) return;
+ const o=opts||{}; const d=o.dec||0; let txt, seg;
+ const nil=(value==null || !isFinite(value)); el.classList.toggle('nil',nil);
+ if(nil){ txt=o.nilText||'—'; seg=o.dashes||'--'; }
+ else {
+  txt=new Intl.NumberFormat('fr-FR',{minimumFractionDigits:d,maximumFractionDigits:d}).format(value);
+  seg=o.group ? Math.round(value).toString().replace(/\B(?=(\d{3})+(?!\d))/g,' ') : value.toFixed(d);
+ }
+ el.innerHTML=`<span class="segw">${segSVG(seg)}</span><span class="txtw">${txt}</span>`;
+}
+const fmt1=n=>new Intl.NumberFormat('fr-FR',{minimumFractionDigits:1,maximumFractionDigits:1}).format(n);
+function fmtLongDate(ms){ try{ return new Date(ms).toLocaleDateString('fr-FR',{day:'numeric',month:'long'}); }catch(e){ return ''; } }
+
+// Jauge : 25 cases de 10 kWh (0 à 250). "used" = déjà consommé ce mois, "after" = position après une recharge simulée.
+function renderGauge(id,used,after){
+ const el=document.getElementById(id); if(!el) return;
+ let h='';
+ for(let i=0;i<25;i++){
+  const lo=i*10;
+  const uf=Math.min(1,Math.max(0,(used-lo)/10));
+  const af=after==null?uf:Math.min(1,Math.max(0,(after-lo)/10));
+  const pf=Math.max(0,af-uf);
+  h+=`<span class="cell${i>=15?' t2':''}${i===15?' first':''}"><i class="u" style="width:${(uf*100).toFixed(1)}%"></i><i class="p" style="width:${(pf*100).toFixed(1)}%"></i></span>`;
+ }
+ el.innerHTML=h;
+}
+
+function firstRechargeThisMonth(nowTs){
+ const m=String(nowTs).slice(0,7);
+ const list=state.events.filter(e=>e.type==='recharge' && String(e.timestamp).slice(0,7)===m && String(e.timestamp)<String(nowTs)).sort((a,b)=>a.timestamp.localeCompare(b.timestamp));
+ return list[0]||null;
+}
+
+let lastCeiling=null;
+function simulate(){
+ const a=+document.getElementById('amount').value||0;
+ const u=+document.getElementById('simKwh').value||0;
+ const applyArrears=document.getElementById('applyArrears').checked;
+ const arrears=latestArrears();
+ let net=a, arrearsNote='';
+ if(applyArrears && arrears && arrears.value){
+  const applied=Math.min(a,arrears.value);
+  net=a-applied;
+  arrearsNote=`${fmt(applied)} F retenus pour le découvert (confirmé manuellement). `;
+ }
+ const now=nowIso();
+ const r=rechargeKwhNet(net,u,now);
+ const k=r.kwh, after=u+k;
+ num('simResult',k,{dec:1,dashes:'---.-'});
+ renderGauge('simGauge',u,after);
+ document.getElementById('simUsedLbl').textContent=fmt1(u)+' déjà utilisés';
+ document.getElementById('simAfter').innerHTML = `Tu finis à ${fmt1(after)} kWh : ` + (after<150 ? 'tu restes en <b class="blue">tranche 1</b>.' : (after<=250 ? (u<150?'une partie passe en <b>tranche 2</b>.':'tu es en <b>tranche 2</b>.') : 'tu dépasses 250 kWh, la <b>TVA</b> s\'applique.'));
+
+ let msg=arrearsNote;
+ if(r.fee>0) msg+=`Retenue de début de mois estimée : ~${fmt(r.fee)} F (1ère recharge de ${new Date(now).toLocaleDateString('fr-FR',{month:'long'})}, hypothèse non confirmée). `;
+ msg+= u<150?'Départ en 1ère tranche. ':u<250?'Départ en 2ème tranche. ':'Départ au-delà de 250 kWh (TVA déjà active). ';
+ if(u<150 && after>=150){ msg+=`Répartition : ${(150-u).toFixed(1)} kWh en T1, ${(after-150).toFixed(1)} kWh en T2+. `; }
+ if(u<250 && after>250){ msg+='Cette recharge te fera franchir 250 kWh : une partie sera facturée avec la TVA. '; }
+ msg+=`Consommation cumulée après recharge (estimée) : ${after.toFixed(1)} kWh.`;
+ document.getElementById('simMessage').textContent=msg;
+
+ num('rowPrice',unitPrice(u,today()),{dec:0});
+ num('rowFee',r.fee,{dec:0});
+ const first=firstRechargeThisMonth(now);
+ document.getElementById('feeNote').textContent = r.fee>0
+  ? "Première recharge du mois : KËR retire environ 430 F (hypothèse tirée de tes reçus). Après la recharge, compose 817 pour vérifier."
+  : (first ? `Déjà prélevée le ${fmtDate(first.timestamp)} (hypothèse). Après la recharge, compose 817 pour vérifier.` : 'Après la recharge, compose 817 pour vérifier.');
+
+ const ce=document.getElementById('t1Ceiling'); const chip=document.getElementById('ceilChip');
+ if(u<150){
+  const room=150-u; const fee=firstTopUpFeeFor(now);
+  lastCeiling=room*unitPrice(u,today())+fee;
+  num('rowCeil',lastCeiling,{dec:0,group:true});
+  ce.textContent='Plafond tranche 1 : environ '+fmt(lastCeiling)+' F ('+room.toFixed(1)+' kWh)'+(fee?', dont ~'+fmt(fee)+' F de retenue de début de mois (hypothèse)':'')+'. Au-delà, le kWh passe de ~'+fmt(unitPrice(u,today()))+' F à ~'+fmt(unitPrice(150,today()))+' F.';
+  chip.disabled=false;
+ } else {
+  lastCeiling=null; num('rowCeil',null,{dashes:'--'}); ce.textContent='Tranche 1 déjà dépassée ce mois-ci.'; chip.disabled=true;
+ }
+ const ceilAmt=lastCeiling?Math.floor(lastCeiling/100)*100:null;
+ document.querySelectorAll('.chip[data-amt]').forEach(c=>c.classList.toggle('sel',+c.dataset.amt===a));
+ chip.classList.toggle('sel',ceilAmt!=null && a===ceilAmt);
+}
+function setAmount(v){document.getElementById('amount').value=v;simulate()}
+function setCeiling(){ if(lastCeiling) setAmount(Math.floor(lastCeiling/100)*100); }
+
+function renderHome(){
+ const bal=latestBalance();
+ const c=latestConsumption();
+ const k=currentKwh();
+ const forecast=calculateForecast();
+ const age=bal?balanceAgeDays(bal):null;
+ const stale=bal && age>1.5;
+ const fresh=bal && !stale;
+
+ const d=new Date();
+ document.getElementById('headDate').innerHTML=`<span class="segw">${segSVG(String(d.getDate()).padStart(2,'0')+'.'+String(d.getMonth()+1).padStart(2,'0'))}</span><span class="txtw">${d.toLocaleDateString('fr-FR',{day:'numeric',month:'long'})}</span>`;
+
+ num('balance', fresh?bal.value:null, {dec:2,dashes:'---.--',nilText:'À relever'});
+ const tag=document.getElementById('balanceTag');
+ tag.textContent = !bal ? 'Aucun relevé' : (stale ? 'Ancien' : confidenceTag(bal.confidence));
+ tag.classList.toggle('dim',!fresh);
+ document.getElementById('balanceMeta').textContent = !bal ? 'Je ne sais pas encore : compose 801 sur le compteur.' : (stale ? `Dernier 801 : ${fmt2(bal.value)} kWh le ${fmtDateTime(bal.timestamp)}. Trop ancien, compose 801.` : `Code 801 · relevé le ${fmtDateTime(bal.timestamp)}`);
+ document.getElementById('balanceValue').textContent = fresh ? '≈ '+fmt(bal.value*costPerKwh(k))+' F au tarif actuel' : '';
+
+ const burn = forecast.burnRateKwhPerDay ?? (dailyKwh()||null);
+ if(forecast.status==='ok'){
+  num('days',forecast.remainingDays,{dec:0});
+  const until=new Date(bal.timestamp).getTime()+forecast.remainingDays*86400000;
+  document.getElementById('untilDate').innerHTML='jusqu\'au<br><b>'+fmtLongDate(until)+'</b>';
+  document.getElementById('daysBasis').textContent=`À ${fmt1(forecast.burnRateKwhPerDay)} kWh par jour, ${forecast.basis}.`;
+ } else {
+  num('days',null,{dashes:'--'});
+  document.getElementById('untilDate').textContent='';
+  document.getElementById('daysBasis').textContent = forecast.status==='stale_balance' ? 'Relevé 801 trop ancien pour estimer. Compose 801.' : 'Données insuffisantes pour estimer.';
+ }
+ num('dailyCost', burn?burn*costPerKwh(k):null, {dec:0,dashes:'---'});
+
+ num('monthKwh', c?c.value:null, {dec:1,dashes:'--.-'});
+ document.getElementById('monthKwhMeta').textContent = c ? `Code 814 · ${fmtDateTime(c.timestamp)}` : 'Aucun relevé 814';
+ document.getElementById('avgKwh').textContent = dailyKwh() ? fmt1(dailyKwh())+' kWh par jour' : '—';
+
+ const room = k<150 ? 150-k : (k<250 ? 250-k : null);
+ num('roomKwh', room, {dec:1,dashes:'--'});
+ document.getElementById('roomLabel').textContent = k<150 ? 'au meilleur prix' : (k<250 ? 'avant la TVA' : 'TVA active');
+
+ renderGauge('gauge',k,null);
+ const dv=250-k;
+ document.getElementById('thresholdText').textContent = k<150 ? `${fmt1(150-k)} kWh avant le prix fort, ${fmt1(dv)} kWh avant la TVA.` : (dv>0 ? `${fmt1(dv)} kWh avant le seuil TVA.` : 'Seuil TVA dépassé ce mois-ci.');
+ document.getElementById('statusPill').textContent = k<150?'Tranche 1':k<=250?'Tranche 2':'TVA active';
+
+ const nudge=document.getElementById('nudge');
+ if(!fresh){
+  nudge.hidden=false;
+  document.getElementById('nudgeText').textContent = !bal ? 'Aucun relevé 801. Compose 801 pour commencer.' : `Relevé vieux de ${Math.floor(age)} jour${Math.floor(age)>1?'s':''}. Compose 801 pour recaler.`;
+ } else nudge.hidden=true;
+
+ const rec=reconcileBalance();
+ const recEl=document.getElementById('reconcileText');
+ if(rec.status==='insufficient_data'){
+  recEl.textContent="Pas encore assez de relevés 801 comparables pour comparer l'estimation de KËR au compteur.";
+ } else {
+  const sign=rec.varianceKwh>=0?'+':'';
+  const statusLabel={matched:'concordant',minor_difference:'écart mineur',significant_difference:'écart important'}[rec.status]||rec.status;
+  recEl.textContent=`KËR estimait ${rec.estimatedKwh.toFixed(2)} kWh avant ce relevé · compteur a montré ${rec.observedKwh.toFixed(2)} kWh · écart ${sign}${rec.varianceKwh.toFixed(2)} kWh (${statusLabel}).`;
+ }
+
+ const arrears=latestArrears();
+ const decText=document.getElementById('decouvertText'), decPill=document.getElementById('decouvertPill');
+ if(!arrears){
+  decText.textContent='Aucun relevé 808 pour le moment.'; decPill.textContent='—'; decPill.className='pill';
+ } else {
+  decText.textContent=`Valeur brute : ${arrears.value}, unité non confirmée. KËR ne la déduit pas automatiquement de tes recharges tant que ce n'est pas validé.`;
+  decPill.textContent='À CONFIRMER'; decPill.className='pill warn';
+ }
+ document.getElementById('todayKwh').textContent = c ? `Dernière lecture (814) : ${fmt1(c.value)} kWh, ${fmtDate(c.timestamp)}` : 'Ajoute une lecture avec le code 814.';
+}
+const fmt2=n=>new Intl.NumberFormat('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2}).format(n);
+
+function addReading(){
+ const v=+document.getElementById('reading').value; if(!v) return;
+ state.events.unshift({id:uid(),timestamp:nowIso(),type:'reading',code:'814',value:v,unit:'kWh',source:'user',confidence:'observed'});
+ save(); document.getElementById('reading').value=''; renderAll();
+}
+
+function addLog(){
+ const code=document.getElementById('logCode').value;
+ const rawValue=document.getElementById('logValue').value.trim();
+ const textual=['815','816','830'].includes(code);
+ const value=(rawValue===''||textual)?null:parseFloat(rawValue.replace(',','.'));
+ const dateVal=document.getElementById('logDate').value||today();
+ const note=document.getElementById('logNote').value;
+ if(!code) return;
+ if(!textual && rawValue!=='' && isNaN(value)) return;
+ const timestamp=dateVal+'T'+new Date().toTimeString().slice(0,8);
+ const ev={id:uid(),timestamp,type:'reading',code,value,
+  unit: code==='808' ? 'unknown' : (['800','801','813','814','817','820'].includes(code) ? 'kWh' : ''),
+  source:'user', confidence: code==='808' ? 'low' : 'observed', note};
+ if(code==='808') ev.interpretation='pending_validation';
+ if(textual && rawValue) ev.valueText=rawValue;
+ if(code==='801' && value!=null){
+  const prevObs=latestBalance();
+  if(prevObs){
+   const estimate=calculateEstimatedBalance(prevObs, timestamp);
+   if(estimate!=null){ const variance=value-estimate; ev.reconciliation={estimatedKwh:estimate,observedKwh:value,varianceKwh:variance,status:classifyVariance(variance)}; }
+  }
+ }
+ state.events.unshift(ev);
+ save();
+ document.getElementById('logValue').value=''; document.getElementById('logNote').value='';
+ renderAll();
+}
+
+function saveRecharge(){
+ const amount=+document.getElementById('amount').value; if(!amount) return;
+ const used=+document.getElementById('simKwh').value || currentKwh();
+ const applyArrears=document.getElementById('applyArrears').checked;
+ const arrears=latestArrears();
+ let net=amount, note='';
+ if(applyArrears && arrears && arrears.value){
+  const applied=Math.min(amount,arrears.value); net=amount-applied;
+  note=`${fmt(applied)} F déduits pour découvert (confirmé manuellement par l'utilisateur).`;
+ }
+ const r=rechargeKwhNet(net,used,nowIso());
+ const k=r.kwh;
+ if(r.fee>0) note=(note?note+' ':'')+`Estimation incluant une retenue de début de mois de ~${fmt(r.fee)} F (hypothèse). Compose 817 pour corriger.`;
+ state.events.unshift({id:uid(),timestamp:nowIso(),type:'recharge',amountFcfa:amount,deliveredKwh:k,consumptionAtRechargeKwh:used,source:'user',confidence:'observed',note});
+ // deliveredKwh est une ESTIMATION du crédit acheté — ce n'est pas un relevé de solde observé (800),
+ // donc on ne touche à aucun "solde" ici. Le prochain relevé 800 servira à réconcilier.
+ save(); renderAll(); show('home');
+}
+
+function renderReadings(){
+ const list=eventsOfCode('814').slice().reverse();
+ document.getElementById('readingCount').textContent=list.length;
+ document.getElementById('readingList').innerHTML=list.map(x=>`<div class="item"><b>${x.value.toFixed(1)} kWh</b><small>${fmtDateTime(x.timestamp)}</small></div>`).join('');
+}
+
+function renderEventItem(e){
+ const dt=fmtDateTime(e.timestamp);
+ if(e.type==='recharge'){
+  let extra='';
+  if(e.reconciliation && e.reconciliation.status==='unexplained'){
+   extra=`<br>Écart détecté : ~${fmt(e.reconciliation.varianceFcfa)} F — KËR n'a pas encore identifié la cause avec certitude (${e.reconciliation.hypotheses.join(', ')}).`;
+  }
+  if(e.reconciliation && e.reconciliation.status==='probable_monthly_fee'){
+   extra=`<br>Écart ~${fmt(e.reconciliation.varianceFcfa)} F vs tarif pur : probablement la retenue de début de mois (hypothèse, non prouvée).`;
+  }
+  if(e.validation && e.validation.status==='fee_inferred'){
+   extra=`<br>Coût réel ${e.validation.observedUnitCost} F/kWh vs ${e.validation.modeledUnitCost} F/kWh au tarif pur : ~${fmt(-e.validation.varianceFcfa)} F retenus (hypothèse : retenue de début de mois).`;
+  }
+  if(e.validation && e.validation.status==='strong_match'){
+   extra=`<br>Cas de calibration : coût observé ${e.validation.observedUnitCost} F/kWh vs modèle ${e.validation.modeledUnitCost} F/kWh.`;
+  }
+  const usedTxt = e.consumptionAtRechargeKwh!=null ? `conso. au moment : ${(+e.consumptionAtRechargeKwh).toFixed(1)} kWh` : 'position tranche inconnue';
+  return `<div class="item"><div class="row"><b>${fmt(e.amountFcfa)} F</b><b>+${e.deliveredKwh.toFixed(1)} kWh<span class="${tagClass(e.confidence)}">${confidenceTag(e.confidence)}</span></b></div><small>${dt} · recharge · ${usedTxt}${e.note?' · '+e.note:''}${extra}</small></div>`;
+ }
+ const label=CODES[e.code]||e.code;
+ let extra='';
+ if(e.reconciliation){
+  const s=e.reconciliation.varianceKwh>=0?'+':'';
+  extra=`<br>KËR estimait ${e.reconciliation.estimatedKwh.toFixed(2)} kWh avant ce relevé · écart ${s}${e.reconciliation.varianceKwh.toFixed(2)} kWh`;
+ }
+ return `<div class="item"><div class="row"><b>${e.code} — ${label}<span class="${tagClass(e.confidence)}">${confidenceTag(e.confidence)}</span></b><b>${e.valueText?e.valueText:(e.value!=null?e.value:'—')}</b></div><small>${dt}${e.note?' · '+e.note:''}${extra}</small></div>`;
+}
+function renderHistory(){
+ const el=document.getElementById('historyList');
+ const items=state.events.slice().sort((a,b)=>b.timestamp.localeCompare(a.timestamp));
+ if(!items.length){el.innerHTML='<div class="empty">Aucun événement enregistré.</div>';return}
+ el.innerHTML=items.map(renderEventItem).join('');
+}
+
+function applianceKwhMonth(a){
+ if(a.mode==='cycling') return a.active?a.w*24*a.duty*30/1000:0;
+ return a.w*(a.h||0)*30/1000;
+}
+function renderAppliances(){
+ const el=document.getElementById('applianceList');el.innerHTML='';
+ state.appliances.forEach((a,i)=>{
+  const d=document.createElement('div');d.className='appliance '+(a.mode==='cycling'?'appliance-cycling':'');
+  const monthly=applianceKwhMonth(a).toFixed(1);
+  const id='app'+i;
+  if(a.mode==='cycling'){
+   d.innerHTML=`<div class="rowx"><div><b class="h4">${a.name}</b><div class="muted">${a.w} W · toujours branché, chauffe par cycles</div></div><div class="checkline" style="margin:0"><input type="checkbox" id="${id}a" ${a.active?'checked':''}><label for="${id}a">Actif</label></div></div>
+   <label class="field" for="${id}s">Intensité des cycles</label>
+   <select id="${id}s">
+    <option value=".2" ${a.duty===.2?'selected':''}>Faible : bien isolé, peu utilisé (~20 %)</option>
+    <option value=".35" ${a.duty===.35?'selected':''}>Moyenne : usage courant (~35 %)</option>
+    <option value=".5" ${a.duty===.5?'selected':''}>Élevée : gros volume ou mal isolé (~50 %)</option>
+   </select>
+   <div class="muted" style="margin-top:6px">≈ ${monthly} kWh par mois estimés</div>`;
+   d.querySelector('input[type=checkbox]').onchange=e=>{state.appliances[i].active=e.target.checked;save();calcApps();renderAppliances()};
+   d.querySelector('select').onchange=e=>{state.appliances[i].duty=+e.target.value;save();calcApps();renderAppliances()};
+  } else {
+   d.innerHTML=`<label for="${id}h"><b class="h4">${a.name}</b><div class="muted">${a.w} W · heures par jour</div></label><input id="${id}h" type="number" inputmode="decimal" min="0" step=".25" value="${a.h}">`;
+   d.querySelector('input').oninput=e=>{state.appliances[i].h=+e.target.value||0;save();calcApps()};
+  }
+  el.appendChild(d);
+ });calcApps();
+}
+function calcApps(){
+ const k=state.appliances.reduce((s,a)=>s+applianceKwhMonth(a),0);
+ document.getElementById('appKwh').textContent=fmt1(k)+' kWh/mois';
+ document.getElementById('appCost').textContent='Ordre de grandeur : '+fmt(k*costPerKwh(currentKwh()))+' F/mois';
+}
+
+function populateCodeUI(){
+ const sel=document.getElementById('logCode');
+ sel.innerHTML='<option value="">Choisir un code</option>'+Object.keys(CODES).map(c=>`<option value="${c}">${c} · ${CODES[c]}</option>`).join('');
+ document.getElementById('logDate').value=today();
+ document.getElementById('codeTable').innerHTML=Object.keys(CODES).map(c=>`<div class="codeRow"><b>${c}</b><span>${CODES[c]}${PRINTED.includes(c)?'':' <span class="tag">non imprimé sur le compteur</span>'}</span></div>`).join('');
+ const pv=document.getElementById('pvSeg'); if(pv) pv.innerHTML=segSVG('113.97');
+}
+
+// ---- Export / import (local-first : les données ne quittent le téléphone que si l'utilisateur le décide) ----
+function exportData(){
+ const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'});
+ const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='ker-donnees-'+today()+'.json';
+ document.body.appendChild(a); a.click(); setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},500);
+}
+function importData(ev){
+ const f=ev.target.files&&ev.target.files[0]; if(!f) return;
+ const rd=new FileReader();
+ rd.onload=()=>{
+  try{
+   const raw=JSON.parse(rd.result);
+   if(!raw || !(Array.isArray(raw.events)||Array.isArray(raw.readings))) throw new Error('format');
+   if(state.events.length && !confirm('Remplacer tes données actuelles par celles de ce fichier ?')) return;
+   state=migrateState(raw); save(); requestPersist(); exitWelcome(); renderAll(); show('home'); alert('Données importées.');
+  }catch(e){ alert("Ce fichier n'est pas une sauvegarde KËR."); }
+ };
+ rd.readAsText(f); ev.target.value='';
+}
+
+function renderAll(){
+ renderHome();renderReadings();renderHistory();renderAppliances();simulate();
+}
+const TAB_OF={home:'home',recharge:'recharge',consumption:'consumption',history:'consumption',appliances:'home',settings:'settings',welcome:null};
+function show(id){
+ document.querySelectorAll('main > section').forEach(s=>s.classList.toggle('active',s.id===id));
+ document.querySelectorAll('nav.tabbar button').forEach(b=>{const on=b.dataset.screen===TAB_OF[id]; b.classList.toggle('on',on); if(on) b.setAttribute('aria-current','page'); else b.removeAttribute('aria-current');});
+ if(id==='recharge'){ document.getElementById('simKwh').value=currentKwh().toFixed(1); simulate(); }
+ if(id==='home') renderHome();
+ if(id==='settings') renderInstall();
+ window.scrollTo(0,0);
+}
+// ---- Version, premier lancement, test, installation ----
+const APP_VERSION='0.7.0';
+const TESTER_NAME='Papi';
+function parseNum(v){ v=String(v==null?'':v).trim().replace(/[\s  ]/g,'').replace(',','.'); if(v==='') return null; const n=Number(v); return isFinite(n)?n:NaN; }
+function requestPersist(){ try{ if(navigator.storage && navigator.storage.persist) navigator.storage.persist(); }catch(e){} }
+function isNewUser(){ return !state.meter && state.events.length===0; }
+function showWelcome(){ document.body.classList.add('onboarding'); const h=document.getElementById('howtoSeg'); if(h) h.innerHTML=`<span class="segw">${segSVG('801')}</span><span class="txtw">801</span>`; show('welcome'); }
+function exitWelcome(){ document.body.classList.remove('onboarding'); }
+function finishWelcome(skip){
+ const err=document.getElementById('wError'); err.textContent='';
+ const meter=(document.getElementById('wMeter').value||'').replace(/\D/g,'');
+ const v801=parseNum(document.getElementById('w801').value), v814=parseNum(document.getElementById('w814').value), v800=parseNum(document.getElementById('w800').value);
+ if(!skip){
+  if([v801,v814,v800].some(x=>Number.isNaN(x)||(x!=null&&x<0))){ err.textContent='Vérifie les nombres : uniquement des chiffres, avec une virgule ou un point.'; return; }
+  if(v801==null && v814==null){ err.textContent="Entre au moins le crédit restant (801) ou la consommation du mois (814). Sinon, touche « Passer pour l'instant »."; return; }
+ }
+ const ts=nowIso();
+ state.meter={number:meter,label:'Mon compteur',createdAt:ts};
+ if(!skip){
+  if(v801!=null) state.events.push({id:uid(),timestamp:ts,type:'reading',code:'801',value:v801,unit:'kWh',source:'user',confidence:'observed',note:'Premier relevé'});
+  if(v814!=null) state.events.push({id:uid(),timestamp:ts,type:'reading',code:'814',value:v814,unit:'kWh',source:'user',confidence:'observed',note:'Premier relevé'});
+  if(v800!=null) state.events.push({id:uid(),timestamp:ts,type:'reading',code:'800',value:v800,unit:'kWh',source:'user',confidence:'observed',note:'Premier relevé'});
+ }
+ save(); requestPersist(); exitWelcome(); renderAll(); show('home');
+}
+
+function downloadFile(text,name){
+ const blob=new Blob([text],{type:'application/json'});
+ const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=name;
+ document.body.appendChild(a); a.click(); setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},500);
+}
+function backupJson(){ return JSON.stringify(Object.assign({exportedAt:nowIso(),appVersion:APP_VERSION},state),null,2); }
+function dataSummary(){
+ const b=latestBalance(), c=latestConsumption(); const rec=state.events.filter(e=>e.type==='recharge');
+ return `KËR v${APP_VERSION} · mes données de test\n`+
+  `Relevés : ${state.events.filter(e=>e.type==='reading').length} · recharges : ${rec.length}\n`+
+  `Dernier 801 : ${b?fmt2(b.value)+' kWh ('+fmtDate(b.timestamp)+')':'aucun'}\n`+
+  `Dernier 814 : ${c?fmt1(c.value)+' kWh ('+fmtDate(c.timestamp)+')':'aucun'}\n\nMon avis : `;
+}
+async function sendToTester(){
+ const json=backupJson(), name='ker-donnees-'+today()+'.json', text=dataSummary();
+ try{
+  const file=new File([json],name,{type:'application/json'});
+  if(navigator.canShare && navigator.canShare({files:[file]})){ await navigator.share({files:[file],title:'Mes données KËR',text}); return; }
+ }catch(e){ if(e && e.name==='AbortError') return; }
+ downloadFile(json,name);
+ window.open('https://wa.me/?text='+encodeURIComponent(text+'\n\n(Le fichier '+name+' vient d\'être téléchargé : joins-le à ce message.)'),'_blank','noopener');
+}
+function wipeData(){
+ if(!confirm('Effacer toutes tes données KËR sur ce téléphone ? Exporte-les avant si tu veux les garder.')) return;
+ state=createInitialState(); save(); renderAll(); showWelcome();
+}
+
+let deferredInstall=null;
+window.addEventListener('beforeinstallprompt',e=>{ e.preventDefault(); deferredInstall=e; renderInstall(); });
+window.addEventListener('appinstalled',()=>{ deferredInstall=null; renderInstall(); });
+function isStandalone(){ return (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || window.navigator.standalone===true; }
+function renderInstall(){
+ const box=document.getElementById('installBox'), nudge=document.getElementById('installNudge');
+ const standalone=isStandalone(), web=/^https?:/.test(location.protocol);
+ if(nudge) nudge.hidden = standalone || !web || !!prefs.installDismissed;
+ if(!box) return;
+ const ios=/iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform==='MacIntel' && navigator.maxTouchPoints>1);
+ if(standalone){ box.innerHTML='<p class="note" style="margin:0">KËR est installée sur ce téléphone.</p>'; return; }
+ if(deferredInstall){ box.innerHTML='<p class="note" style="margin:0">Ajoute KËR à ton écran d\'accueil : elle s\'ouvre comme une app et marche sans connexion.</p><button class="btn" onclick="doInstall()">Installer KËR</button>'; return; }
+ if(ios){ box.innerHTML='<p class="note" style="margin:0">Sur iPhone : ouvre ce lien dans Safari, touche le bouton Partager (le carré avec une flèche), puis « Sur l\'écran d\'accueil ». C\'est important : sur iPhone, c\'est ce qui protège tes données.</p>'; return; }
+ box.innerHTML='<p class="note" style="margin:0">Dans le menu du navigateur (⋮), choisis « Installer l\'application » ou « Ajouter à l\'écran d\'accueil ».</p>';
+}
+async function doInstall(){ if(!deferredInstall) return; deferredInstall.prompt(); try{ await deferredInstall.userChoice; }catch(e){} deferredInstall=null; renderInstall(); }
+
+if('serviceWorker' in navigator && /^https?:/.test(location.protocol)){
+ window.addEventListener('load',()=>{
+  navigator.serviceWorker.register('./sw.js').then(reg=>{
+   if(reg.waiting && navigator.serviceWorker.controller) document.getElementById('updateToast').hidden=false;
+   reg.addEventListener('updatefound',()=>{
+    const nw=reg.installing; if(!nw) return;
+    nw.addEventListener('statechange',()=>{ if(nw.state==='installed' && navigator.serviceWorker.controller) document.getElementById('updateToast').hidden=false; });
+   });
+  }).catch(()=>{});
+ });
+}
+function applyUpdate(){
+ let done=false; const go=()=>{ if(!done){ done=true; location.reload(); } };
+ navigator.serviceWorker.addEventListener('controllerchange',go);
+ navigator.serviceWorker.getRegistration().then(r=>{ if(r && r.waiting) r.waiting.postMessage('skipWaiting'); else go(); });
+ setTimeout(go,2500);
+}
+function boot(){
+ const v=document.getElementById('appVersion'); if(v) v.textContent=APP_VERSION;
+ renderInstall();
+ if(isNewUser()) showWelcome(); else { if(state.events.length) requestPersist(); show('home'); }
+}
+
+applyPrefs();
+populateCodeUI();
+renderAll();
+boot();
+</script>
+</body>
+</html>
