@@ -5,6 +5,22 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0A0A0A">
 <meta name="description" content="KËR suit ton compteur Woyofal : crédit, tranches, autonomie et vrai coût de chaque recharge.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="KËR">
+<meta property="og:title" content="KËR · Enfin au courant.">
+<meta property="og:description" content="Ton compteur Woyofal, enfin lisible : crédit, tranche, jours restants et vrai coût de chaque recharge.">
+<meta property="og:url" content="https://papiwata.github.io/KER/">
+<meta property="og:image" content="https://papiwata.github.io/KER/og-image.png">
+<meta property="og:image:secure_url" content="https://papiwata.github.io/KER/og-image.png">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="KËR, écrit comme sur l'écran d'un compteur, avec le slogan Enfin au courant.">
+<meta property="og:locale" content="fr_FR">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="KËR · Enfin au courant.">
+<meta name="twitter:description" content="Ton compteur Woyofal, enfin lisible : crédit, tranche, jours restants et vrai coût de chaque recharge.">
+<meta name="twitter:image" content="https://papiwata.github.io/KER/og-image.png">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" href="icons/icon-192.png">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
@@ -1227,7 +1243,7 @@ function closeMoment(){ document.body.classList.remove('moment'); show('home'); 
 function log817(){ document.body.classList.remove('moment'); show('consumption'); const s=document.getElementById('logCode'); if(s) s.value='817'; const v=document.getElementById('logValue'); if(v) v.focus(); }
 
 // ---- Version, premier lancement, test, installation ----
-const APP_VERSION='0.8.0';
+const APP_VERSION='0.8.1';
 const TESTER_NAME='Papi';
 function parseNum(v){ v=String(v==null?'':v).trim().replace(/[\s  ]/g,'').replace(',','.'); if(v==='') return null; const n=Number(v); return isFinite(n)?n:NaN; }
 function requestPersist(){ try{ if(navigator.storage && navigator.storage.persist) navigator.storage.persist(); }catch(e){} }
