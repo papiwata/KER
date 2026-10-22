@@ -329,6 +329,39 @@ html[data-style=clarte] .mLcd .num{font-size:1.1rem}
 #done .btn.mGhost{background:none;border:1.5px solid rgba(255,255,255,.75);color:#FFFFFF;border-radius:28px;margin-top:10px;justify-content:center}
 #done .btn::after{content:none!important}
 
+
+/* écrans secondaires en cartes */
+.cardSec{font-size:.75rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;opacity:.72}
+.card .field{margin-top:12px}
+.card .btn{margin-top:12px}
+.card.c-act .btn{margin-top:0}
+.card.col{display:flex;flex-direction:column;gap:8px}
+.c-paper input,.c-paper select{background:transparent;border-color:rgba(10,10,10,.22);color:inherit}
+.c-lcd input{background:rgba(255,255,255,.35);border-color:rgba(11,15,10,.3);color:#0B0F0A}
+.lcdInput{font-size:1.6rem!important;font-weight:600;letter-spacing:-.01em}
+.c-paper .opt,.c-paper .switchRow{border-color:rgba(10,10,10,.12)}
+.c-paper .note,.c-paper .list,.c-paper .codeTable{color:inherit}
+.btn.plainBtn{background:none!important;border:0!important;color:#0A0A0A;text-decoration:underline;min-height:40px}
+.c-blue .btn{background:#F4F4EF;color:#0A0A0A;border:0}
+.bigApp{font-size:2.6rem;font-weight:700;letter-spacing:-.03em;line-height:1.05;margin-top:4px}
+.card.welcomeHero{padding:22px 18px}
+.card.howto{display:flex;gap:14px;align-items:center;margin-top:2px}
+.card.howto .num{font-size:1.6rem;flex:none}
+html[data-style=clarte] .c-paper input,html[data-style=clarte] .c-paper select,html[data-style=clarte] .c-lcd input{background:var(--field);border-color:var(--line);color:var(--text)}
+html[data-style=clarte] .btn.plainBtn{color:var(--text)}
+html[data-style=clarte] .c-blue .btn{background:var(--text);color:var(--bg)}
+.c-paper .btn.ghost{color:#0A0A0A;border-color:rgba(10,10,10,.22)}
+.c-paper .btn.ghost.danger{color:#B4260F}
+.c-paper .switch:not(:checked){background:rgba(10,10,10,.22)}
+.c-paper .radio{border-color:#55554F}
+html[data-style=clarte] .c-paper .btn.ghost{color:var(--text);border-color:var(--line)}
+html[data-style=clarte] .c-paper .switch:not(:checked){background:var(--line)}
+html[data-style=clarte] .c-paper .radio{border-color:var(--muted)}
+.c-paper .styleCard{background:rgba(10,10,10,.04);border-color:rgba(10,10,10,.14);color:#0A0A0A}
+.c-paper .styleCard.sel{border-color:#1F3DFF}
+.c-paper .styleCard .sd{color:#55554F}
+html[data-style=clarte] .c-paper .styleCard{background:var(--surface);border-color:var(--line);color:var(--text)}
+html[data-style=clarte] .c-paper .styleCard.sel{border-color:var(--accentText)}
 /* accueil (premier lancement) */
 body.onboarding nav.tabbar,body.onboarding header.top{display:none}
 body.onboarding main{padding-top:calc(24px + env(safe-area-inset-top))}
@@ -359,26 +392,32 @@ html[data-style=clarte] .howto .lcd{padding:0}
 <main>
 
 <section id="welcome" aria-label="Bienvenue">
- <div class="welcomeHero">
-  <svg class="logoMark big" viewBox="30 96 452 306" role="img" aria-label="KËR" focusable="false"><rect x="32" y="98" width="448" height="302" rx="44" fill="#D5DACB" stroke="#050505" stroke-width="4"/><polygon fill="#C2C8B6" points="76,184 90,170 142,170 156,184 142,198 90,198"/><polygon fill="#C2C8B6" points="76,275 90,261 142,261 156,275 142,289 90,289"/><polygon fill="#C2C8B6" points="76,366 90,352 142,352 156,366 142,380 90,380"/><polygon fill="#0B0F0A" points="72,188 86,202 86,257 72,271 58,257 58,202"/><polygon fill="#C2C8B6" points="160,188 174,202 174,257 160,271 146,257 146,202"/><polygon fill="#0B0F0A" points="72,279 86,293 86,348 72,362 58,348 58,293"/><polygon fill="#C2C8B6" points="160,279 174,293 174,348 160,362 146,348 146,293"/><polygon fill="#0B0F0A" points="92,273 109,271 170,199 168,181 151,183 90,255"/><polygon fill="#0B0F0A" points="92,277 90,295 151,367 168,369 170,351 109,279"/><polygon fill="#0B0F0A" points="216,184 230,170 282,170 296,184 282,198 230,198"/><polygon fill="#0B0F0A" points="216,275 230,261 282,261 296,275 282,289 230,289"/><polygon fill="#0B0F0A" points="216,366 230,352 282,352 296,366 282,380 230,380"/><polygon fill="#0B0F0A" points="212,188 226,202 226,257 212,271 198,257 198,202"/><polygon fill="#C2C8B6" points="300,188 314,202 314,257 300,271 286,257 286,202"/><polygon fill="#0B0F0A" points="212,279 226,293 226,348 212,362 198,348 198,293"/><polygon fill="#C2C8B6" points="300,279 314,293 314,348 300,362 286,348 286,293"/><rect x="221" y="118" width="30" height="30" fill="#1F3DFF"/><rect x="261" y="118" width="30" height="30" fill="#1F3DFF"/><polygon fill="#0B0F0A" points="356,184 370,170 422,170 436,184 422,198 370,198"/><polygon fill="#0B0F0A" points="356,275 370,261 422,261 436,275 422,289 370,289"/><polygon fill="#C2C8B6" points="356,366 370,352 422,352 436,366 422,380 370,380"/><polygon fill="#0B0F0A" points="352,188 366,202 366,257 352,271 338,257 338,202"/><polygon fill="#0B0F0A" points="440,188 454,202 454,257 440,271 426,257 426,202"/><polygon fill="#0B0F0A" points="352,279 366,293 366,348 352,362 338,348 338,293"/><polygon fill="#C2C8B6" points="440,279 454,293 454,348 440,362 426,348 426,293"/><polygon fill="#0B0F0A" points="386,283 383,301 431,366 448,369 451,351 403,286"/></svg>
-  <p class="tagline">Enfin au courant.</p>
-  <p class="lead" style="font-weight:400">KËR suit ton compteur Woyofal : ton crédit, ta tranche, ton autonomie, et ce que chaque recharge te donne vraiment.</p>
+ <div class="stack">
+  <div class="card c-paper welcomeHero">
+   <svg class="logoMark big" viewBox="30 96 452 306" role="img" aria-label="KËR" focusable="false"><rect x="32" y="98" width="448" height="302" rx="44" fill="#D5DACB" stroke="#050505" stroke-width="4"/><polygon fill="#C2C8B6" points="76,184 90,170 142,170 156,184 142,198 90,198"/><polygon fill="#C2C8B6" points="76,275 90,261 142,261 156,275 142,289 90,289"/><polygon fill="#C2C8B6" points="76,366 90,352 142,352 156,366 142,380 90,380"/><polygon fill="#0B0F0A" points="72,188 86,202 86,257 72,271 58,257 58,202"/><polygon fill="#C2C8B6" points="160,188 174,202 174,257 160,271 146,257 146,202"/><polygon fill="#0B0F0A" points="72,279 86,293 86,348 72,362 58,348 58,293"/><polygon fill="#C2C8B6" points="160,279 174,293 174,348 160,362 146,348 146,293"/><polygon fill="#0B0F0A" points="92,273 109,271 170,199 168,181 151,183 90,255"/><polygon fill="#0B0F0A" points="92,277 90,295 151,367 168,369 170,351 109,279"/><polygon fill="#0B0F0A" points="216,184 230,170 282,170 296,184 282,198 230,198"/><polygon fill="#0B0F0A" points="216,275 230,261 282,261 296,275 282,289 230,289"/><polygon fill="#0B0F0A" points="216,366 230,352 282,352 296,366 282,380 230,380"/><polygon fill="#0B0F0A" points="212,188 226,202 226,257 212,271 198,257 198,202"/><polygon fill="#C2C8B6" points="300,188 314,202 314,257 300,271 286,257 286,202"/><polygon fill="#0B0F0A" points="212,279 226,293 226,348 212,362 198,348 198,293"/><polygon fill="#C2C8B6" points="300,279 314,293 314,348 300,362 286,348 286,293"/><rect x="221" y="118" width="30" height="30" fill="#1F3DFF"/><rect x="261" y="118" width="30" height="30" fill="#1F3DFF"/><polygon fill="#0B0F0A" points="356,184 370,170 422,170 436,184 422,198 370,198"/><polygon fill="#0B0F0A" points="356,275 370,261 422,261 436,275 422,289 370,289"/><polygon fill="#C2C8B6" points="356,366 370,352 422,352 436,366 422,380 370,380"/><polygon fill="#0B0F0A" points="352,188 366,202 366,257 352,271 338,257 338,202"/><polygon fill="#0B0F0A" points="440,188 454,202 454,257 440,271 426,257 426,202"/><polygon fill="#0B0F0A" points="352,279 366,293 366,348 352,362 338,348 338,293"/><polygon fill="#C2C8B6" points="440,279 454,293 454,348 440,362 426,348 426,293"/><polygon fill="#0B0F0A" points="386,283 383,301 431,366 448,369 451,351 403,286"/></svg>
+   <p class="tagline">Enfin au courant.</p>
+   <p class="lead" style="font-weight:400">KËR suit ton compteur Woyofal : ton crédit, ta tranche, ton autonomie, et ce que chaque recharge te donne vraiment.</p>
+  </div>
+  <div class="card c-lcd howto"><span class="num" id="howtoSeg"></span><p style="margin:0;font-size:.875rem;line-height:1.4">Sur le clavier du compteur, tape un code (par exemple 801), puis lis le nombre qui s'affiche.</p></div>
+  <div class="card c-paper">
+   <div class="cardSec">Ton compteur aujourd'hui</div>
+   <label class="field" for="w801">Crédit restant · code 801 (kWh)</label>
+   <input id="w801" type="text" inputmode="decimal" autocomplete="off" placeholder="Ex. 52,4">
+   <label class="field" for="w814">Consommation du mois · code 814 (kWh)</label>
+   <input id="w814" type="text" inputmode="decimal" autocomplete="off" placeholder="Ex. 20,4">
+   <label class="field" for="w800">Consommation totale · code 800 (kWh, facultatif)</label>
+   <input id="w800" type="text" inputmode="decimal" autocomplete="off" placeholder="Ex. 16 789,09">
+   <label class="field" for="wMeter">Numéro du compteur · code 804 (facultatif)</label>
+   <input id="wMeter" type="text" inputmode="numeric" autocomplete="off" placeholder="11 chiffres">
+   <div class="err" id="wError" role="alert"></div>
+  </div>
+  <div class="card c-act col">
+   <button class="btn dark" onclick="finishWelcome(false)">Commencer</button>
+   <button class="btn plainBtn" onclick="finishWelcome(true)">Passer pour l'instant</button>
+  </div>
  </div>
- <div class="howto"><div class="lcd"><span class="num" id="howtoSeg"></span></div><p class="note" style="margin:0">Sur le clavier du compteur, tape un code (par exemple 801), puis lis le nombre qui s'affiche.</p></div>
- <div class="sec">Ton compteur aujourd'hui</div>
- <label class="field" for="w801" style="margin-top:0">Crédit restant · code 801 (kWh)</label>
- <input id="w801" type="text" inputmode="decimal" autocomplete="off" placeholder="Ex. 52,4">
- <label class="field" for="w814">Consommation du mois · code 814 (kWh)</label>
- <input id="w814" type="text" inputmode="decimal" autocomplete="off" placeholder="Ex. 20,4">
- <label class="field" for="w800">Consommation totale · code 800 (kWh, facultatif)</label>
- <input id="w800" type="text" inputmode="decimal" autocomplete="off" placeholder="Ex. 16 789,09">
- <label class="field" for="wMeter">Numéro du compteur · code 804 (facultatif)</label>
- <input id="wMeter" type="text" inputmode="numeric" autocomplete="off" placeholder="11 chiffres">
- <div class="err" id="wError" role="alert"></div>
- <button class="btn" onclick="finishWelcome(false)">Commencer</button>
- <label class="btn ghost" for="importFile">J'ai déjà une sauvegarde KËR <span aria-hidden="true">↑</span></label>
- <button class="btn ghost" onclick="finishWelcome(true)">Passer pour l'instant <span aria-hidden="true">→</span></button>
- <p class="note" style="margin-top:16px">Tes données restent sur ce téléphone. Rien n'est envoyé sans ton accord.</p>
+ <label class="btn ghost" for="importFile" style="margin-top:14px">J'ai déjà une sauvegarde KËR <span aria-hidden="true">↑</span></label>
+ <p class="note" style="margin-top:14px">Tes données restent sur ce téléphone. Rien n'est envoyé sans ton accord.</p>
 </section>
 
 <section id="home" aria-label="Accueil">
@@ -491,82 +530,113 @@ html[data-style=clarte] .howto .lcd{padding:0}
 </section>
 
 <section id="consumption" aria-label="Relevés">
- <h1 class="screenTitle">Relevés</h1>
- <div class="panel">
-  <div class="h3">Lecture rapide (814)</div>
-  <div class="note">Tape 814 sur le clavier du compteur : consommation du mois en cours.</div>
-  <label class="field" for="reading">Valeur affichée (kWh)</label>
-  <input id="reading" type="number" inputmode="decimal" min="0" step=".1" placeholder="Ex. 20.4">
-  <button class="btn" onclick="addReading()">Enregistrer</button>
+ <div class="stack">
+  <div class="card c-paper">
+   <h1 class="cardTitle">Relevés</h1>
+   <p class="note" style="margin:0">Tape un code sur le clavier du compteur et note ce qui s'affiche. Plus tu notes, plus KËR est juste.</p>
+  </div>
+  <div class="card c-lcd">
+   <div class="cardHead"><span>814 · Lecture rapide</span><span class="lcdTag">Ce mois</span></div>
+   <label class="field" for="reading">Consommation du mois affichée (kWh)</label>
+   <input id="reading" class="lcdInput" type="number" inputmode="decimal" min="0" step=".1" placeholder="20.4">
+   <button class="btn dark" onclick="addReading()">Enregistrer</button>
+  </div>
+  <div class="card c-paper">
+   <div class="cardSec">Journal complet</div>
+   <p class="note" style="margin:4px 0 0">N'importe quel code : 801 crédit, 800 total, 817 dernière recharge, 808 découvert, 811 crédit d'urgence…</p>
+   <label class="field" for="logCode">Code</label>
+   <select id="logCode"></select>
+   <label class="field" for="logValue">Valeur affichée</label>
+   <input id="logValue" type="text" inputmode="decimal" placeholder="Ex. 113,97 ou 28-09-26">
+   <label class="field" for="logDate">Date</label>
+   <input id="logDate" type="date">
+   <label class="field" for="logNote">Note (optionnel)</label>
+   <input id="logNote" type="text">
+   <button class="btn" onclick="addLog()">Ajouter au journal</button>
+  </div>
+  <div class="card c-act"><button class="btn dark" onclick="show('history')">Historique complet</button></div>
  </div>
- <div class="panel">
-  <div class="h3">Journal complet</div>
-  <div class="note">N'importe quel code : 801 crédit, 800 total, 817 dernière recharge, 808 découvert, 811 crédit d'urgence…</div>
-  <label class="field" for="logCode">Code</label>
-  <select id="logCode"></select>
-  <label class="field" for="logValue">Valeur affichée</label>
-  <input id="logValue" type="text" inputmode="decimal" placeholder="Ex. 113,97 ou 28-09-26">
-  <label class="field" for="logDate">Date</label>
-  <input id="logDate" type="date">
-  <label class="field" for="logNote">Note (optionnel)</label>
-  <input id="logNote" type="text">
-  <button class="btn" onclick="addLog()">Ajouter au journal</button>
+ <div class="stack" style="margin-top:14px">
+  <div class="card c-paper">
+   <div class="cardSec">Codes du clavier Woyofal</div>
+   <div class="codeTable" id="codeTable"></div>
+  </div>
+  <div class="card c-paper">
+   <div class="cardSec">Lectures 814 · <span id="readingCount">0</span></div>
+   <div id="readingList" class="list"></div>
+  </div>
  </div>
- <button class="btn ghost" onclick="show('history')">Historique complet <span aria-hidden="true">→</span></button>
- <div class="sec">Codes du clavier Woyofal</div>
- <div class="codeTable" id="codeTable"></div>
- <div class="sec">Lectures 814 · <span id="readingCount">0</span></div>
- <div id="readingList" class="list"></div>
 </section>
 
 <section id="history" aria-label="Historique">
- <h1 class="screenTitle">Historique</h1>
- <div id="historyList" class="list"></div>
- <button class="btn ghost" onclick="show('consumption')"><span aria-hidden="true">←</span> Retour aux relevés</button>
+ <div class="stack">
+  <div class="card c-paper">
+   <h1 class="cardTitle">Historique</h1>
+   <div id="historyList" class="list"></div>
+  </div>
+  <div class="card c-act"><button class="btn dark" onclick="show('consumption')">← Retour aux relevés</button></div>
+ </div>
 </section>
 
 <section id="appliances" aria-label="Mon foyer">
- <h1 class="screenTitle">Mon foyer</h1>
- <p class="note" style="margin-top:0">Puissance × heures par jour × 30 jours. Les appareils toujours branchés (chauffe-eau) sont estimés par cycles.</p>
- <div id="applianceList"></div>
- <div class="result"><div class="label">Consommation estimée</div><div class="big" id="appKwh">—</div><div class="note" id="appCost">—</div></div>
+ <div class="stack">
+  <div class="card c-paper">
+   <h1 class="cardTitle">Mon foyer</h1>
+   <p class="note" style="margin:0">Puissance × heures par jour × 30 jours. Les appareils toujours branchés (chauffe-eau) sont estimés par cycles.</p>
+   <div id="applianceList"></div>
+  </div>
+  <div class="card c-blue">
+   <div class="cardLbl">Consommation estimée</div>
+   <div class="bigApp" id="appKwh">—</div>
+   <div class="explain" id="appCost">—</div>
+  </div>
+ </div>
 </section>
 
 <section id="settings" aria-label="Réglages">
- <h1 class="screenTitle">Réglages</h1>
- <div class="sec" style="margin-top:6px">Apparence · Style</div>
- <div class="styleCards">
-  <button class="styleCard" data-pref="style:compteur" onclick="setPref('style','compteur')">
-   <span class="pv pvC"><span class="pvLcd" id="pvSeg"></span></span>
-   <span class="sn">Compteur</span><span class="sd">Écran à chiffres</span>
-  </button>
-  <button class="styleCard" data-pref="style:clarte" onclick="setPref('style','clarte')">
-   <span class="pv pvK"><b>113,97</b><small>kWh</small></span>
-   <span class="sn">Clarté</span><span class="sd">Simple et épuré</span>
-  </button>
+ <div class="stack">
+  <div class="card c-paper"><h1 class="cardTitle" style="margin:0">Réglages</h1></div>
+  <div class="card c-paper">
+   <div class="cardSec">Apparence · Style</div>
+   <div class="styleCards" style="margin-top:10px">
+    <button class="styleCard" data-pref="style:compteur" onclick="setPref('style','compteur')">
+     <span class="pv pvC"><span class="pvLcd" id="pvSeg"></span></span>
+     <span class="sn">Compteur</span><span class="sd">Cartes et cadran</span>
+    </button>
+    <button class="styleCard" data-pref="style:clarte" onclick="setPref('style','clarte')">
+     <span class="pv pvK"><b>113,97</b><small>kWh</small></span>
+     <span class="sn">Clarté</span><span class="sd">Simple et épuré</span>
+    </button>
+   </div>
+  </div>
+  <div class="card c-paper">
+   <div class="cardSec">Apparence · Mode</div>
+   <button class="opt" data-pref="mode:light" onclick="setPref('mode','light')"><span class="radio"></span><span><span class="on">Clair</span></span></button>
+   <button class="opt" data-pref="mode:dark" onclick="setPref('mode','dark')"><span class="radio"></span><span><span class="on">Sombre</span></span></button>
+   <button class="opt" data-pref="mode:system" onclick="setPref('mode','system')"><span class="radio"></span><span><span class="on">Système</span><span class="sub">Suit le réglage de ton téléphone</span></span></button>
+   <div class="switchRow" style="border-bottom:0">
+    <label for="largeText"><span class="h4" style="display:block;font-size:1.0625rem;font-weight:500">Texte plus grand</span><span class="note" style="display:block">Agrandit tous les textes de l'app</span></label>
+    <input type="checkbox" id="largeText" class="switch" onchange="setPref('largeText',this.checked)">
+   </div>
+  </div>
+  <div class="card c-paper">
+   <div class="cardSec">Installer l'app</div>
+   <div id="installBox" style="margin-top:6px"></div>
+  </div>
+  <div class="card c-blue">
+   <div class="cardLbl">Tester KËR</div>
+   <p class="explain">Tu fais partie des premiers testeurs ? Envoie tes données et ton avis à Papi sur WhatsApp. Tes reçus servent à vérifier les calculs.</p>
+   <button class="btn" onclick="sendToTester()">Envoyer mes données à Papi</button>
+  </div>
+  <div class="card c-paper">
+   <div class="cardSec">Données et confidentialité</div>
+   <p class="note" style="margin:6px 0 4px">Tes relevés et recharges restent uniquement sur ce téléphone : pas de compte, pas de serveur. Rien ne part sans ton accord, seulement quand tu touches « Envoyer » ou « Exporter ».</p>
+   <button class="btn ghost" onclick="exportData()">Exporter mes données <span aria-hidden="true">↓</span></button>
+   <label class="btn ghost" for="importFile">Importer un fichier <span aria-hidden="true">↑</span></label>
+   <button class="btn ghost danger" onclick="wipeData()">Effacer mes données <span aria-hidden="true">✕</span></button>
+  </div>
+  <div class="card c-act"><button class="btn dark" onclick="show('appliances')">Mon foyer : simulateur d'appareils</button></div>
  </div>
- <div class="sec">Apparence · Mode</div>
- <div>
-  <button class="opt" data-pref="mode:light" onclick="setPref('mode','light')"><span class="radio"></span><span><span class="on">Clair</span></span></button>
-  <button class="opt" data-pref="mode:dark" onclick="setPref('mode','dark')"><span class="radio"></span><span><span class="on">Sombre</span></span></button>
-  <button class="opt" data-pref="mode:system" onclick="setPref('mode','system')"><span class="radio"></span><span><span class="on">Système</span><span class="sub">Suit le réglage de ton téléphone</span></span></button>
- </div>
- <div class="switchRow">
-  <label for="largeText"><span class="h4" style="display:block;font-size:1.0625rem;font-weight:500">Texte plus grand</span><span class="note" style="display:block">Agrandit tous les textes de l'app</span></label>
-  <input type="checkbox" id="largeText" class="switch" onchange="setPref('largeText',this.checked)">
- </div>
- <div class="sec">Installer l'app</div>
- <div id="installBox"></div>
- <div class="sec">Tester KËR</div>
- <p class="note" style="margin:0 0 4px">Tu fais partie des premiers testeurs ? Envoie tes données et ton avis à Papi sur WhatsApp. Tes reçus servent à vérifier les calculs.</p>
- <button class="btn" onclick="sendToTester()">Envoyer mes données à Papi</button>
- <div class="sec">Données et confidentialité</div>
- <p class="note" style="margin:0 0 4px">Tes relevés et recharges restent uniquement sur ce téléphone : pas de compte, pas de serveur. Rien ne part sans ton accord, seulement quand tu touches « Envoyer » ou « Exporter ».</p>
- <button class="btn ghost" onclick="exportData()">Exporter mes données <span aria-hidden="true">↓</span></button>
- <label class="btn ghost" for="importFile">Importer un fichier <span aria-hidden="true">↑</span></label>
- <button class="btn ghost danger" onclick="wipeData()">Effacer mes données <span aria-hidden="true">✕</span></button>
- <div class="sec">Outils</div>
- <button class="btn ghost" onclick="show('appliances')">Mon foyer : simulateur d'appareils <span aria-hidden="true">→</span></button>
  <p class="note" style="margin-top:18px">KËR v<span id="appVersion"></span> · Enfin au courant.</p>
 </section>
 
@@ -1243,7 +1313,7 @@ function closeMoment(){ document.body.classList.remove('moment'); show('home'); 
 function log817(){ document.body.classList.remove('moment'); show('consumption'); const s=document.getElementById('logCode'); if(s) s.value='817'; const v=document.getElementById('logValue'); if(v) v.focus(); }
 
 // ---- Version, premier lancement, test, installation ----
-const APP_VERSION='0.8.1';
+const APP_VERSION='0.9.0';
 const TESTER_NAME='Papi';
 function parseNum(v){ v=String(v==null?'':v).trim().replace(/[\s  ]/g,'').replace(',','.'); if(v==='') return null; const n=Number(v); return isFinite(n)?n:NaN; }
 function requestPersist(){ try{ if(navigator.storage && navigator.storage.persist) navigator.storage.persist(); }catch(e){} }
