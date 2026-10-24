@@ -1,5 +1,5 @@
 // KËR service worker : l'app fonctionne sans connexion. Changer VERSION à chaque publication déclenche la mise à jour.
-const VERSION='ker-v0.9.0';
+const VERSION='ker-v0.9.1';
 const FONTS='ker-fonts';
 const SHELL=['./','./index.html','./manifest.webmanifest','./icons/icon-192.png','./icons/icon-512.png','./icons/icon-maskable-512.png','./icons/apple-touch-icon.png'];
 self.addEventListener('install',e=>{ e.waitUntil(caches.open(VERSION).then(c=>c.addAll(SHELL))); });

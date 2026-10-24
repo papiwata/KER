@@ -488,7 +488,7 @@ html[data-style=clarte] .howto .lcd{padding:0}
     <div class="dialCenter"><span class="num" id="simResult"></span><span class="unit">kWh</span></div>
    </div>
    <div class="clarteOnly"><div class="bigNum sm"><span class="num" id="simResultText"></span><span class="unit">kWh</span></div></div>
-   <div class="legend compteurOnly"><span><i class="lg u"></i>déjà utilisé</span><span><i class="lg p"></i>cette recharge</span><span><i class="lg h"></i>prix fort</span></div>
+   <div class="legend compteurOnly"><span><i class="lg u"></i>déjà acheté</span><span><i class="lg p"></i>cette recharge</span><span><i class="lg h"></i>prix fort</span></div>
    <div class="gauge clarteOnly" id="simGauge" role="img" aria-label="Position après recharge sur l'échelle des tranches"></div>
    <div class="scale clarteOnly"><span id="simUsedLbl">0</span><span>150 : prix fort</span><span>250 : TVA</span></div>
   </div>
@@ -505,7 +505,7 @@ html[data-style=clarte] .howto .lcd{padding:0}
  </div>
  <details class="details">
   <summary>Détails du calcul</summary>
-  <label class="field" for="simKwh">Consommation du mois avant recharge (814, kWh)</label>
+  <label class="field" for="simKwh">kWh déjà achetés ce mois, avant cette recharge</label>
   <input id="simKwh" type="number" inputmode="decimal" min="0" step=".1" oninput="simulate()">
   <div class="checkline"><input type="checkbox" id="applyArrears" onchange="simulate()"><label for="applyArrears">Déduire le découvert (808), seulement si tu as confirmé qu'il est en FCFA</label></div>
   <div class="note" id="simMessage" style="margin-top:8px"></div>
@@ -625,8 +625,8 @@ html[data-style=clarte] .howto .lcd{padding:0}
   </div>
   <div class="card c-blue">
    <div class="cardLbl">Tester KËR</div>
-   <p class="explain">Tu fais partie des premiers testeurs ? Envoie tes données et ton avis à Papi sur WhatsApp. Tes reçus servent à vérifier les calculs.</p>
-   <button class="btn" onclick="sendToTester()">Envoyer mes données à Papi</button>
+   <p class="explain">Tu fais partie des premiers testeurs ? Soumets tes données et ton avis à Papi, par WhatsApp. Tes reçus servent à vérifier les calculs.</p>
+   <button class="btn" onclick="sendToTester()">Soumettre mes données</button>
   </div>
   <div class="card c-paper">
    <div class="cardSec">Données et confidentialité</div>
@@ -813,6 +813,18 @@ function latestTotalRegister(){return latestByCode('800');} // 800 = consommatio
 function latestConsumption(){return latestByCode('814');}  // 814 = consommation mensuelle observée, autoritaire
 function latestArrears(){return latestByCode('808');}       // 808 = valeur brute, non interprétée
 function currentKwh(){const c=latestConsumption();return c?c.value:0;}
+// Position dans les tranches de prix = kWh ACHETÉS dans le mois calendaire (hypothèse confirmée le 24/10/2026 :
+// 12 000 F ont donné 100,20 kWh, ce que prédit ce modèle à 0,01 kWh près ; le modèle « consommation 814 » donnait ~92 kWh).
+// Sans recharge enregistrée ce mois-ci, repli sur 814 (approximation).
+function purchasedKwhInMonth(dateStr,excludeId){
+ const m=monthOf(dateStr);
+ return state.events.filter(e=>e.type==='recharge' && e.id!==excludeId && monthOf(e.timestamp)===m && String(e.timestamp)<String(dateStr)).reduce((a,e)=>a+(+e.deliveredKwh||0),0);
+}
+function tranchePosition(dateStr){
+ const d=dateStr||nowIso();
+ const has=state.events.some(e=>e.type==='recharge' && monthOf(e.timestamp)===monthOf(d) && String(e.timestamp)<String(d));
+ return has ? purchasedKwhInMonth(d) : currentKwh();
+}
 
 // ---- Vitesse de consommation (burn rate) ----
 function calculateRecentBurnRate(){
@@ -1004,7 +1016,7 @@ function simulate(){
  num('simResultText',k,{dec:1});
  renderDial('simDial',u,u+k);
  renderGauge('simGauge',u,after);
- document.getElementById('simUsedLbl').textContent=fmt1(u)+' déjà utilisés';
+ document.getElementById('simUsedLbl').textContent=fmt1(u)+' déjà achetés';
  document.getElementById('simAfter').innerHTML = `Tu finis à ${fmt1(after)} kWh : ` + (after<150 ? 'tu restes en <b class="blue">tranche 1</b>.' : (after<=250 ? (u<150?'une partie passe en <b>tranche 2</b>.':'tu es en <b>tranche 2</b>.') : 'tu dépasses 250 kWh, la <b>TVA</b> s\'applique.'));
 
  let msg=arrearsNote;
@@ -1012,7 +1024,7 @@ function simulate(){
  msg+= u<150?'Départ en 1ère tranche. ':u<250?'Départ en 2ème tranche. ':'Départ au-delà de 250 kWh (TVA déjà active). ';
  if(u<150 && after>=150){ msg+=`Répartition : ${(150-u).toFixed(1)} kWh en T1, ${(after-150).toFixed(1)} kWh en T2+. `; }
  if(u<250 && after>250){ msg+='Cette recharge te fera franchir 250 kWh : une partie sera facturée avec la TVA. '; }
- msg+=`Consommation cumulée après recharge (estimée) : ${after.toFixed(1)} kWh.`;
+ msg+=`Achats du mois après recharge (estimés) : ${after.toFixed(1)} kWh. La tranche suit les kWh achetés dans le mois (hypothèse confirmée une fois).`;
  document.getElementById('simMessage').textContent=msg;
 
  num('rowPrice',unitPrice(u,today()),{dec:0});
@@ -1030,7 +1042,7 @@ function simulate(){
   ce.textContent='Plafond tranche 1 : environ '+fmt(lastCeiling)+' F ('+room.toFixed(1)+' kWh)'+(fee?', dont ~'+fmt(fee)+' F de retenue de début de mois (hypothèse)':'')+'. Au-delà, le kWh passe de ~'+fmt(unitPrice(u,today()))+' F à ~'+fmt(unitPrice(150,today()))+' F.';
   chip.disabled=false;
  } else {
-  lastCeiling=null; num('rowCeil',null,{dashes:'--'}); ce.textContent='Tranche 1 déjà dépassée ce mois-ci.'; chip.disabled=true;
+  lastCeiling=null; num('rowCeil',null,{dashes:'--'}); ce.textContent='Tranche 1 déjà dépassée par tes achats de ce mois.'; chip.disabled=true;
  }
  const ceilAmt=lastCeiling?Math.floor(lastCeiling/100)*100:null;
  document.querySelectorAll('.chip[data-amt]').forEach(c=>c.classList.toggle('sel',+c.dataset.amt===a));
@@ -1084,7 +1096,16 @@ function renderHome(){
  renderGauge('gauge',k,null);
  const dv=250-k;
  document.getElementById('thresholdText').textContent = k<150 ? `${fmt1(k)} sur 150 kWh ce mois. Encore ${fmt1(150-k)} kWh à ~${fmt(unitPrice(k,today()))} F, ensuite ~${fmt(unitPrice(150,today()))} F.` : (dv>0 ? `${fmt1(k)} kWh ce mois, au prix fort. Encore ${fmt1(dv)} kWh avant la TVA.` : `${fmt1(k)} kWh ce mois : la TVA de 18 % s'applique.`);
- document.getElementById('statusPill').textContent = k<150?'Tranche 1':k<=250?'Tranche 2':'TVA active';
+ {const P=tranchePosition(), has=state.events.some(e=>e.type==='recharge' && monthOf(e.timestamp)===monthOf(nowIso()));
+ if(has){
+  const roomP = P<150 ? 150-P : (P<250 ? 250-P : null);
+  num('roomKwh', roomP, {dec:1,dashes:'--'});
+  document.getElementById('roomLabel').textContent = P<150 ? 'Avant prix fort' : (P<250 ? 'Avant la TVA' : 'TVA active');
+  document.getElementById('thresholdText').textContent = `Tu as acheté ${fmt1(P)} kWh ce mois (consommé : ${fmt1(k)}). La tranche suit les kWh achetés. ` + (P<150 ? `Encore ${fmt1(150-P)} kWh à ~${fmt(unitPrice(P,today()))} F, ensuite ~${fmt(unitPrice(150,today()))} F.` : (P<250 ? `Prochain kWh acheté : ~${fmt(unitPrice(P,today()))} F. Encore ${fmt1(250-P)} kWh avant la TVA.` : `Prochain kWh acheté : ~${fmt(unitPrice(P,today()))} F, TVA de 18 % comprise.`));
+  document.getElementById('statusPill').textContent = P<150?'Tranche 1':P<250?'Tranche 2':'TVA active';
+ } else {
+  document.getElementById('statusPill').textContent = k<150?'Tranche 1':k<=250?'Tranche 2':'TVA active';
+ } }
 
  const nudge=document.getElementById('nudge');
  if(!fresh){
@@ -1150,7 +1171,7 @@ function addLog(){
 
 function saveRecharge(){
  const amount=+document.getElementById('amount').value; if(!amount) return;
- const used=+document.getElementById('simKwh').value || currentKwh();
+ const used=+document.getElementById('simKwh').value || tranchePosition();
  const applyArrears=document.getElementById('applyArrears').checked;
  const arrears=latestArrears();
  let net=amount, note='';
@@ -1161,7 +1182,7 @@ function saveRecharge(){
  const r=rechargeKwhNet(net,used,nowIso());
  const k=r.kwh;
  if(r.fee>0) note=(note?note+' ':'')+`Estimation incluant une retenue de début de mois de ~${fmt(r.fee)} F (hypothèse). Compose 817 pour corriger.`;
- const ev={id:uid(),timestamp:nowIso(),type:'recharge',amountFcfa:amount,deliveredKwh:k,consumptionAtRechargeKwh:used,estimatedFeeFcfa:r.fee,source:'user',confidence:'observed',note};
+ const ev={id:uid(),timestamp:nowIso(),type:'recharge',amountFcfa:amount,deliveredKwh:k,tranchePositionKwh:used,consumptionAtRechargeKwh:currentKwh()||null,estimatedFeeFcfa:r.fee,source:'user',confidence:'observed',note};
  state.events.unshift(ev);
  // deliveredKwh est une ESTIMATION du crédit acheté — ce n'est pas un relevé de solde observé (800),
  // donc on ne touche à aucun "solde" ici. Le prochain relevé 800 servira à réconcilier.
@@ -1190,7 +1211,7 @@ function renderEventItem(e){
   if(e.validation && e.validation.status==='strong_match'){
    extra=`<br>Cas de calibration : coût observé ${e.validation.observedUnitCost} F/kWh vs modèle ${e.validation.modeledUnitCost} F/kWh.`;
   }
-  const usedTxt = e.consumptionAtRechargeKwh!=null ? `conso. au moment : ${(+e.consumptionAtRechargeKwh).toFixed(1)} kWh` : 'position tranche inconnue';
+  const usedTxt = e.tranchePositionKwh!=null ? `déjà acheté ce mois : ${(+e.tranchePositionKwh).toFixed(1)} kWh` : (e.consumptionAtRechargeKwh!=null ? `conso. au moment : ${(+e.consumptionAtRechargeKwh).toFixed(1)} kWh` : 'position tranche inconnue');
   return `<div class="item"><div class="row"><b>${fmt(e.amountFcfa)} F</b><b>+${e.deliveredKwh.toFixed(1)} kWh<span class="${tagClass(e.confidence)}">${confidenceTag(e.confidence)}</span></b></div><small>${dt} · recharge · ${usedTxt}${e.note?' · '+e.note:''}${extra}</small></div>`;
  }
  const label=CODES[e.code]||e.code;
@@ -1277,7 +1298,7 @@ const TAB_OF={home:'home',recharge:'recharge',consumption:'consumption',history:
 function show(id){
  document.querySelectorAll('main > section').forEach(s=>s.classList.toggle('active',s.id===id));
  document.querySelectorAll('nav.tabbar button').forEach(b=>{const on=b.dataset.screen===TAB_OF[id]; b.classList.toggle('on',on); if(on) b.setAttribute('aria-current','page'); else b.removeAttribute('aria-current');});
- if(id==='recharge'){ document.getElementById('simKwh').value=currentKwh().toFixed(1); simulate(); }
+ if(id==='recharge'){ document.getElementById('simKwh').value=tranchePosition().toFixed(1); simulate(); }
  if(id==='home') renderHome();
  if(id==='settings') renderInstall();
  window.scrollTo(0,0);
@@ -1313,7 +1334,7 @@ function closeMoment(){ document.body.classList.remove('moment'); show('home'); 
 function log817(){ document.body.classList.remove('moment'); show('consumption'); const s=document.getElementById('logCode'); if(s) s.value='817'; const v=document.getElementById('logValue'); if(v) v.focus(); }
 
 // ---- Version, premier lancement, test, installation ----
-const APP_VERSION='0.9.0';
+const APP_VERSION='0.9.1';
 const TESTER_NAME='Papi';
 function parseNum(v){ v=String(v==null?'':v).trim().replace(/[\s  ]/g,'').replace(',','.'); if(v==='') return null; const n=Number(v); return isFinite(n)?n:NaN; }
 function requestPersist(){ try{ if(navigator.storage && navigator.storage.persist) navigator.storage.persist(); }catch(e){} }
