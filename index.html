@@ -368,6 +368,36 @@ html[data-style=clarte] .c-paper .styleCard.sel{border-color:var(--accentText)}
 textarea{width:100%;min-height:84px;border:1px solid var(--line);border-radius:var(--rb);background:var(--field);color:var(--text);padding:11px 14px;font:inherit;font-size:1rem;margin-top:10px;resize:vertical}
 .c-paper textarea{background:transparent;border-color:rgba(10,10,10,.22);color:inherit}
 html[data-style=clarte] .c-paper textarea{background:var(--field);border-color:var(--line);color:var(--text)}
+/* compteurs multiples */
+.meterBar{display:flex;align-items:center;gap:10px;width:100%;background:var(--paper);color:#0A0A0A;border:0;border-radius:22px;padding:12px 16px;margin:0 0 2px;text-align:left;font:inherit;min-height:52px;cursor:pointer}
+.meterBar .mbName{font-weight:600;font-size:1rem;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.meterBar .mbMore{font-size:.8125rem;color:#55554F;white-space:nowrap}
+.meterBar .mbChev{font-size:1.25rem;line-height:1;color:#55554F}
+html[data-style=clarte] .meterBar{background:none;color:var(--text);border-bottom:1px solid var(--line);border-radius:0;padding:12px 0}
+html[data-style=clarte] .meterBar .mbMore,html[data-style=clarte] .meterBar .mbChev{color:var(--muted)}
+.meterItem{padding:14px 0;border-bottom:1px solid rgba(10,10,10,.12)}
+.meterItem:last-child{border-bottom:0}
+.miHead{display:flex;align-items:center;gap:8px}
+.miName{font-weight:600;font-size:1.0625rem;min-height:44px}
+.meterItem.on .miName{border-color:#1F3DFF}
+.miBtns{display:flex;gap:8px}
+.miBtns .btn{min-height:46px;margin-top:10px;font-size:.9375rem}
+html[data-style=clarte] .meterItem{border-color:var(--line)}
+/* conseils et alertes */
+.alert{display:flex;gap:12px;align-items:flex-start;padding:12px 0;border-bottom:1px solid rgba(10,10,10,.12)}
+.alert:last-child{border-bottom:0;padding-bottom:2px}
+.alert .adot{width:10px;height:10px;border-radius:50%;flex:none;margin-top:6px;background:#9A9A95}
+.alert.lv-urgent .adot{background:#D93B1F}
+.alert.lv-warn .adot{background:#E59A14}
+.alert.lv-info .adot{background:#1F3DFF}
+.alert.lv-tip .adot{background:#0A0A0A}
+.alert b{display:block;font-size:.9375rem;font-weight:600;line-height:1.3}
+.alert p{margin:4px 0 0;font-size:.8125rem;line-height:1.45;color:#55554F}
+html[data-style=clarte] .alert{border-color:var(--line)}
+html[data-style=clarte] .alert p{color:var(--muted)}
+html[data-style=clarte] .alert.lv-tip .adot{background:var(--text)}
+.mTranche{margin:14px 0 0;font-size:.9375rem;line-height:1.4;font-weight:500}
+.bigNum .num.nil .txtw{font-size:.4em;letter-spacing:-.01em;line-height:1.1;white-space:normal;display:inline-block;max-width:100%}
 /* accueil (premier lancement) */
 body.onboarding nav.tabbar,body.onboarding header.top{display:none}
 body.onboarding main{padding-top:calc(24px + env(safe-area-inset-top))}
@@ -407,6 +437,10 @@ html[data-style=clarte] .howto .lcd{padding:0}
   <div class="card c-lcd howto"><span class="num" id="howtoSeg"></span><p style="margin:0;font-size:.875rem;line-height:1.4">Sur le clavier du compteur, tape un code (par exemple 801), puis lis le nombre qui s'affiche.</p></div>
   <div class="card c-paper">
    <div class="cardSec">Ton compteur aujourd'hui</div>
+   <div id="wLabelBox" hidden>
+    <label class="field" for="wLabel">Nom du compteur (facultatif)</label>
+    <input id="wLabel" type="text" autocomplete="off" maxlength="40" placeholder="Ex. Maison, Parents, Boutique">
+   </div>
    <label class="field" for="w801">Crédit restant · code 801 (kWh)</label>
    <input id="w801" type="text" inputmode="decimal" autocomplete="off" placeholder="Ex. 52,4">
    <label class="field" for="w814">Consommation du mois · code 814 (kWh)</label>
@@ -423,6 +457,7 @@ html[data-style=clarte] .howto .lcd{padding:0}
   <div class="card c-act col">
    <button class="btn dark" onclick="finishWelcome(false)">Commencer</button>
    <button class="btn plainBtn" onclick="finishWelcome(true)">Passer pour l'instant</button>
+   <button class="btn plainBtn" id="wCancel" hidden onclick="cancelAddMeter()">Annuler l'ajout du compteur</button>
   </div>
  </div>
  <label class="btn ghost" for="importFile" style="margin-top:14px">J'ai déjà une sauvegarde KËR <span aria-hidden="true">↑</span></label>
@@ -431,6 +466,7 @@ html[data-style=clarte] .howto .lcd{padding:0}
 
 <section id="home" aria-label="Accueil">
  <div class="banner" id="installNudge" hidden><span>Installe KËR sur ton écran d'accueil pour l'ouvrir comme une app et garder tes données.</span><span style="display:flex;gap:4px"><button onclick="show('settings')">Comment</button><button class="x" aria-label="Masquer" onclick="setPref('installDismissed',true);renderInstall()">✕</button></span></div>
+ <button class="meterBar" onclick="show('meters')" aria-label="Mes compteurs"><span class="mbName" id="meterName">Mon compteur</span><span class="mbMore" id="meterCount">Ajouter un compteur</span><span class="mbChev" aria-hidden="true">›</span></button>
  <div class="stack">
   <div class="card c-lcd" id="heroLcd">
    <div class="cardHead"><span>801 · Crédit restant</span><span class="lcdTag" id="balanceTag">—</span></div>
@@ -455,6 +491,10 @@ html[data-style=clarte] .howto .lcd{padding:0}
     <div class="until" id="untilDate"></div>
    </div>
    <div class="explain onBlue" id="daysBasis">—</div>
+  </div>
+  <div class="card c-paper" id="alertsCard" hidden>
+   <div class="cardSec">Conseils</div>
+   <div id="alertList" role="list"></div>
   </div>
   <div class="card c-paper">
    <div class="stats3">
@@ -558,6 +598,7 @@ html[data-style=clarte] .howto .lcd{padding:0}
   <div><span>Prix moyen</span><b id="mAvg">—</b></div>
   <div><span>Retenue de début de mois</span><b id="mFee">—</b></div>
  </div>
+ <p class="mTranche" id="mTranche" hidden></p>
  <div class="mCheck"><div>Vérifie sur le compteur : tape <b>817</b>. Il doit afficher environ :</div><div class="mLcd"><span class="num" id="m817"></span></div></div>
  <button class="btn mDone" onclick="closeMoment()">Terminé</button>
  <button class="btn mGhost" onclick="log817()">Noter le 817 maintenant</button>
@@ -628,6 +669,17 @@ html[data-style=clarte] .howto .lcd{padding:0}
  </div>
 </section>
 
+<section id="meters" aria-label="Mes compteurs">
+ <div class="stack">
+  <div class="card c-paper">
+   <h1 class="cardTitle">Mes compteurs</h1>
+   <p class="note" style="margin:0">Suis plusieurs compteurs Woyofal : ta maison, celle de tes parents, ta boutique. Chacun garde son historique, ses tranches et ses alertes.</p>
+   <div id="meterList"></div>
+  </div>
+  <div class="card c-act"><button class="btn dark" onclick="addMeter()">Ajouter un compteur</button></div>
+ </div>
+</section>
+
 <section id="settings" aria-label="Réglages">
  <div class="stack">
   <div class="card c-paper"><h1 class="cardTitle" style="margin:0">Réglages</h1></div>
@@ -653,6 +705,26 @@ html[data-style=clarte] .howto .lcd{padding:0}
     <label for="largeText"><span class="h4" style="display:block;font-size:1.0625rem;font-weight:500">Texte plus grand</span><span class="note" style="display:block">Agrandit tous les textes de l'app</span></label>
     <input type="checkbox" id="largeText" class="switch" onchange="setPref('largeText',this.checked)">
    </div>
+  </div>
+  <div class="card c-paper">
+   <div class="cardSec">Langue</div>
+   <button class="opt" data-pref="lang:fr" onclick="setPref('lang','fr')"><span class="radio"></span><span><span class="on" data-noi18n>Français</span></span></button>
+   <button class="opt" data-pref="lang:en" onclick="setPref('lang','en')"><span class="radio"></span><span><span class="on" data-noi18n>English</span></span></button>
+   <button class="opt" data-pref="lang:wo" onclick="setPref('lang','wo')"><span class="radio"></span><span><span class="on" data-noi18n>Wolof</span><span class="sub">Bêta : traduction à relire</span></span></button>
+   <button class="opt" data-pref="lang:system" onclick="setPref('lang','system')" style="border-bottom:0"><span class="radio"></span><span><span class="on">Système</span><span class="sub">Suit la langue de ton téléphone</span></span></button>
+  </div>
+  <div class="card c-paper">
+   <div class="cardSec">Alertes</div>
+   <div class="switchRow" style="border-bottom:0">
+    <label for="notifSwitch"><span class="h4" style="display:block;font-size:1.0625rem;font-weight:500">Notifications sur ce téléphone</span><span class="note" style="display:block">Crédit bientôt épuisé, changement de tranche, fin du mois.</span></label>
+    <input type="checkbox" id="notifSwitch" class="switch" onchange="toggleNotifs(this.checked)">
+   </div>
+   <p class="note" id="notifStatus" style="margin:4px 0 0"></p>
+  </div>
+  <div class="card c-paper">
+   <div class="cardSec">Mes compteurs</div>
+   <p class="note" style="margin:6px 0 0">Ajoute la maison de tes parents ou ta boutique, et passe de l'un à l'autre depuis l'accueil.</p>
+   <button class="btn ghost" onclick="show('meters')">Gérer mes compteurs <span aria-hidden="true">→</span></button>
   </div>
   <div class="card c-paper">
    <div class="cardSec">Installer l'app</div>
@@ -686,14 +758,60 @@ html[data-style=clarte] .howto .lcd{padding:0}
 </nav>
 </div>
 <script>
-const KEY='ker_mvp_v03';
+const KEY='ker_mvp_v03';        // compteur actif, format v5 (lisible par les anciennes versions de KËR)
+const STORE_KEY='ker_store_v6'; // tous les compteurs
 const APP_SCHEMA_VERSION=5;
+const I18N={"en":{"KËR n'arrive pas à enregistrer sur ce téléphone (stockage plein ou navigation privée). Exporte tes données pour ne rien perdre.":"KËR can't save on this phone (storage full or private browsing). Export your data so you don't lose anything.","Nouveau compteur":"New meter","Supprimer le compteur « {label} » et tout son historique de ce téléphone ? Exporte tes données avant si tu veux les garder.":"Delete the meter “{label}” and all its history from this phone? Export your data first if you want to keep it.","{n} compteurs · changer":"{n} meters · switch","Ajouter un compteur":"Add a meter","Dernier 801 : {v} kWh, {d}":"Last 801: {v} kWh, {d}","Pas encore configuré":"Not set up yet","Aucun relevé 801":"No 801 reading","Nom du compteur":"Meter name","ACTIF":"ACTIVE","Ouvrir":"Open","Supprimer":"Delete","{v} déjà achetés":"{v} already bought","Tu finis à {v} kWh :":"You end up at {v} kWh:","tu restes en <b class=\"blue\">tranche 1</b>.":"you stay in <b class=\"blue\">tier 1</b>.","une partie passe en <b>tranche 2</b>.":"part of it goes into <b>tier 2</b>.","tu es en <b>tranche 2</b>.":"you're in <b>tier 2</b>.","tu dépasses 250 kWh, la <b>TVA</b> s'applique.":"you go past 250 kWh, <b>VAT</b> applies.","Retenue de début de mois estimée : ~{f} F (1ère recharge de {m}, hypothèse non confirmée).":"Estimated start-of-month deduction: ~{f} F (first top-up of {m}, unconfirmed assumption).","Départ en 1ère tranche.":"Starting in tier 1.","Départ en 2ème tranche.":"Starting in tier 2.","Départ au-delà de 250 kWh (TVA déjà active).":"Starting above 250 kWh (VAT already applies).","Répartition : {a} kWh en T1, {b} kWh en T2+.":"Split: {a} kWh in T1, {b} kWh in T2+.","Cette recharge te fera franchir 250 kWh : une partie sera facturée avec la TVA.":"This top-up takes you past 250 kWh: part of it will be charged with VAT.","Achats du mois après recharge (estimés) : {v} kWh. La tranche suit les kWh achetés dans le mois (hypothèse confirmée une fois).":"Purchases this month after the top-up (estimated): {v} kWh. The tier follows kWh bought in the month (assumption confirmed once).","Première recharge du mois : KËR retire environ 430 F (hypothèse tirée de tes reçus). Après la recharge, compose 817 pour vérifier.":"First top-up of the month: KËR takes off about 430 F (assumption based on your receipts). After topping up, dial 817 to check.","Déjà prélevée le {d} (hypothèse). Après la recharge, compose 817 pour vérifier.":"Already taken on {d} (assumption). After topping up, dial 817 to check.","Après la recharge, compose 817 pour vérifier.":"After topping up, dial 817 to check.","Plafond tranche 1 : environ {f} F ({k} kWh).":"Tier 1 ceiling: about {f} F ({k} kWh).","Dont ~{f} F de retenue de début de mois (hypothèse).":"Including ~{f} F start-of-month deduction (assumption).","Au-delà, le kWh passe de ~{a} F à ~{b} F.":"Beyond that, the kWh goes from ~{a} F to ~{b} F.","Tranche 1 déjà dépassée par tes achats de ce mois.":"Tier 1 already passed by your purchases this month.","Ta période dépasse la fin du mois. Le 1er, la tranche repart à zéro et le kWh redescend à ~{p} F : achète seulement pour le dernier jour, puis recharge le 1er.":"Your period runs past the end of the month. On the 1st the tier resets and the kWh drops back to ~{p} F: only buy for the last day, then top up on the 1st.","Ta période dépasse la fin du mois. Le 1er, la tranche repart à zéro et le kWh redescend à ~{p} F : achète seulement pour les {n} jours qui restent, puis recharge le 1er.":"Your period runs past the end of the month. On the 1st the tier resets and the kWh drops back to ~{p} F: only buy for the {n} days left, then top up on the 1st.","Ton crédit (~{c} kWh) suffit pour {n} jour. Pas besoin de recharger.":"Your credit (~{c} kWh) covers {n} day. No need to top up.","Ton crédit (~{c} kWh) suffit pour {n} jours. Pas besoin de recharger.":"Your credit (~{c} kWh) covers {n} days. No need to top up.","{d} j × {b}":"{d} d × {b}","{n} nuit de clim × {k}":"{n} night of AC × {k}","{n} nuits de clim × {k}":"{n} nights of AC × {k}","moins ~{c} kWh de crédit":"minus ~{c} kWh of credit","sans crédit connu (compose 801 pour affiner)":"no known credit (dial 801 to refine)","Il te faut ~{need} kWh ({parts}, {credit}).":"You need ~{need} kWh ({parts}, {credit}).","<b>Mets environ {f} F</b> : tu recevras ~{k} kWh.":"<b>Put in about {f} F</b>: you'll get ~{k} kWh.","Inclut ~{f} F de retenue de début de mois (hypothèse).":"Includes ~{f} F start-of-month deduction (assumption).","Une partie passera au prix fort (~{p} F) : {k} kWh au delà de 150 achetés.":"Part of it will be at the higher price (~{p} F): {k} kWh beyond 150 bought.","Au delà de 250 kWh achetés, la TVA s'ajoute (~{p} F).":"Beyond 250 kWh bought, VAT is added (~{p} F).","Aucun achat enregistré ce mois-ci : KËR utilise ta consommation (814) comme approximation. Corrige le nombre ci-dessus si tu le connais, puis :":"No purchase recorded this month: KËR uses your consumption (814) as an approximation. Correct the number above if you know it, then:","Enregistrer comme achats du mois":"Save as this month's purchases","Ton crédit est sans doute épuisé":"Your credit has probably run out","À ton rythme (~{r} kWh par jour depuis ton 801 du {d}), il ne reste presque plus rien. Compose 801 pour vérifier, ou 811 pour le crédit d’urgence.":"At your pace (~{r} kWh a day since your 801 on {d}), there's almost nothing left. Dial 801 to check, or 811 for emergency credit.","Il te reste environ 1 heure à ce rythme":"About 1 hour left at this rate","Il te reste environ {n} heures à ce rythme":"About {n} hours left at this rate","Estimation : ~{k} kWh à ~{r} kWh par jour, depuis ton 801 du {d}. La clim fait fondre ce délai. Recharge bientôt.":"Estimate: ~{k} kWh at ~{r} kWh a day, since your 801 on {d}. Running the AC shortens this. Top up soon.","Plus que ~{n} jour de crédit":"Only ~{n} day of credit left","Plus que ~{n} jours de crédit":"Only ~{n} days of credit left","~{k} kWh restants à ~{r} kWh par jour. Le bouton « Combien recharger ? » te dit combien mettre.":"~{k} kWh left at ~{r} kWh a day. The “How much to top up?” card tells you how much to put in.","Ton dernier 801 date d’hier":"Your last 801 is from yesterday","Ton dernier 801 date de {n} jours":"Your last 801 is {n} days old","Compose 801 sur le compteur pour que les alertes restent justes.":"Dial 801 on the meter so the alerts stay accurate.","Compose 801 sur le compteur et note-le : KËR pourra te prévenir avant que ton crédit finisse.":"Dial 801 on the meter and log it: KËR can then warn you before your credit runs out.","Tu es au 3e palier : TVA comprise":"You're on the 3rd tier: VAT included","Tu as acheté {k} kWh ce mois. Chaque kWh acheté coûte maintenant ~{p} F jusqu’au 1er. Si tu peux, ne recharge que le nécessaire.":"You've bought {k} kWh this month. Each kWh you buy now costs ~{p} F until the 1st. If you can, only top up what you need.","Tu es passé en tranche 2":"You've moved into tier 2","Au delà de 150 kWh achetés, le kWh coûte ~{p2} F au lieu de ~{p1} F, jusqu’au 1er. Encore {k} kWh avant la TVA.":"Beyond 150 kWh bought, the kWh costs ~{p2} F instead of ~{p1} F, until the 1st. {k} kWh more before VAT.","Plus que {k} kWh à ~{p} F":"Only {k} kWh left at ~{p} F","Ensuite le kWh passe à ~{p} F jusqu’au 1er. Le bouton « Plafond » de la recharge achète pile ce qu’il reste.":"After that the kWh goes up to ~{p} F until the 1st. The “Ceiling” button on the top-up screen buys exactly what's left.","Le 1er approche":"The 1st is coming","Le {d}, la tranche repart à zéro et le kWh redescend à ~{p} F. Si tu dois recharger avant, prends juste ce qu’il faut.":"On {d} the tier resets and the kWh drops back to ~{p} F. If you have to top up before then, only take what you need.","Nouveau mois":"New month","Les 150 premiers kWh achetés sont à ~{p} F. Ta 1ère recharge du mois inclut ~430 F de retenue (hypothèse).":"The first 150 kWh you buy are at ~{p} F. Your first top-up of the month includes a ~430 F deduction (assumption).","Éteindre le chauffe-eau te ferait économiser ~{f} F par mois":"Turning off the water heater would save you ~{f} F a month","≈ {k} kWh par mois, estimés d’après « Mon foyer » et ta conso réelle. Allume-le 1 h avant la douche plutôt que toute la journée.":"≈ {k} kWh a month, estimated from “My home” and your real use. Turn it on 1 h before showering rather than all day.","1 h de clim en moins par jour : ~{f} F par mois":"1 h less AC a day: ~{f} F a month","≈ {k} kWh par mois. Régler la clim sur 26 °C au lieu de 18 °C économise aussi beaucoup.":"≈ {k} kWh a month. Setting the AC to 26 °C instead of 18 °C also saves a lot.","KËR · Notifications activées":"KËR · Notifications on","Tu seras prévenu quand ton crédit va bientôt finir ou quand tu changes de tranche.":"You'll be warned when your credit is about to run out or when you change tier.","Sur iPhone, installe d'abord KËR sur l'écran d'accueil pour recevoir des notifications.":"On iPhone, first add KËR to your home screen to get notifications.","Ce navigateur ne permet pas les notifications. Les conseils restent visibles sur l'accueil.":"This browser doesn't support notifications. Tips stay visible on the home screen.","Notifications bloquées pour KËR dans les réglages du téléphone. Les conseils restent visibles sur l’accueil.":"Notifications are blocked for KËR in your phone settings. Tips stay visible on the home screen.","Activées. KËR vérifie à chaque ouverture et toutes les 10 minutes quand l’app est ouverte. Sur Android, avec l’app installée, il vérifie aussi en arrière-plan, environ deux fois par jour.":"On. KËR checks every time you open it and every 10 minutes while it's open. On Android, with the app installed, it also checks in the background, about twice a day.","Les conseils s’affichent toujours sur l’accueil. Active les notifications pour être prévenu aussi quand KËR est en arrière-plan.":"Tips always show on the home screen. Turn on notifications to be warned even when KËR is in the background.","À relever":"Not read yet","Aucun relevé":"No reading","Ancien":"Old","Je ne sais pas encore : compose 801 sur le compteur.":"I don't know yet: dial 801 on the meter.","Dernier 801 : {v} kWh le {d}. Trop ancien, compose 801.":"Last 801: {v} kWh on {d}. Too old, dial 801.","Code 801 · relevé le {d}":"Code 801 · read on {d}","≈ {f} F au tarif actuel":"≈ {f} F at today's price","jusqu’au<br><b>{d}</b>":"until<br><b>{d}</b>","À {r} kWh par jour, basé sur les derniers relevés.":"At {r} kWh a day, based on your latest readings.","À {r} kWh par jour, moyenne du mois, données limitées.":"At {r} kWh a day, monthly average, limited data.","Relevé 801 trop ancien pour estimer. Compose 801.":"801 reading too old to estimate. Dial 801.","Données insuffisantes pour estimer.":"Not enough data to estimate.","Code 814 · {d}":"Code 814 · {d}","Aucun relevé 814":"No 814 reading","{r} kWh par jour":"{r} kWh a day","Avant prix fort":"Before higher price","Avant la TVA":"Before VAT","TVA active":"VAT applies","Tu as acheté {p} kWh ce mois (consommé : {k}). La tranche suit les kWh achetés.":"You've bought {p} kWh this month (used: {k}). The tier follows kWh bought.","Encore {r} kWh à ~{a} F, ensuite ~{b} F.":"{r} kWh more at ~{a} F, then ~{b} F.","Prochain kWh acheté : ~{a} F. Encore {r} kWh avant la TVA.":"Next kWh bought: ~{a} F. {r} kWh more before VAT.","Prochain kWh acheté : ~{a} F, TVA de 18 % comprise.":"Next kWh bought: ~{a} F, including 18% VAT.","{k} sur 150 kWh ce mois. Encore {r} kWh à ~{a} F, ensuite ~{b} F.":"{k} of 150 kWh this month. {r} kWh more at ~{a} F, then ~{b} F.","{k} kWh ce mois, au prix fort. Encore {r} kWh avant la TVA.":"{k} kWh this month, at the higher price. {r} kWh more before VAT.","{k} kWh ce mois : la TVA de 18 % s'applique.":"{k} kWh this month: 18% VAT applies.","Tranche 1":"Tier 1","Tranche 2":"Tier 2","Aucun relevé 801. Compose 801 pour commencer.":"No 801 reading. Dial 801 to get started.","Relevé vieux de {n} jour. Compose 801 pour recaler.":"Reading is {n} day old. Dial 801 to update.","Relevé vieux de {n} jours. Compose 801 pour recaler.":"Reading is {n} days old. Dial 801 to update.","Pas encore assez de relevés 801 comparables pour comparer l'estimation de KËR au compteur.":"Not enough comparable 801 readings yet to check KËR's estimate against the meter.","concordant":"matches","écart mineur":"small gap","écart important":"large gap","KËR estimait {e} kWh avant ce relevé · le compteur a montré {o} kWh · écart {v} kWh ({s}).":"KËR estimated {e} kWh before this reading · the meter showed {o} kWh · gap {v} kWh ({s}).","Aucun relevé 808 pour le moment.":"No 808 reading yet.","Valeur brute : {v}, unité non confirmée. KËR ne la déduit pas de tes recharges tant que ce n'est pas validé.":"Raw value: {v}, unit not confirmed. KËR won't deduct it from your top-ups until it's validated.","À CONFIRMER":"TO CONFIRM","Dernière lecture (814) : {v} kWh, {d}":"Last reading (814): {v} kWh, {d}","Ajoute une lecture avec le code 814.":"Add a reading with code 814.","Recharge du {d} corrigée : prévu {e} kWh, reçu {o} kWh ({v}). Tes prix du mois sont recalculés.":"Top-up of {d} corrected: expected {e} kWh, received {o} kWh ({v}). This month's prices are recalculated.","Ajouté. Aucune recharge des 3 derniers jours à corriger.":"Added. No top-up in the last 3 days to correct.","Ajouté au journal.":"Added to the log.","compteur {n}":"meter {n}","Lu : {p}.":"Read: {p}.","Je n'ai rien trouvé de lisible. Saisis le montant à la main.":"I couldn't read anything. Enter the amount by hand.","Montant introuvable : saisis-le.":"Amount not found: enter it.","kWh introuvables : compose 817 après la recharge.":"kWh not found: dial 817 after topping up.","Ce reçu est pour ton compteur « {l} ».":"This receipt is for your meter “{l}”.","Passer à « {l} »":"Switch to “{l}”","Attention : ton compteur enregistré est le {n}.":"Careful: your saved meter is {n}.","Compteur changé. Vérifie puis enregistre la recharge.":"Meter switched. Check, then save the top-up.","Achats du mois":"Purchases this month","déclaré":"declared","Écart détecté : ~{f} F. KËR n'a pas encore identifié la cause avec certitude.":"Gap detected: ~{f} F. KËR hasn't pinned down the cause yet.","Écart ~{f} F vs tarif pur : probablement la retenue de début de mois (hypothèse, non prouvée).":"Gap ~{f} F vs pure tariff: probably the start-of-month deduction (assumption, not proven).","Coût réel {o} F/kWh vs {m} F/kWh au tarif pur : ~{f} F retenus (hypothèse : retenue de début de mois).":"Real cost {o} F/kWh vs {m} F/kWh at the pure tariff: ~{f} F held back (assumption: start-of-month deduction).","Cas de calibration : coût observé {o} F/kWh vs modèle {m} F/kWh.":"Calibration case: observed cost {o} F/kWh vs model {m} F/kWh.","Estimation incluant une retenue de début de mois de ~{f} F (hypothèse).":"Estimate including a ~{f} F start-of-month deduction (assumption).","Selon le reçu : prévu {e} kWh, reçu {o} kWh ({v}).":"Per the receipt: expected {e} kWh, received {o} kWh ({v}).","Corrigé par le 817 : prévu {e} kWh, reçu {o} kWh ({v}).":"Corrected by 817: expected {e} kWh, received {o} kWh ({v}).","déjà acheté ce mois : {k} kWh":"already bought this month: {k} kWh","conso. au moment : {k} kWh":"use at the time: {k} kWh","position tranche inconnue":"tier position unknown","recharge":"top-up","KËR estimait {e} kWh avant ce relevé · écart {v} kWh":"KËR estimated {e} kWh before this reading · gap {v} kWh","A corrigé la recharge associée.":"Corrected the related top-up.","Aucun événement enregistré.":"Nothing recorded yet.","{w} W · toujours branché, chauffe par cycles":"{w} W · always plugged in, heats in cycles","Actif":"On","Intensité des cycles":"Cycle intensity","Faible : bien isolé, peu utilisé (~20 %)":"Low: well insulated, little use (~20%)","Moyenne : usage courant (~35 %)":"Medium: everyday use (~35%)","Élevée : gros volume ou mal isolé (~50 %)":"High: large tank or poorly insulated (~50%)","≈ {k} kWh par mois estimés":"≈ {k} kWh a month, estimated","{w} W · heures par jour":"{w} W · hours a day","{k} kWh/mois":"{k} kWh/month","Ordre de grandeur : {f} F/mois":"Rough idea: {f} F/month","ta conso réelle mesurée : ~{m} kWh/mois":"your real measured use: ~{m} kWh/month","Choisir un code":"Choose a code","non imprimé sur le compteur":"not printed on the meter","Remplacer tous tes compteurs par ceux de ce fichier ?":"Replace all your meters with the ones in this file?","Remplacer les données du compteur « {l} » par celles de ce fichier ?":"Replace the data of meter “{l}” with this file's?","Ajouter ce fichier comme un nouveau compteur ?":"Add this file as a new meter?","Données importées.":"Data imported.","Ce fichier n'est pas une sauvegarde KËR.":"This file isn't a KËR backup.","{p} F / kWh":"{p} F / kWh","≈ {f} F (estimée)":"≈ {f} F (estimated)","Avec cette recharge, tu passes en tranche 2 : le prochain kWh acheté coûtera ~{p} F jusqu’au 1er.":"With this top-up you move into tier 2: the next kWh you buy will cost ~{p} F until the 1st.","Avec cette recharge, tu passes au 3e palier (TVA) : le prochain kWh acheté coûtera ~{p} F jusqu’au 1er.":"With this top-up you move to the 3rd tier (VAT): the next kWh you buy will cost ~{p} F until the 1st.","Vérifie les nombres : uniquement des chiffres, avec une virgule ou un point.":"Check the numbers: digits only, with a comma or a point.","Entre au moins le crédit restant (801) ou la consommation du mois (814). Sinon, touche « Passer pour l'instant ».":"Enter at least the remaining credit (801) or this month's use (814). Otherwise, tap “Skip for now”.","Compteur {n}":"Meter {n}","KËR v{v} · mes données de test":"KËR v{v} · my test data","Relevés : {r} · recharges : {n}":"Readings: {r} · top-ups: {n}","Dernier 801 : {v}":"Last 801: {v}","aucun":"none","Dernier 814 : {v}":"Last 814: {v}","Mon avis :":"My feedback:","Mes données KËR":"My KËR data","(Le fichier {n} vient d’être téléchargé : joins-le à ce message.)":"(The file {n} has just been downloaded: attach it to this message.)","Effacer toutes tes données KËR sur ce téléphone, pour tous les compteurs ? Exporte-les avant si tu veux les garder.":"Erase all your KËR data on this phone, for all meters? Export it first if you want to keep it.","KËR est installée sur ce téléphone.":"KËR is installed on this phone.","Ajoute KËR à ton écran d'accueil : elle s'ouvre comme une app et marche sans connexion.":"Add KËR to your home screen: it opens like an app and works offline.","Installer KËR":"Install KËR","Sur iPhone : ouvre ce lien dans Safari, touche le bouton Partager (le carré avec une flèche), puis « Sur l'écran d'accueil ». C'est important : sur iPhone, c'est ce qui protège tes données.":"On iPhone: open this link in Safari, tap the Share button (the square with an arrow), then “Add to Home Screen”. It matters: on iPhone, that's what protects your data.","Dans le menu du navigateur (⋮), choisis « Installer l'application » ou « Ajouter à l'écran d'accueil ».":"In the browser menu (⋮), choose “Install app” or “Add to Home screen”.","Consommation totale du compteur (1.8.0)":"Meter total consumption (1.8.0)","Crédit restant":"Credit remaining","Numéro du compteur":"Meter number","Découvert (en observation)":"Arrears (under observation)","Activer le crédit d'urgence (à zéro)":"Activate emergency credit (at zero)","Désactiver l'alarme sonore":"Turn off the beeping alarm","Consommation de la journée précédente":"Previous day's use","Consommation du mois en cours":"This month's use","Date de la dernière recharge":"Date of last top-up","Heure de la dernière recharge":"Time of last top-up","Montant de la dernière recharge (kWh)":"Last top-up amount (kWh)","Consommation du mois précédent":"Last month's use","Code de la dernière recharge":"Last top-up code","OBSERVÉ":"OBSERVED","CALCULÉ":"CALCULATED","ESTIMATION":"ESTIMATE","Climatisation":"Air conditioning","Réfrigérateur":"Fridge","TV":"TV","Fer à repasser":"Iron","Éclairage":"Lighting","Chauffe-eau":"Water heater","Premier relevé":"First reading","kWh déjà achetés ce mois (déclaré à l'installation)":"kWh already bought this month (declared at setup)","kWh déjà achetés ce mois (déclaré)":"kWh already bought this month (declared)","Mon compteur":"My meter","Bienvenue":"Welcome","Enfin au courant.":"Finally in the know.","KËR suit ton compteur Woyofal : ton crédit, ta tranche, ton autonomie, et ce que chaque recharge te donne vraiment.":"KËR tracks your Woyofal meter: your credit, your tier, how long it'll last, and what each top-up really gives you.","Sur le clavier du compteur, tape un code (par exemple 801), puis lis le nombre qui s'affiche.":"On the meter keypad, type a code (for example 801), then read the number that appears.","Ton compteur aujourd'hui":"Your meter today","Nom du compteur (facultatif)":"Meter name (optional)","Ex. Maison, Parents, Boutique":"E.g. Home, Parents, Shop","Crédit restant · code 801 (kWh)":"Credit remaining · code 801 (kWh)","Ex. 52,4":"E.g. 52.4","Consommation du mois · code 814 (kWh)":"This month's use · code 814 (kWh)","Ex. 20,4":"E.g. 20.4","kWh déjà achetés ce mois (facultatif)":"kWh already bought this month (optional)","Ex. 113,9":"E.g. 113.9","Additionne les kWh de tes recharges depuis le 1er du mois. Le code 817 donne ceux de ta dernière recharge. Ça fixe ton prix du kWh : à partir de 150 kWh achetés dans le mois, il passe de ~84 F à ~140 F.":"Add up the kWh from your top-ups since the 1st of the month. Code 817 gives your last top-up. It sets your kWh price: from 150 kWh bought in the month, it goes from ~84 F to ~140 F.","Consommation totale · code 800 (kWh, facultatif)":"Total consumption · code 800 (kWh, optional)","Ex. 16 789,09":"E.g. 16,789.09","Numéro du compteur · code 804 (facultatif)":"Meter number · code 804 (optional)","11 chiffres":"11 digits","Commencer":"Start","Passer pour l'instant":"Skip for now","Annuler l'ajout du compteur":"Cancel adding the meter","J'ai déjà une sauvegarde KËR":"I already have a KËR backup","Tes données restent sur ce téléphone. Rien n'est envoyé sans ton accord.":"Your data stays on this phone. Nothing is sent without your OK.","Accueil":"Home","Installe KËR sur ton écran d'accueil pour l'ouvrir comme une app et garder tes données.":"Add KËR to your home screen to open it like an app and keep your data.","Comment":"How","Masquer":"Hide","Mes compteurs":"My meters","801 · Crédit restant":"801 · Credit remaining","Cadran de la tranche du mois":"This month's tier dial","Consommation du mois sur l'échelle des tranches":"This month's use on the tier scale","150 : prix fort":"150: higher price","250 : TVA":"250: VAT","Autonomie":"Lasts","j":"d","Conseils":"Tips","Ce mois":"This month","Par jour":"Per day","Noter 801":"Log 801","Recharger":"Top up","Analyse":"Analysis","Réconciliation":"Reconciliation","Découvert (808)":"Arrears (808)","Aujourd'hui":"Today","Moyenne :":"Average:","Comprendre mon foyer":"Understand my home","Recharge":"Top-up","Montant payé (F)":"Amount paid (F)","Plafond":"Ceiling","Combien recharger ?":"How much to top up?","Jours à couvrir":"Days to cover","Nuits de clim":"AC nights","Conso par jour hors clim (kWh)":"Daily use without AC (kWh)","kWh par nuit de clim":"kWh per AC night","Utiliser ce montant":"Use this amount","Tu recevras":"You'll get","Estimé":"Estimated","Position après recharge sur le cadran":"Position on the dial after the top-up","déjà acheté":"already bought","cette recharge":"this top-up","prix fort":"higher price","Position après recharge sur l'échelle des tranches":"Position on the tier scale after the top-up","Prix du kWh au départ":"kWh price at the start","Plafond tranche 1":"Tier 1 ceiling","Retenue de début de mois":"Start-of-month deduction","Déjà payé ? Colle ton reçu":"Already paid? Paste your receipt","Colle le SMS ou le message Wave / Max it. KËR lit le montant, le compteur et les kWh. Le code de recharge n'est jamais enregistré.":"Paste the SMS or the Wave / Max it message. KËR reads the amount, the meter and the kWh. The recharge code is never saved.","Colle ton reçu ici":"Paste your receipt here","Lire le reçu":"Read receipt","kWh reçus (reçu ou code 817, facultatif)":"kWh received (receipt or code 817, optional)","Ex. 100,20":"E.g. 100.20","Enregistrer la recharge":"Save the top-up","Détails du calcul":"Calculation details","kWh déjà achetés ce mois, avant cette recharge":"kWh already bought this month, before this top-up","Barème CRSE en vigueur au 1er janvier 2026 : 82 F/kWh jusqu'à 150 kWh, 136,49 F/kWh au delà, plus 2,5 % de taxe communale, et 18 % de TVA au delà de 250 kWh. Validé sur tes reçus. La retenue de début de mois (~430 F) reste une hypothèse. Le 808 (découvert) est en observation : son unité est inconnue et il n'a pas réduit les kWh reçus le 24/10/2026, donc KËR ne le déduit pas.":"CRSE tariff in force since 1 January 2026: 82 F/kWh up to 150 kWh, 136.49 F/kWh beyond, plus 2.5% municipal tax, and 18% VAT beyond 250 kWh. Validated on your receipts. The start-of-month deduction (~430 F) is still an assumption. 808 (arrears) is under observation: its unit is unknown and it didn't reduce the kWh received on 24/10/2026, so KËR doesn't deduct it.","Recharge enregistrée":"Top-up saved","Fermer":"Close","enregistrée.":"saved.","Montant":"Amount","Prix moyen":"Average price","Vérifie sur le compteur : tape":"Check on the meter: type",". Il doit afficher environ :":". It should show about:","Terminé":"Done","Noter le 817 maintenant":"Log 817 now","Relevés":"Readings","Tape un code sur le clavier du compteur et note ce qui s'affiche. Plus tu notes, plus KËR est juste.":"Type a code on the meter keypad and log what shows. The more you log, the more accurate KËR gets.","814 · Lecture rapide":"814 · Quick reading","Consommation du mois affichée (kWh)":"This month's use shown (kWh)","Enregistrer":"Save","Journal complet":"Full log","N'importe quel code : 801 crédit, 800 total, 817 dernière recharge, 808 découvert, 811 crédit d'urgence…":"Any code: 801 credit, 800 total, 817 last top-up, 808 arrears, 811 emergency credit…","Code":"Code","Valeur affichée":"Value shown","Ex. 113,97 ou 28-09-26":"E.g. 113.97 or 28-09-26","Date":"Date","Note (optionnel)":"Note (optional)","Ajouter au journal":"Add to log","Historique complet":"Full history","Codes du clavier Woyofal":"Woyofal keypad codes","Lectures 814 ·":"814 readings ·","Historique":"History","← Retour aux relevés":"← Back to readings","Mon foyer":"My home","Puissance × heures par jour × 30 jours. Les appareils toujours branchés (chauffe-eau) sont estimés par cycles.":"Power × hours a day × 30 days. Always-on appliances (water heater) are estimated in cycles.","Consommation estimée":"Estimated use","Suis plusieurs compteurs Woyofal : ta maison, celle de tes parents, ta boutique. Chacun garde son historique, ses tranches et ses alertes.":"Track several Woyofal meters: your home, your parents', your shop. Each keeps its own history, tiers and alerts.","Réglages":"Settings","Apparence · Style":"Appearance · Style","Compteur":"Meter","Cartes et cadran":"Cards and dial","Clarté":"Clarity","Simple et épuré":"Simple and clean","Apparence · Mode":"Appearance · Mode","Clair":"Light","Sombre":"Dark","Système":"System","Suit le réglage de ton téléphone":"Follows your phone's setting","Texte plus grand":"Larger text","Agrandit tous les textes de l'app":"Makes all the app's text bigger","Langue":"Language","Bêta : traduction à relire":"Beta: translation to be reviewed","Suit la langue de ton téléphone":"Follows your phone's language","Alertes":"Alerts","Notifications sur ce téléphone":"Notifications on this phone","Crédit bientôt épuisé, changement de tranche, fin du mois.":"Credit running out, tier change, end of month.","Ajoute la maison de tes parents ou ta boutique, et passe de l'un à l'autre depuis l'accueil.":"Add your parents' home or your shop, and switch between them from the home screen.","Gérer mes compteurs":"Manage my meters","Installer l'app":"Install the app","Tester KËR":"Test KËR","Tu fais partie des premiers testeurs ? Soumets tes données et ton avis à Papi, par WhatsApp. Tes reçus servent à vérifier les calculs.":"Are you one of the first testers? Send your data and feedback to Papi on WhatsApp. Your receipts help check the calculations.","Soumettre mes données":"Submit my data","Données et confidentialité":"Data and privacy","Tes relevés et recharges restent uniquement sur ce téléphone : pas de compte, pas de serveur. Rien ne part sans ton accord, seulement quand tu touches « Envoyer » ou « Exporter ».":"Your readings and top-ups stay only on this phone: no account, no server. Nothing leaves without your OK, only when you tap “Send” or “Export”.","Exporter mes données":"Export my data","Importer un fichier":"Import a file","Effacer mes données":"Erase my data","Mon foyer : simulateur d'appareils":"My home: appliance simulator","· Enfin au courant.":"· Finally in the know.","Nouvelle version de KËR disponible.":"A new version of KËR is available.","Mettre à jour":"Update","Navigation":"Navigation"},"wo":{"KËR n'arrive pas à enregistrer sur ce téléphone (stockage plein ou navigation privée). Exporte tes données pour ne rien perdre.":"KËR mënul a denc dara ci telefon bii (bërëb bi fees na walla navigation privée la). Génnél say xibaar ngir baña ñàkk dara.","Nouveau compteur":"Compteur bu bees","Supprimer le compteur « {label} » et tout son historique de ce téléphone ? Exporte tes données avant si tu veux les garder.":"Far compteur « {label} » ak li mu jaar yépp ci telefon bii ? Génnél say xibaar balaa, soo bëggee leen denc.","{n} compteurs · changer":"{n} compteur · soppi","Ajouter un compteur":"Yokk ab compteur","Dernier 801 : {v} kWh, {d}":"801 bu mujj : {v} kWh, {d}","Pas encore configuré":"Defaguñu ko ba léegi","Aucun relevé 801":"Amul benn natt 801","Nom du compteur":"Turu compteur bi","ACTIF":"MOOY BII","Ouvrir":"Ubbi","Supprimer":"Far","{v} déjà achetés":"{v} jënd nga leen ba noppi","Tu finis à {v} kWh :":"Dinga mujje ci {v} kWh :","tu restes en <b class=\"blue\">tranche 1</b>.":"dinga des ci <b class=\"blue\">tranche 1</b>.","une partie passe en <b>tranche 2</b>.":"benn wàll dina dugg ci <b>tranche 2</b>.","tu es en <b>tranche 2</b>.":"yaa ngi ci <b>tranche 2</b>.","tu dépasses 250 kWh, la <b>TVA</b> s'applique.":"dinga weesu 250 kWh, <b>TVA</b> dina dugg.","Retenue de début de mois estimée : ~{f} F (1ère recharge de {m}, hypothèse non confirmée).":"Xaalis bi ñuy jël ci njëlbéenu weer wi : ~{f} F (recharge bu jëkk ci {m}, lu ñu jàppe rekk, dëggaluñu ko).","Départ en 1ère tranche.":"Ngay tàmbalee ci tranche 1.","Départ en 2ème tranche.":"Ngay tàmbalee ci tranche 2.","Départ au-delà de 250 kWh (TVA déjà active).":"Ngay tàmbalee ci kaw 250 kWh (TVA dugg na ba noppi).","Répartition : {a} kWh en T1, {b} kWh en T2+.":"Xàjjale : {a} kWh ci T1, {b} kWh ci T2+.","Cette recharge te fera franchir 250 kWh : une partie sera facturée avec la TVA.":"Recharge bii dina la weesal 250 kWh : benn wàll dinañu ko jaayee ak TVA.","Achats du mois après recharge (estimés) : {v} kWh. La tranche suit les kWh achetés dans le mois (hypothèse confirmée une fois).":"Li nga jënd weer wii ginnaaw recharge bi (lu jege) : {v} kWh. Tranche bi dafay topp kWh yi nga jënd ci weer wi (dëggal nañu ko benn yoon).","Première recharge du mois : KËR retire environ 430 F (hypothèse tirée de tes reçus). Après la recharge, compose 817 pour vérifier.":"Recharge bu jëkk ci weer wi : KËR dafay wàññi lu tollu ci 430 F (lu ñu jàppe ci say reçu). Ginnaaw recharge bi, bësal 817 ngir xool.","Déjà prélevée le {d} (hypothèse). Après la recharge, compose 817 pour vérifier.":"Jël nañu ko ba noppi ci {d} (lu ñu jàppe). Ginnaaw recharge bi, bësal 817 ngir xool.","Après la recharge, compose 817 pour vérifier.":"Ginnaaw recharge bi, bësal 817 ngir xool.","Plafond tranche 1 : environ {f} F ({k} kWh).":"Kemu tranche 1 : lu tollu ci {f} F ({k} kWh).","Dont ~{f} F de retenue de début de mois (hypothèse).":"Ci biir am na ~{f} F bu ñuy jël ci njëlbéenu weer wi (lu ñu jàppe).","Au-delà, le kWh passe de ~{a} F à ~{b} F.":"Ci kaw loolu, kWh bi dafay jóge ~{a} F dem ~{b} F.","Tranche 1 déjà dépassée par tes achats de ce mois.":"Li nga jënd weer wii weesu na tranche 1 ba noppi.","Ta période dépasse la fin du mois. Le 1er, la tranche repart à zéro et le kWh redescend à ~{p} F : achète seulement pour le dernier jour, puis recharge le 1er.":"Sa diir weesu na jeexitalu weer wi. Ci 1 bi, tranche bi dafay dellu ci tàmbali te kWh bi dellu ~{p} F : jëndal rekk ngir bés bu mujj bi, te yokk crédit ci 1 bi.","Ta période dépasse la fin du mois. Le 1er, la tranche repart à zéro et le kWh redescend à ~{p} F : achète seulement pour les {n} jours qui restent, puis recharge le 1er.":"Sa diir weesu na jeexitalu weer wi. Ci 1 bi, tranche bi dafay dellu ci tàmbali te kWh bi dellu ~{p} F : jëndal rekk ngir {n} fan yi des, te yokk crédit ci 1 bi.","Ton crédit (~{c} kWh) suffit pour {n} jour. Pas besoin de recharger.":"Sa crédit (~{c} kWh) doy na {n} fan. Soxlaa nga yokk crédit.","Ton crédit (~{c} kWh) suffit pour {n} jours. Pas besoin de recharger.":"Sa crédit (~{c} kWh) doy na {n} fan. Soxlaa nga yokk crédit.","{d} j × {b}":"{d} fan × {b}","{n} nuit de clim × {k}":"{n} guddi clim × {k}","{n} nuits de clim × {k}":"{n} guddi clim × {k}","moins ~{c} kWh de crédit":"wàññi ~{c} kWh crédit","sans crédit connu (compose 801 pour affiner)":"xamuñu sa crédit (bësal 801 ngir mu gën a jub)","Il te faut ~{need} kWh ({parts}, {credit}).":"Soxla nga ~{need} kWh ({parts}, {credit}).","<b>Mets environ {f} F</b> : tu recevras ~{k} kWh.":"<b>Defal lu tollu ci {f} F</b> : dinga jot ~{k} kWh.","Inclut ~{f} F de retenue de début de mois (hypothèse).":"Ci biir am na ~{f} F bu ñuy jël ci njëlbéenu weer wi (lu ñu jàppe).","Une partie passera au prix fort (~{p} F) : {k} kWh au delà de 150 achetés.":"Benn wàll dina jar njëg gu kawe gi (~{p} F) : {k} kWh ci kaw 150 yi nga jënd.","Au delà de 250 kWh achetés, la TVA s'ajoute (~{p} F).":"Ci kaw 250 kWh yu nga jënd, TVA dina yokku (~{p} F).","Aucun achat enregistré ce mois-ci : KËR utilise ta consommation (814) comme approximation. Corrige le nombre ci-dessus si tu le connais, puis :":"Amul benn jënd bu ñu denc weer wii : KËR dafay jëfandikoo li nga lekk (814) ni lu jege. Defaral limu kaw bi soo ko xamee, te :","Enregistrer comme achats du mois":"Denc ko ni li nga jënd weer wii","Ton crédit est sans doute épuisé":"Sa crédit mën na am ne jeex na","À ton rythme (~{r} kWh par jour depuis ton 801 du {d}), il ne reste presque plus rien. Compose 801 pour vérifier, ou 811 pour le crédit d’urgence.":"Ci sa yoon (~{r} kWh ci bés bu nekk dale ko ci sa 801 bu {d}), dara desatul. Bësal 801 ngir xool, walla 811 ngir crédit d’urgence.","Il te reste environ 1 heure à ce rythme":"Lu tollu ci benn waxtu moo la des, su nga wéyee nii","Il te reste environ {n} heures à ce rythme":"Lu tollu ci {n} waxtu moo la des, su nga wéyee nii","Estimation : ~{k} kWh à ~{r} kWh par jour, depuis ton 801 du {d}. La clim fait fondre ce délai. Recharge bientôt.":"Lu jege : ~{k} kWh ci ~{r} kWh ci bés bu nekk, dale ko ci sa 801 bu {d}. Clim day gaawal jeex bi. Yokkal crédit ci kanam.","Plus que ~{n} jour de crédit":"~{n} fan rekk moo des ci sa crédit","Plus que ~{n} jours de crédit":"~{n} fan rekk moo des ci sa crédit","~{k} kWh restants à ~{r} kWh par jour. Le bouton « Combien recharger ? » te dit combien mettre.":"~{k} kWh moo des ci ~{r} kWh ci bés bu nekk. « Ñaata laa wara yokk ? » dina la wax ñaata nga wara def.","Ton dernier 801 date d’hier":"Sa 801 bu mujj, démb la","Ton dernier 801 date de {n} jours":"Sa 801 bu mujj am na {n} fan","Compose 801 sur le compteur pour que les alertes restent justes.":"Bësal 801 ci compteur bi ngir yëgle yi des ci dëgg.","Compose 801 sur le compteur et note-le : KËR pourra te prévenir avant que ton crédit finisse.":"Bësal 801 ci compteur bi te bind ko : KËR dina mën a yëgle la balaa sa crédit jeex.","Tu es au 3e palier : TVA comprise":"Yaa ngi ci 3eelu tolluwaay : TVA dugg na","Tu as acheté {k} kWh ce mois. Chaque kWh acheté coûte maintenant ~{p} F jusqu’au 1er. Si tu peux, ne recharge que le nécessaire.":"Jënd nga {k} kWh weer wii. Léegi kWh bu nekk ~{p} F la ba 1 bu weer wi. Soo mënee, yokkal rekk li nga soxla.","Tu es passé en tranche 2":"Dugg nga ci tranche 2","Au delà de 150 kWh achetés, le kWh coûte ~{p2} F au lieu de ~{p1} F, jusqu’au 1er. Encore {k} kWh avant la TVA.":"Ci kaw 150 kWh yu nga jënd, kWh bi ~{p2} F la, wuute ak ~{p1} F, ba 1 bu weer wi. {k} kWh des balaa TVA.","Plus que {k} kWh à ~{p} F":"{k} kWh rekk moo des ci ~{p} F","Ensuite le kWh passe à ~{p} F jusqu’au 1er. Le bouton « Plafond » de la recharge achète pile ce qu’il reste.":"Ginnaaw loolu kWh bi dina jar ~{p} F ba 1 bu weer wi. Butoŋu « Kem » ci recharge bi dafay jënd li des rekk.","Le 1er approche":"1 bu weer wi jege na","Le {d}, la tranche repart à zéro et le kWh redescend à ~{p} F. Si tu dois recharger avant, prends juste ce qu’il faut.":"Ci {d}, tranche bi dafay dellu ci tàmbali te kWh bi dellu ~{p} F. Soo wara yokk crédit balaa loolu, jëlal li nga soxla rekk.","Nouveau mois":"Weer wu bees","Les 150 premiers kWh achetés sont à ~{p} F. Ta 1ère recharge du mois inclut ~430 F de retenue (hypothèse).":"150 kWh yu jëkk yi nga jënd ~{p} F lañu. Sa recharge bu jëkk ci weer wi am na ~430 F yu ñuy jël (lu ñu jàppe).","Éteindre le chauffe-eau te ferait économiser ~{f} F par mois":"Fey chauffe-eau bi dina la denc ~{f} F ci weer wi","≈ {k} kWh par mois, estimés d’après « Mon foyer » et ta conso réelle. Allume-le 1 h avant la douche plutôt que toute la journée.":"≈ {k} kWh ci weer wi, lu ñu jàppe ci « Sama kër » ak li nga jëfandikoo dëgg. Taal ko benn waxtu balaa nga sangu, te bul ko bàyyi bés bi yépp.","1 h de clim en moins par jour : ~{f} F par mois":"Benn waxtu clim bu gën a tuuti ci bés bu nekk : ~{f} F ci weer wi","≈ {k} kWh par mois. Régler la clim sur 26 °C au lieu de 18 °C économise aussi beaucoup.":"≈ {k} kWh ci weer wi. Teg clim bi ci 26 °C te du 18 °C day denc lu bare itam.","KËR · Notifications activées":"KËR · Yëgle yi taal nañu","Tu seras prévenu quand ton crédit va bientôt finir ou quand tu changes de tranche.":"Dinañu la yëgle bu sa crédit di jege jeex walla bu nga soppi tranche.","Sur iPhone, installe d'abord KËR sur l'écran d'accueil pour recevoir des notifications.":"Ci iPhone, sampal KËR ci écran d’accueil bi balaa ngay jot yëgle yi.","Ce navigateur ne permet pas les notifications. Les conseils restent visibles sur l'accueil.":"Navigateur bii mayul yëgle yi. Xelal yi ñungi des ci Kër.","Notifications bloquées pour KËR dans les réglages du téléphone. Les conseils restent visibles sur l’accueil.":"Yëgle yi tëj nañu leen ngir KËR ci tànneefu telefon bi. Xelal yi ñungi des ci Kër.","Activées. KËR vérifie à chaque ouverture et toutes les 10 minutes quand l’app est ouverte. Sur Android, avec l’app installée, il vérifie aussi en arrière-plan, environ deux fois par jour.":"Taal nañu. KËR dafay xool saa yu nga ko ubbee ak 10 simili yu nekk bu ubbeekoo. Ci Android, su app bi samposu, dafay xool itam ci ginnaaw, lu tollu ci ñaari yoon ci bés.","Les conseils s’affichent toujours sur l’accueil. Active les notifications pour être prévenu aussi quand KËR est en arrière-plan.":"Xelal yi ñungi feeñ saa su nekk ci Kër. Taalal yëgle yi ngir ñu yëgle la itam bu KËR nekkul ci kanam.","À relever":"Natt ko","Aucun relevé":"Amul natt","Ancien":"Yàgg na","Je ne sais pas encore : compose 801 sur le compteur.":"Xamaguma : bësal 801 ci compteur bi.","Dernier 801 : {v} kWh le {d}. Trop ancien, compose 801.":"801 bu mujj : {v} kWh ci {d}. Yàgg na lool, bësal 801.","Code 801 · relevé le {d}":"Code 801 · natt nañu ko ci {d}","≈ {f} F au tarif actuel":"≈ {f} F ci njëg gi léegi","jusqu’au<br><b>{d}</b>":"ba<br><b>{d}</b>","À {r} kWh par jour, basé sur les derniers relevés.":"Ci {r} kWh ci bés bu nekk, ci say natt yu mujj.","À {r} kWh par jour, moyenne du mois, données limitées.":"Ci {r} kWh ci bés bu nekk, diggu weer wi, xibaar yi barewul.","Relevé 801 trop ancien pour estimer. Compose 801.":"Natt 801 bi yàgg na lool. Bësal 801.","Données insuffisantes pour estimer.":"Xibaar yi doyuñu ngir xayma.","Code 814 · {d}":"Code 814 · {d}","Aucun relevé 814":"Amul natt 814","{r} kWh par jour":"{r} kWh ci bés bu nekk","Avant prix fort":"Balaa njëg gu kawe","Avant la TVA":"Balaa TVA","TVA active":"TVA dugg na","Tu as acheté {p} kWh ce mois (consommé : {k}). La tranche suit les kWh achetés.":"Jënd nga {p} kWh weer wii (lekk nga : {k}). Tranche bi dafay topp kWh yi nga jënd.","Encore {r} kWh à ~{a} F, ensuite ~{b} F.":"{r} kWh des ci ~{a} F, ginnaaw loolu ~{b} F.","Prochain kWh acheté : ~{a} F. Encore {r} kWh avant la TVA.":"kWh bi ngay jënd ci topp : ~{a} F. {r} kWh des balaa TVA.","Prochain kWh acheté : ~{a} F, TVA de 18 % comprise.":"kWh bi ngay jënd ci topp : ~{a} F, ak TVA 18 % ci biir.","{k} sur 150 kWh ce mois. Encore {r} kWh à ~{a} F, ensuite ~{b} F.":"{k} ci 150 kWh weer wii. {r} kWh des ci ~{a} F, ginnaaw loolu ~{b} F.","{k} kWh ce mois, au prix fort. Encore {r} kWh avant la TVA.":"{k} kWh weer wii, ci njëg gu kawe gi. {r} kWh des balaa TVA.","{k} kWh ce mois : la TVA de 18 % s'applique.":"{k} kWh weer wii : TVA 18 % dugg na.","Tranche 1":"Tranche 1","Tranche 2":"Tranche 2","Aucun relevé 801. Compose 801 pour commencer.":"Amul natt 801. Bësal 801 ngir tàmbali.","Relevé vieux de {n} jour. Compose 801 pour recaler.":"Natt bi am na {n} fan. Bësal 801 ngir yeesal.","Relevé vieux de {n} jours. Compose 801 pour recaler.":"Natt bi am na {n} fan. Bësal 801 ngir yeesal.","Pas encore assez de relevés 801 comparables pour comparer l'estimation de KËR au compteur.":"Natt 801 yi doyagul ngir méngale li KËR xayma ak compteur bi.","concordant":"dëppoo na","écart mineur":"wuute gu tuuti","écart important":"wuute gu mag","KËR estimait {e} kWh avant ce relevé · le compteur a montré {o} kWh · écart {v} kWh ({s}).":"KËR xaymaon na {e} kWh balaa natt bii · compteur bi wone na {o} kWh · wuute {v} kWh ({s}).","Aucun relevé 808 pour le moment.":"Amul natt 808 ba léegi.","Valeur brute : {v}, unité non confirmée. KËR ne la déduit pas de tes recharges tant que ce n'est pas validé.":"Lim bi : {v}, xamuñu ndamu bi. KËR du ko wàññi ci say recharge ba ñu dëggal ko.","À CONFIRMER":"DËGGAL","Dernière lecture (814) : {v} kWh, {d}":"Natt bu mujj (814) : {v} kWh, {d}","Ajoute une lecture avec le code 814.":"Yokkal ab natt ak code 814.","Recharge du {d} corrigée : prévu {e} kWh, reçu {o} kWh ({v}). Tes prix du mois sont recalculés.":"Recharge bu {d} defar nañu ko : xaar nañu {e} kWh, jot nga {o} kWh ({v}). Njëgu weer wi waññ nañu ko waat.","Ajouté. Aucune recharge des 3 derniers jours à corriger.":"Yokk nañu ko. Amul recharge ci 3 fan yu mujj yi ngir defar.","Ajouté au journal.":"Yokk nañu ko ci téere bi.","compteur {n}":"compteur {n}","Lu : {p}.":"Jàng nañu : {p}.","Je n'ai rien trouvé de lisible. Saisis le montant à la main.":"Gisuma dara bu ma mën a jàng. Bindal xaalis bi ak sa loxo.","Montant introuvable : saisis-le.":"Gisuñu xaalis bi : bindal ko.","kWh introuvables : compose 817 après la recharge.":"Gisuñu kWh yi : bësal 817 ginnaaw recharge bi.","Ce reçu est pour ton compteur « {l} ».":"Reçu bii ngir sa compteur « {l} » la.","Passer à « {l} »":"Dem ci « {l} »","Attention : ton compteur enregistré est le {n}.":"Moytul : compteur bi nga denc mooy {n}.","Compteur changé. Vérifie puis enregistre la recharge.":"Soppi nañu compteur bi. Xoolal te denc recharge bi.","Achats du mois":"Li nga jënd weer wii","déclaré":"nga wax","Écart détecté : ~{f} F. KËR n'a pas encore identifié la cause avec certitude.":"Wuute : ~{f} F. KËR xamagul lu ko waral.","Écart ~{f} F vs tarif pur : probablement la retenue de début de mois (hypothèse, non prouvée).":"Wuute ~{f} F ak njëg gi : xéy na mooy li ñuy jël ci njëlbéenu weer wi (lu ñu jàppe).","Coût réel {o} F/kWh vs {m} F/kWh au tarif pur : ~{f} F retenus (hypothèse : retenue de début de mois).":"Njëg gu dëgg {o} F/kWh, njëg gi {m} F/kWh : ~{f} F lañu jël (lu ñu jàppe : njëlbéenu weer wi).","Cas de calibration : coût observé {o} F/kWh vs modèle {m} F/kWh.":"Natt ngir dëggal : njëg gu ñu gis {o} F/kWh, xayma {m} F/kWh.","Estimation incluant une retenue de début de mois de ~{f} F (hypothèse).":"Lu jege, ak ~{f} F yu ñuy jël ci njëlbéenu weer wi (lu ñu jàppe).","Selon le reçu : prévu {e} kWh, reçu {o} kWh ({v}).":"Ci reçu bi : xaar nañu {e} kWh, jot nga {o} kWh ({v}).","Corrigé par le 817 : prévu {e} kWh, reçu {o} kWh ({v}).":"817 defar na ko : xaar nañu {e} kWh, jot nga {o} kWh ({v}).","déjà acheté ce mois : {k} kWh":"li nga jënd weer wii : {k} kWh","conso. au moment : {k} kWh":"li nga lekkoon : {k} kWh","position tranche inconnue":"xamuñu fan nga nekk ci tranche bi","recharge":"recharge","KËR estimait {e} kWh avant ce relevé · écart {v} kWh":"KËR xaymaon na {e} kWh balaa natt bii · wuute {v} kWh","A corrigé la recharge associée.":"Defar na recharge bi mu aju.","Aucun événement enregistré.":"Amul dara bu ñu denc.","{w} W · toujours branché, chauffe par cycles":"{w} W · ñu ngi ko lënk saa su nekk, day tàng ci yoon yu bare","Actif":"Taal na","Intensité des cycles":"Doole yoon yi","Faible : bien isolé, peu utilisé (~20 %)":"Tuuti : dafa sàqu bu baax, jëfandikoowuñu ko lu bare (~20 %)","Moyenne : usage courant (~35 %)":"Diggu : jëfandikoo gu bés bu nekk (~35 %)","Élevée : gros volume ou mal isolé (~50 %)":"Bare : mag na walla sàquwul bu baax (~50 %)","≈ {k} kWh par mois estimés":"≈ {k} kWh ci weer wi, lu jege","{w} W · heures par jour":"{w} W · waxtu ci bés bu nekk","{k} kWh/mois":"{k} kWh/weer","Ordre de grandeur : {f} F/mois":"Lu jege : {f} F/weer","ta conso réelle mesurée : ~{m} kWh/mois":"li nga lekk dëgg : ~{m} kWh/weer","Choisir un code":"Tànnal ab code","non imprimé sur le compteur":"bindu ci compteur bi","Remplacer tous tes compteurs par ceux de ce fichier ?":"Wecci say compteur yépp ak yi nekk ci fichier bii ?","Remplacer les données du compteur « {l} » par celles de ce fichier ?":"Wecci xibaaru compteur « {l} » ak yi nekk ci fichier bii ?","Ajouter ce fichier comme un nouveau compteur ?":"Yokk fichier bii ni ab compteur bu bees ?","Données importées.":"Dugal nañu xibaar yi.","Ce fichier n'est pas une sauvegarde KËR.":"Fichier bii du ndenc KËR.","{p} F / kWh":"{p} F / kWh","≈ {f} F (estimée)":"≈ {f} F (lu jege)","Avec cette recharge, tu passes en tranche 2 : le prochain kWh acheté coûtera ~{p} F jusqu’au 1er.":"Ak recharge bii, dugg nga ci tranche 2 : kWh bi ngay jënd ci topp dina jar ~{p} F ba 1 bu weer wi.","Avec cette recharge, tu passes au 3e palier (TVA) : le prochain kWh acheté coûtera ~{p} F jusqu’au 1er.":"Ak recharge bii, dugg nga ci 3eelu tolluwaay (TVA) : kWh bi ngay jënd ci topp dina jar ~{p} F ba 1 bu weer wi.","Vérifie les nombres : uniquement des chiffres, avec une virgule ou un point.":"Xoolal lim yi : nimero rekk, ak virgule walla point.","Entre au moins le crédit restant (801) ou la consommation du mois (814). Sinon, touche « Passer pour l'instant ».":"Bindal crédit bi des (801) walla li nga lekk weer wii (814). Lu ko moy, bësal « Bàyyi ko léegi ».","Compteur {n}":"Compteur {n}","KËR v{v} · mes données de test":"KËR v{v} · sama xibaaru test","Relevés : {r} · recharges : {n}":"Natt : {r} · recharge : {n}","Dernier 801 : {v}":"801 bu mujj : {v}","aucun":"dara","Dernier 814 : {v}":"814 bu mujj : {v}","Mon avis :":"Sama xalaat :","Mes données KËR":"Sama xibaaru KËR","(Le fichier {n} vient d’être téléchargé : joins-le à ce message.)":"(Fichier {n} bi yebal nañu ko léegi : takkal ko ci message bii.)","Effacer toutes tes données KËR sur ce téléphone, pour tous les compteurs ? Exporte-les avant si tu veux les garder.":"Far sa xibaaru KËR yépp ci telefon bii, ngir compteur yépp ? Génnél leen balaa, soo bëggee leen denc.","KËR est installée sur ce téléphone.":"KËR samp nañu ko ci telefon bii.","Ajoute KËR à ton écran d'accueil : elle s'ouvre comme une app et marche sans connexion.":"Sampal KËR ci écran d’accueil bi : dina ubbeeku ni app te dina dox te amul connexion.","Installer KËR":"Samp KËR","Sur iPhone : ouvre ce lien dans Safari, touche le bouton Partager (le carré avec une flèche), puis « Sur l'écran d'accueil ». C'est important : sur iPhone, c'est ce qui protège tes données.":"Ci iPhone : ubbil lien bii ci Safari, bësal butoŋu Partager (kaare bu am fléche), te « Sur l’écran d’accueil ». Am na solo : ci iPhone, loolu moo aar say xibaar.","Dans le menu du navigateur (⋮), choisis « Installer l'application » ou « Ajouter à l'écran d'accueil ».":"Ci menu bu navigateur bi (⋮), tànnal « Installer l’application » walla « Ajouter à l’écran d’accueil ».","Consommation totale du compteur (1.8.0)":"Li compteur bi lekk yépp (1.8.0)","Crédit restant":"Crédit bi des","Numéro du compteur":"Nimerou compteur bi","Découvert (en observation)":"Bor (ñungi koy xool)","Activer le crédit d'urgence (à zéro)":"Taal crédit d’urgence (bu jeexee)","Désactiver l'alarme sonore":"Fey alarme bi","Consommation de la journée précédente":"Li nga lekk démb","Consommation du mois en cours":"Li nga lekk weer wii","Date de la dernière recharge":"Bésu recharge bu mujj","Heure de la dernière recharge":"Waxtu recharge bu mujj","Montant de la dernière recharge (kWh)":"Kemu recharge bu mujj (kWh)","Consommation du mois précédent":"Li nga lekk weer wi weesu","Code de la dernière recharge":"Code recharge bu mujj","OBSERVÉ":"NATT","CALCULÉ":"WAÑÑ","ESTIMATION":"JEGE","Climatisation":"Clim","Réfrigérateur":"Frigo","TV":"Télé","Fer à repasser":"Fer","Éclairage":"Lampu yi","Chauffe-eau":"Chauffe-eau","Premier relevé":"Natt bu jëkk","kWh déjà achetés ce mois (déclaré à l'installation)":"kWh yi nga jënd weer wii (nga wax ci tàmbali bi)","kWh déjà achetés ce mois (déclaré)":"kWh yi nga jënd weer wii (nga wax)","Mon compteur":"Sama compteur","Bienvenue":"Dalal ak jàmm","Enfin au courant.":"Léegi nga xam sa kuraŋ.","KËR suit ton compteur Woyofal : ton crédit, ta tranche, ton autonomie, et ce que chaque recharge te donne vraiment.":"KËR dafay topp sa compteur Woyofal : sa crédit, sa tranche, ñaata fan la doy, ak li recharge bu nekk di la jox dëgg.","Sur le clavier du compteur, tape un code (par exemple 801), puis lis le nombre qui s'affiche.":"Ci clavier bu compteur bi, bësal ab code (ci misaal 801), te jàng lim bi feeñ.","Ton compteur aujourd'hui":"Sa compteur tey","Nom du compteur (facultatif)":"Turu compteur bi (bu la neexee)","Ex. Maison, Parents, Boutique":"Ci misaal : Kër, Waajur, Bitig","Crédit restant · code 801 (kWh)":"Crédit bi des · code 801 (kWh)","Ex. 52,4":"Ci misaal 52,4","Consommation du mois · code 814 (kWh)":"Li nga lekk weer wii · code 814 (kWh)","Ex. 20,4":"Ci misaal 20,4","kWh déjà achetés ce mois (facultatif)":"kWh yi nga jënd weer wii (bu la neexee)","Ex. 113,9":"Ci misaal 113,9","Additionne les kWh de tes recharges depuis le 1er du mois. Le code 817 donne ceux de ta dernière recharge. Ça fixe ton prix du kWh : à partir de 150 kWh achetés dans le mois, il passe de ~84 F à ~140 F.":"Boolel kWh yi nga jënd dale ko ci 1 bu weer wi. Code 817 day wone recharge bu mujj bi. Loolu moo taxawal njëgu kWh bi : bu nga jëndee 150 kWh ci weer wi, mu jóge ~84 F dem ~140 F.","Consommation totale · code 800 (kWh, facultatif)":"Li nga lekk yépp · code 800 (kWh, bu la neexee)","Ex. 16 789,09":"Ci misaal 16 789,09","Numéro du compteur · code 804 (facultatif)":"Nimerou compteur bi · code 804 (bu la neexee)","11 chiffres":"11 nimero","Commencer":"Tàmbali","Passer pour l'instant":"Bàyyi ko léegi","Annuler l'ajout du compteur":"Neenal yokk compteur bi","J'ai déjà une sauvegarde KËR":"Am naa ndenc KËR ba noppi","Tes données restent sur ce téléphone. Rien n'est envoyé sans ton accord.":"Say xibaar ñungi des ci telefon bii. Dara du dem te nanguwoo ko.","Accueil":"Kër","Installe KËR sur ton écran d'accueil pour l'ouvrir comme une app et garder tes données.":"Sampal KËR ci écran d’accueil bi ngir ubbi ko ni app te denc say xibaar.","Comment":"Naka","Masquer":"Nëbb","Mes compteurs":"Samay compteur","801 · Crédit restant":"801 · Crédit bi des","Cadran de la tranche du mois":"Montaru tranche bu weer wii","Consommation du mois sur l'échelle des tranches":"Li nga lekk weer wii ci tolluwaayu tranche yi","150 : prix fort":"150 : njëg gu kawe","250 : TVA":"250 : TVA","Autonomie":"Ñaata fan la doy","j":"f","Conseils":"Xelal","Ce mois":"Weer wii","Par jour":"Ci bés","Noter 801":"Bind 801","Recharger":"Yokk crédit","Analyse":"Xool bu xóot","Réconciliation":"Méngale","Découvert (808)":"Bor (808)","Aujourd'hui":"Tey","Moyenne :":"Diggu :","Comprendre mon foyer":"Xam sama kër","Recharge":"Recharge","Montant payé (F)":"Xaalis bi nga fey (F)","Plafond":"Kem","Combien recharger ?":"Ñaata laa wara yokk ?","Jours à couvrir":"Fan yi mu wara doy","Nuits de clim":"Guddi clim","Conso par jour hors clim (kWh)":"Li ngay lekk ci bés te clim nekku ci (kWh)","kWh par nuit de clim":"kWh ci guddi clim gu nekk","Utiliser ce montant":"Jëfandikoo xaalis bii","Tu recevras":"Dinga jot","Estimé":"Lu jege","Position après recharge sur le cadran":"Fan nga nekk ci montar bi ginnaaw recharge bi","déjà acheté":"jënd nga ko","cette recharge":"recharge bii","prix fort":"njëg gu kawe","Position après recharge sur l'échelle des tranches":"Fan nga nekk ci tolluwaay bi ginnaaw recharge bi","Prix du kWh au départ":"Njëgu kWh bi ci tàmbali bi","Plafond tranche 1":"Kemu tranche 1","Retenue de début de mois":"Li ñuy jël ci njëlbéenu weer wi","Déjà payé ? Colle ton reçu":"Fey nga ba noppi ? Takkal sa reçu","Colle le SMS ou le message Wave / Max it. KËR lit le montant, le compteur et les kWh. Le code de recharge n'est jamais enregistré.":"Takkal SMS bi walla message Wave / Max it. KËR dafay jàng xaalis bi, compteur bi ak kWh yi. Code recharge bi, duñu ko denc mukk.","Colle ton reçu ici":"Takkal sa reçu fii","Lire le reçu":"Jàng reçu bi","kWh reçus (reçu ou code 817, facultatif)":"kWh yi nga jot (reçu walla code 817, bu la neexee)","Ex. 100,20":"Ci misaal 100,20","Enregistrer la recharge":"Denc recharge bi","Détails du calcul":"Naka lañu ko waññe","kWh déjà achetés ce mois, avant cette recharge":"kWh yi nga jënd weer wii, balaa recharge bii","Barème CRSE en vigueur au 1er janvier 2026 : 82 F/kWh jusqu'à 150 kWh, 136,49 F/kWh au delà, plus 2,5 % de taxe communale, et 18 % de TVA au delà de 250 kWh. Validé sur tes reçus. La retenue de début de mois (~430 F) reste une hypothèse. Le 808 (découvert) est en observation : son unité est inconnue et il n'a pas réduit les kWh reçus le 24/10/2026, donc KËR ne le déduit pas.":"Njëgu CRSE dale ko 1 janvier 2026 : 82 F/kWh ba 150 kWh, 136,49 F/kWh ci kaw, ak 2,5 % taxe communale, ak 18 % TVA ci kaw 250 kWh. Dëggal nañu ko ci say reçu. Li ñuy jël ci njëlbéenu weer wi (~430 F) lu ñu jàppe la rekk. 808 (bor) ñungi koy xool : xamuñu ndamam te wàññiwul kWh yi nga jot ci 24/10/2026, moo tax KËR du ko wàññi.","Recharge enregistrée":"Recharge bi denc nañu ko","Fermer":"Tëj","enregistrée.":"denc nañu ko.","Montant":"Xaalis","Prix moyen":"Njëg gu diggu","Vérifie sur le compteur : tape":"Xoolal ci compteur bi : bësal",". Il doit afficher environ :":". Dafa wara wone lu tollu ci :","Terminé":"Jeex na","Noter le 817 maintenant":"Bind 817 léegi","Relevés":"Natt yi","Tape un code sur le clavier du compteur et note ce qui s'affiche. Plus tu notes, plus KËR est juste.":"Bësal ab code ci clavier bu compteur bi te bind li feeñ. Lu nga gën a bind, KËR gën a jub.","814 · Lecture rapide":"814 · Natt bu gaaw","Consommation du mois affichée (kWh)":"Li nga lekk weer wii, ni mu feeñe (kWh)","Enregistrer":"Denc","Journal complet":"Téere bi yépp","N'importe quel code : 801 crédit, 800 total, 817 dernière recharge, 808 découvert, 811 crédit d'urgence…":"Code bu mu mën a doon : 801 crédit, 800 yépp, 817 recharge bu mujj, 808 bor, 811 crédit d’urgence…","Code":"Code","Valeur affichée":"Lim bi feeñ","Ex. 113,97 ou 28-09-26":"Ci misaal 113,97 walla 28-09-26","Date":"Bés","Note (optionnel)":"Xamle (bu la neexee)","Ajouter au journal":"Yokk ci téere bi","Historique complet":"Li jaar yépp","Codes du clavier Woyofal":"Code yu clavier Woyofal","Lectures 814 ·":"Natt 814 ·","Historique":"Li jaar","← Retour aux relevés":"← Dellu ci natt yi","Mon foyer":"Sama kër","Puissance × heures par jour × 30 jours. Les appareils toujours branchés (chauffe-eau) sont estimés par cycles.":"Doole × waxtu ci bés × 30 fan. Jumtukaay yi ñu lënk saa su nekk (chauffe-eau) ñungi leen xayma ci yoon yi.","Consommation estimée":"Li ngay lekk, lu jege","Suis plusieurs compteurs Woyofal : ta maison, celle de tes parents, ta boutique. Chacun garde son historique, ses tranches et ses alertes.":"Toppal ay compteur Woyofal yu bare : sa kër, kër say waajur, sa bitig. Bu nekk am na li mu jaar, ay tranche ak ay yëgle.","Réglages":"Tànneef","Apparence · Style":"Melo · Style","Compteur":"Compteur","Cartes et cadran":"Kart ak montar","Clarté":"Leer","Simple et épuré":"Yomb te set","Apparence · Mode":"Melo · Mode","Clair":"Leer","Sombre":"Lëndëm","Système":"Ni telefon bi","Suit le réglage de ton téléphone":"Dafay topp tànneefu sa telefon","Texte plus grand":"Bind yu gën a mag","Agrandit tous les textes de l'app":"Dafay magal bind yi yépp","Langue":"Làkk","Bêta : traduction à relire":"Bêta : fàww ñu xool tekki bi","Suit la langue de ton téléphone":"Dafay topp làkku sa telefon","Alertes":"Yëgle","Notifications sur ce téléphone":"Yëgle ci telefon bii","Crédit bientôt épuisé, changement de tranche, fin du mois.":"Crédit bu jege jeex, soppi tranche, jeexitalu weer.","Ajoute la maison de tes parents ou ta boutique, et passe de l'un à l'autre depuis l'accueil.":"Yokkal kër say waajur walla sa bitig, te jóge ci benn dem ci beneen ci Kër.","Gérer mes compteurs":"Saytu samay compteur","Installer l'app":"Samp app bi","Tester KËR":"Test KËR","Tu fais partie des premiers testeurs ? Soumets tes données et ton avis à Papi, par WhatsApp. Tes reçus servent à vérifier les calculs.":"Ndax yaa ngi ci ñi jëkk a test ? Yónnéel Papi say xibaar ak sa xalaat ci WhatsApp. Say reçu dañuy dimbali ngir dëggal waññ yi.","Soumettre mes données":"Yónnee samay xibaar","Données et confidentialité":"Xibaar ak sutura","Tes relevés et recharges restent uniquement sur ce téléphone : pas de compte, pas de serveur. Rien ne part sans ton accord, seulement quand tu touches « Envoyer » ou « Exporter ».":"Say natt ak say recharge ci telefon bii rekk lañuy des : amul compte, amul serveur. Dara du génn te nanguwoo ko, ba nga bësee « Yónnee » walla « Génne ».","Exporter mes données":"Génne samay xibaar","Importer un fichier":"Dugal ab fichier","Effacer mes données":"Far samay xibaar","Mon foyer : simulateur d'appareils":"Sama kër : xayma jumtukaay yi","· Enfin au courant.":"· Léegi nga xam sa kuraŋ.","Nouvelle version de KËR disponible.":"KËR am na sumb bu bees.","Mettre à jour":"Yeesal","Navigation":"Yoon yi"}};
+
+// ---- Préférences d'affichage : style, mode, texte, langue, notifications ----
+// Gardées à part des données (clé distincte) : changer d'apparence ne touche jamais au ledger.
+const PREF_KEY='ker_prefs';
+function loadPrefs(){
+ const d={style:'compteur',mode:'system',largeText:false,lang:'system',notify:false};
+ try{ return Object.assign(d, JSON.parse(localStorage.getItem(PREF_KEY)||'{}')||{}); }catch(e){ return d; }
+}
+let prefs=loadPrefs();
+function savePrefs(){ try{localStorage.setItem(PREF_KEY,JSON.stringify(prefs));}catch(e){} }
+
+// ---- Langues : français (source), anglais, wolof. « Système » suit la langue du téléphone. ----
+const LANGS=['fr','en','wo'];
+let LANG='fr';
+function systemLang(){
+ const ls=(navigator.languages&&navigator.languages.length?navigator.languages:[navigator.language||'fr']).map(x=>String(x).toLowerCase().split('-')[0]);
+ for(const l of ls){ if(LANGS.includes(l)) return l; }
+ return 'fr';
+}
+function resolveLang(){ return LANGS.includes(prefs.lang)?prefs.lang:systemLang(); }
+function t(k,v){
+ let s=k;
+ if(LANG!=='fr'){ const d=I18N[LANG]; if(d && d[k]!=null) s=d[k]; }
+ if(v) s=s.replace(/\{(\w+)\}/g,(m,n)=>v[n]!=null?v[n]:m);
+ return s;
+}
+function LOC(){ return LANG==='en'?'en-GB':'fr-FR'; }
+const WO_MONTHS=['Samwiyee','Fewriyee','Mars','Awril','Me','Suwe','Sullet','Ut','Septàmbar','Oktoobar','Noowàmbar','Desàmbar'];
+const I18N_ATTRS=['placeholder','aria-label','title'];
+function translateStatic(){
+ const walker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT,{acceptNode:n=>{const p=n.parentElement; return (!p||p.closest('script,style,svg,[data-noi18n]'))?NodeFilter.FILTER_REJECT:NodeFilter.FILTER_ACCEPT;}});
+ let n;
+ while((n=walker.nextNode())){
+  if(n.__fr===undefined) n.__fr=n.nodeValue;
+  const raw=n.__fr, tr=raw.trim();
+  if(!tr || !/[A-Za-zÀ-ÿ]/.test(tr)) continue;
+  n.nodeValue=raw.replace(tr,t(tr));
+ }
+ document.querySelectorAll(I18N_ATTRS.map(a=>'['+a+']').join(',')).forEach(el=>{
+  if(el.closest('[data-noi18n]') || el.closest('svg')) return;
+  el.__fra=el.__fra||{};
+  I18N_ATTRS.forEach(a=>{ if(!el.hasAttribute(a)) return; if(el.__fra[a]===undefined) el.__fra[a]=el.getAttribute(a); el.setAttribute(a,t(el.__fra[a])); });
+ });
+ document.documentElement.lang=LANG;
+}
 
 // ---- Codes du clavier Woyofal ----
-// Imprimés sur le compteur (photo du 10/10/2026, légèrement floue mais lisible) : 800 consommation totale, 801 crédit restant,
+// Imprimés sur le compteur (photo du 10/10/2026) : 800 consommation totale, 801 crédit restant,
 // 804 numéro du compteur, 811 crédit d'urgence, 813 conso veille, 814 conso du mois, 820 conso mois précédent.
 // NON imprimés (liste tierce) : 808, 812, 815, 816, 817, 830. 808/815/817 répondent bien sur ce compteur ; 812/816/830 non vérifiés.
-// Correction v0.4 : v0.3 avait 800 = crédit restant (erreur issue d'une liste tierce).
 const PRINTED=['800','801','804','811','813','814','820'];
 const CODES={
  '800':'Consommation totale du compteur (1.8.0)',
@@ -716,8 +834,8 @@ const CODES={
 // le CRSE ne prévoit pas de 3e taux, la conso >250 kWh est valorisée au taux T2 + TVA.
 const TARIFF_SCHEDULES=[
  {effectiveFrom:'2026-01-01', t1Rate:82.00, t2Rate:136.49, communalTax:0.025, vat:0.18, vatThreshold:250,
-  // Retenue observée sur la 1ère recharge de chaque mois : ~427 F (11/10/2026), ~438 F (04/09/2026, si conso≈0 ce mois-là).
-  // HYPOTHÈSE à confirmer (probablement la redevance fixe, mais 1 155 F ne colle pas) : ne jamais l'afficher comme un fait.
+  // Retenue observée sur la 1ère recharge de chaque mois : ~427 F (11/10/2026), ~438 F (04/09/2026).
+  // HYPOTHÈSE à confirmer : ne jamais l'afficher comme un fait.
   firstTopUpFee:430, firstTopUpFeeConfirmed:false}
 ];
 function tariffFor(dateStr){
@@ -727,62 +845,56 @@ function tariffFor(dateStr){
  return chosen;
 }
 function unitPrice(cumKwh,dateStr){
- const t=tariffFor(dateStr);
- const base=cumKwh<150?t.t1Rate:t.t2Rate;
- const withCommunale=base*(1+t.communalTax);
- return cumKwh>=t.vatThreshold?withCommunale*(1+t.vat):withCommunale;
+ const t_=tariffFor(dateStr);
+ const base=cumKwh<150?t_.t1Rate:t_.t2Rate;
+ const withCommunale=base*(1+t_.communalTax);
+ return cumKwh>=t_.vatThreshold?withCommunale*(1+t_.vat):withCommunale;
 }
 function costPerKwh(kwh,dateStr){return unitPrice(kwh,dateStr);}
-// Intègre un montant FCFA en kWh en traversant les seuils de tranche si nécessaire. Fonction pure —
-// ne connaît rien du découvert ni d'aucune autre déduction ; c'est le tarif "propre", validé sur 2 reçus réels.
+// Intègre un montant FCFA en kWh en traversant les seuils de tranche si nécessaire. Fonction pure.
 function integrateKwh(amountFcfa,usedKwh,dateStr){
- const t=tariffFor(dateStr);
+ const t_=tariffFor(dateStr);
  let remaining=Math.max(0,amountFcfa), cursor=Math.max(0,usedKwh), kwh=0, guard=0;
  while(remaining>0.01 && guard<1000){
   guard++;
-  const nextThreshold = cursor<150 ? 150 : (cursor<t.vatThreshold ? t.vatThreshold : Infinity);
+  const nextThreshold = cursor<150 ? 150 : (cursor<t_.vatThreshold ? t_.vatThreshold : Infinity);
   const price=unitPrice(cursor+1e-6,dateStr);
   const roomKwh=nextThreshold-cursor;
   const roomCost=roomKwh===Infinity?Infinity:roomKwh*price;
-  if(roomCost===Infinity || remaining<=roomCost){
-   const gained=remaining/price; kwh+=gained; cursor+=gained; remaining=0;
-  } else {
-   kwh+=roomKwh; cursor+=roomKwh; remaining-=roomCost;
-  }
+  if(roomCost===Infinity || remaining<=roomCost){ const gained=remaining/price; kwh+=gained; cursor+=gained; remaining=0; }
+  else { kwh+=roomKwh; cursor+=roomKwh; remaining-=roomCost; }
  }
  return kwh;
 }
 function rechargeKwh(amount,used,dateStr){ return integrateKwh(amount,used,dateStr); }
 function costForKwh(kwh,usedKwh,dateStr){
- const t=tariffFor(dateStr); let left=Math.max(0,kwh), cursor=Math.max(0,usedKwh), cost=0, guard=0;
+ const t_=tariffFor(dateStr); let left=Math.max(0,kwh), cursor=Math.max(0,usedKwh), cost=0, guard=0;
  while(left>1e-9 && guard<100){ guard++;
-  const next = cursor<150 ? 150 : (cursor<t.vatThreshold ? t.vatThreshold : Infinity);
+  const next = cursor<150 ? 150 : (cursor<t_.vatThreshold ? t_.vatThreshold : Infinity);
   const take=Math.min(left,next-cursor), price=unitPrice(cursor+1e-6,dateStr);
   cost+=take*price; cursor+=take; left-=take;
  }
  return cost;
 }
-// Retenue de début de mois : appliquée à la 1ère recharge du mois calendaire (aucune autre recharge du même mois dans le ledger).
 function monthOf(ts){return String(ts||'').slice(0,7);}
 function isFirstTopUpOfMonth(dateStr,excludeId){
  const m=monthOf(dateStr);
  // Des achats déclarés ce mois-ci (base) veulent dire que la 1ère recharge du mois a déjà eu lieu.
  const base=purchaseBaseline(dateStr); if(base && +base.value>0) return false;
- // 1ère recharge du mois = aucune recharge ANTÉRIEURE dans le même mois calendaire.
  return !state.events.some(e=>e.type==='recharge' && e.id!==excludeId && monthOf(e.timestamp)===m && String(e.timestamp)<String(dateStr));
 }
 function firstTopUpFeeFor(dateStr,excludeId){
- const t=tariffFor(dateStr);
- return isFirstTopUpOfMonth(dateStr,excludeId) ? t.firstTopUpFee : 0;
+ const t_=tariffFor(dateStr);
+ return isFirstTopUpOfMonth(dateStr,excludeId) ? t_.firstTopUpFee : 0;
 }
-// kWh livrés par un montant, retenue de début de mois comprise. Retourne aussi la retenue appliquée.
 function rechargeKwhNet(amount,used,dateStr,excludeId){
  const fee=Math.min(Math.max(0,amount),firstTopUpFeeFor(dateStr,excludeId));
  return {kwh:integrateKwh(amount-fee,used,dateStr),fee:fee};
 }
 
-// ---- Event ledger : source de vérité unique ----
+// ---- Event ledger : source de vérité unique (un ledger par compteur) ----
 function uid(){return 'e'+Date.now().toString(36)+Math.random().toString(36).slice(2,8);}
+function newId(){return 'm'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);}
 const today=()=>new Date().toISOString().slice(0,10);
 const nowIso=()=>new Date().toISOString();
 
@@ -793,39 +905,24 @@ function defaultAppliances(){
   {name:'Chauffe-eau',w:1500,mode:'cycling',duty:.35,active:true}
  ];
 }
-
-// Version publique : aucune donnée personnelle intégrée. Un nouvel utilisateur démarre vide et passe par l'accueil.
-// L'historique d'un utilisateur existant arrive par son propre stockage local ou par l'import de sa sauvegarde.
-function createInitialState(){
- return { schemaVersion:APP_SCHEMA_VERSION, events:[], appliances: defaultAppliances(), meter:null };
-}
+function createInitialState(){ return { schemaVersion:APP_SCHEMA_VERSION, events:[], appliances: defaultAppliances(), meter:null }; }
 function ensureEvents(s){
  if(!Array.isArray(s.events)) s.events=[];
  if(!Array.isArray(s.appliances)) s.appliances=defaultAppliances();
  if(s.meter===undefined) s.meter = s.events.length ? {number:'',label:'Mon compteur'} : null;
  return s;
 }
-// v3 -> v4 : le code 800 imprimé sur le compteur est la consommation TOTALE (1.8.0). Les relevés "800" saisis en v3
-// étaient des soldes (crédit restant) : on les recode en 801. Une valeur < 1000 ne peut pas être un registre cumulé réaliste.
 function migrateV3toV4(s){
- s.events.forEach(e=>{
-  if(e.code==='800' && e.value!=null && e.value<1000){
-   e.code='801';
-   e.note=(e.note?e.note+' · ':'')+'recodé de 800 vers 801 (crédit restant)';
-  }
- });
- s.schemaVersion=4;
- return s;
+ s.events.forEach(e=>{ if(e.code==='800' && e.value!=null && e.value<1000){ e.code='801'; e.note=(e.note?e.note+' · ':'')+'recodé de 800 vers 801 (crédit restant)'; } });
+ s.schemaVersion=4; return s;
 }
-// v4 -> v5 : un écart "inexpliqué" sur une 1ère recharge du mois devient "probablement la retenue de début de mois".
 function migrateV4toV5(s){
  s.events.forEach(e=>{
   if(e.type==='recharge' && e.reconciliation && e.reconciliation.status==='unexplained' && Array.isArray(e.reconciliation.hypotheses) && e.reconciliation.hypotheses.includes('monthly_fee')){
    e.reconciliation=Object.assign({},e.reconciliation,{status:'probable_monthly_fee',hypotheses:['monthly_fee','other'],confidence:'medium'});
   }
  });
- s.schemaVersion=5;
- return s;
+ s.schemaVersion=5; return s;
 }
 function migrateState(raw){
  if(!raw) return createInitialState();
@@ -840,29 +937,94 @@ function migrateState(raw){
  return ensureEvents({schemaVersion:APP_SCHEMA_VERSION, events, appliances: raw.appliances || defaultAppliances()});
 }
 
-let state = migrateState((function(){try{return JSON.parse(localStorage.getItem(KEY)||'null')}catch(e){return null}})());
+// ---- Plusieurs compteurs ----
+// STORE_KEY garde tous les compteurs. KEY garde une copie du compteur actif au format v5 :
+// une ancienne version de KËR encore en cache continue de fonctionner dessus sans rien effacer.
+function readJSON(k){ try{ return JSON.parse(localStorage.getItem(k)||'null'); }catch(e){ return null; } }
+function isBlank(s){ return !s.meter && (!s.events || s.events.length===0); }
+function normalizeStore(raw){
+ const meters=(raw.meters||[]).map(m=>{ const id=m.id; const s=migrateState(m); s.id=id||newId(); return s; });
+ if(!meters.length){ const s=createInitialState(); s.id=newId(); meters.push(s); }
+ const activeId=meters.some(m=>m.id===raw.activeId)?raw.activeId:meters[0].id;
+ return {schemaVersion:6, activeId, meters};
+}
+function loadStore(){
+ const st=readJSON(STORE_KEY), active=readJSON(KEY);
+ if(st && Array.isArray(st.meters)){
+  const s6=normalizeStore(st);
+  if(active && (Array.isArray(active.events)||Array.isArray(active.readings))){
+   const s=migrateState(active); s.id=s6.activeId;
+   const i=s6.meters.findIndex(m=>m.id===s6.activeId); s6.meters[i]=s;
+  }
+  return s6;
+ }
+ const s=migrateState(active); s.id=(active&&active.id)||newId();
+ return {schemaVersion:6, activeId:s.id, meters:[s]};
+}
+let store=loadStore();
+let state=store.meters.find(m=>m.id===store.activeId);
 let storageWarned=false;
 function save(){
- try{ localStorage.setItem(KEY,JSON.stringify(state)); }
- catch(e){ if(!storageWarned){ storageWarned=true; alert("KËR n'arrive pas à enregistrer sur ce téléphone (stockage plein ou navigation privée). Exporte tes données pour ne rien perdre."); } }
+ const i=store.meters.findIndex(m=>m.id===state.id); if(i>=0) store.meters[i]=state; else store.meters.push(state);
+ store.activeId=state.id;
+ try{ localStorage.setItem(KEY,JSON.stringify(state)); localStorage.setItem(STORE_KEY,JSON.stringify(store)); }
+ catch(e){ if(!storageWarned){ storageWarned=true; alert(t("KËR n'arrive pas à enregistrer sur ce téléphone (stockage plein ou navigation privée). Exporte tes données pour ne rien perdre.")); } }
+ scheduleNotifyCheck();
 }
-save(); // persiste l'état migré
-const fmt=n=>new Intl.NumberFormat('fr-FR').format(Math.round(n));
-function fmtDate(ts){try{return new Date(ts).toLocaleDateString('fr-FR',{day:'2-digit',month:'short'})}catch(e){return ts}}
-function fmtDateTime(ts){try{return fmtDate(ts)+' · '+new Date(ts).toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})}catch(e){return ts}}
+function withState(m,fn){ const prev=state; state=m; try{ return fn(); } finally{ state=prev; } }
+function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function meterName(m){ return m.meter&&m.meter.label ? t(m.meter.label) : t('Nouveau compteur'); }
+function switchMeter(id){
+ const m=store.meters.find(x=>x.id===id); if(!m) return;
+ state=m; save(); resetAdvisorInputs(); renderAll(); renderMeters();
+ if(isBlank(state)) showWelcome(); else { exitWelcome(); show('home'); }
+}
+function addMeter(){ const s=createInitialState(); s.id=newId(); store.meters.push(s); state=s; save(); renderMeters(); clearWelcome(); showWelcome(); }
+function otherMeters(){ return store.meters.filter(m=>m.id!==state.id && !isBlank(m)); }
+function cancelAddMeter(){
+ const prev=otherMeters(); if(!prev.length) return;
+ store.meters=store.meters.filter(m=>m.id!==state.id); state=prev[prev.length-1]; save();
+ exitWelcome(); renderAll(); renderMeters(); show('home');
+}
+function renameMeter(id,v){
+ const m=store.meters.find(x=>x.id===id); if(!m) return;
+ v=String(v||'').trim().slice(0,40);
+ if(!m.meter) m.meter={number:'',label:''};
+ m.meter.label=v||'Mon compteur';
+ if(m.id===state.id) state=m;
+ save(); renderMeters();
+}
+function deleteMeter(id){
+ const m=store.meters.find(x=>x.id===id); if(!m) return;
+ if(!confirm(t('Supprimer le compteur « {label} » et tout son historique de ce téléphone ? Exporte tes données avant si tu veux les garder.',{label:meterName(m)}))) return;
+ store.meters=store.meters.filter(x=>x.id!==id);
+ if(!store.meters.length){ const s=createInitialState(); s.id=newId(); store.meters.push(s); }
+ if(state.id===id) state=store.meters[0];
+ save(); resetAdvisorInputs(); renderAll(); renderMeters();
+ if(isBlank(state)) showWelcome(); else show('meters');
+}
+function renderMeters(){
+ const name=document.getElementById('meterName'); if(name) name.textContent=meterName(state);
+ const cnt=document.getElementById('meterCount'); if(cnt) cnt.textContent = store.meters.length>1 ? t('{n} compteurs · changer',{n:store.meters.length}) : t('Ajouter un compteur');
+ const el=document.getElementById('meterList'); if(!el) return;
+ el.innerHTML=store.meters.map(m=>{
+  const active=m.id===state.id;
+  const bal=withState(m,()=>latestBalance());
+  const info=(m.meter&&m.meter.number?esc(m.meter.number)+' · ':'')+(bal?t('Dernier 801 : {v} kWh, {d}',{v:fmt2(bal.value),d:fmtDate(bal.timestamp)}):(isBlank(m)?t('Pas encore configuré'):t('Aucun relevé 801')));
+  return `<div class="meterItem${active?' on':''}"><div class="miHead"><input class="miName" value="${esc(meterName(m))}" aria-label="${esc(t('Nom du compteur'))}" onchange="renameMeter('${m.id}',this.value)">${active?`<span class="tag">${t('ACTIF')}</span>`:''}</div><div class="note">${info}</div><div class="miBtns">${active?'':`<button class="btn" onclick="switchMeter('${m.id}')">${t('Ouvrir')}</button>`}<button class="btn ghost danger" onclick="deleteMeter('${m.id}')">${t('Supprimer')}</button></div></div>`;
+ }).join('');
+}
 
 // ---- Ledger accessors ----
 function eventsOfCode(code){return state.events.filter(e=>e.code===code).sort((a,b)=>a.timestamp.localeCompare(b.timestamp));}
 function latestByCode(code){const l=eventsOfCode(code);return l.length?l[l.length-1]:null;}
-function latestBalance(){return latestByCode('801');}      // 801 = crédit restant (solde observé, autoritaire)
-function latestTotalRegister(){return latestByCode('800');} // 800 = consommation totale cumulée (1.8.0), ne se réinitialise jamais
-function latestConsumption(){return latestByCode('814');}  // 814 = consommation mensuelle observée, autoritaire
-function latestArrears(){return latestByCode('808');}       // 808 = valeur brute, non interprétée
+function latestBalance(){return latestByCode('801');}
+function latestTotalRegister(){return latestByCode('800');}
+function latestConsumption(){return latestByCode('814');}
+function latestArrears(){return latestByCode('808');}
 function currentKwh(){const c=latestConsumption();return c?c.value:0;}
 // Position dans les tranches de prix = kWh ACHETÉS dans le mois calendaire (hypothèse confirmée le 24/10/2026 :
-// 12 000 F ont donné 100,20 kWh, ce que prédit ce modèle à 0,01 kWh près ; le modèle « consommation 814 » donnait ~92 kWh).
-// Sans recharge enregistrée ce mois-ci, repli sur 814 (approximation).
-// Base déclarée (« kWh déjà achetés ce mois ») : sert aux nouveaux utilisateurs qui n'ont pas saisi leurs recharges passées.
+// 12 000 F ont donné 100,20 kWh, ce que prédit ce modèle à 0,01 kWh près). Sans achat connu ce mois-ci, repli sur 814.
 function purchaseBaseline(dateStr){
  const m=monthOf(dateStr);
  const l=state.events.filter(e=>e.type==='purchase_baseline' && monthOf(e.timestamp)===m && String(e.timestamp)<=String(dateStr)).sort((a,b)=>a.timestamp.localeCompare(b.timestamp));
@@ -877,10 +1039,7 @@ function hasPurchaseData(dateStr){
  const d=dateStr||nowIso();
  return !!purchaseBaseline(d) || state.events.some(e=>e.type==='recharge' && monthOf(e.timestamp)===monthOf(d) && String(e.timestamp)<String(d));
 }
-function tranchePosition(dateStr){
- const d=dateStr||nowIso();
- return hasPurchaseData(d) ? purchasedKwhInMonth(d) : currentKwh();
-}
+function tranchePosition(dateStr){ const d=dateStr||nowIso(); return hasPurchaseData(d) ? purchasedKwhInMonth(d) : currentKwh(); }
 function saveBaseline(v,note){
  if(v==null || isNaN(v) || v<0) return;
  state.events.push({id:uid(),timestamp:nowIso(),type:'purchase_baseline',value:v,unit:'kWh',source:'user',confidence:'observed',note:note||'kWh déjà achetés ce mois (déclaré)'});
@@ -888,7 +1047,6 @@ function saveBaseline(v,note){
 
 // ---- Vitesse de consommation (burn rate) ----
 function calculateRecentBurnRate(){
- // Le registre cumulé 800 ne se réinitialise jamais : fiable sur n'importe quelle période. Sinon, repli sur 814 (même mois).
  const reg=eventsOfCode('800').filter(e=>e.value!=null);
  if(reg.length>=2){
   const rb=reg[reg.length-1], ra=reg[reg.length-2];
@@ -898,7 +1056,7 @@ function calculateRecentBurnRate(){
  const readings=eventsOfCode('814');
  if(readings.length<2) return null;
  const b=readings[readings.length-1], a=readings[readings.length-2];
- if(a.timestamp.slice(0,7)!==b.timestamp.slice(0,7)) return null; // ne compare pas across un changement de mois (814 se réinitialise)
+ if(a.timestamp.slice(0,7)!==b.timestamp.slice(0,7)) return null;
  const days=(new Date(b.timestamp)-new Date(a.timestamp))/86400000;
  if(days<=0) return null;
  return (b.value-a.value)/days;
@@ -910,53 +1068,36 @@ function monthAverageBurn(){
  return c.value/days;
 }
 function dailyKwh(){ return calculateRecentBurnRate() ?? monthAverageBurn() ?? 0; }
-
 function balanceAgeDays(bal,nowMs){return ((nowMs??Date.now())-new Date(bal.timestamp).getTime())/86400000;}
 function calculateForecast(nowMs){
  const bal=latestBalance();
- let burn=calculateRecentBurnRate(), basis='basé sur les derniers relevés';
- if(burn==null){ burn=monthAverageBurn(); basis='moyenne du mois, données limitées'; }
+ let burn=calculateRecentBurnRate(), basis='recent';
+ if(burn==null){ burn=monthAverageBurn(); basis='month'; }
  if(!bal || burn==null || burn<=0) return {status:'insufficient_data'};
- // Un solde 801 vieux de plus de ~36 h n'est plus un fait observé : on ne projette pas dessus.
  if(balanceAgeDays(bal,nowMs)>1.5) return {status:'stale_balance', burnRateKwhPerDay:burn, asOf:bal.timestamp};
  return {status:'ok', remainingDays:bal.value/burn, burnRateKwhPerDay:burn, basis};
 }
 
 // ---- Solde estimé & réconciliation ----
-// Projette un solde observé (800) vers l'avant à l'aide des recharges livrées et du burn rate,
-// pour le comparer au prochain relevé 800 réel.
 function burnRateBetween(startTs,endTs){
  const lo=new Date(startTs).getTime()-3600000, hi=new Date(endTs).getTime()+3600000;
- const inRange=e=>{ if(e.value==null) return false; const t=new Date(e.timestamp).getTime(); return t>=lo && t<=hi; };
- const pick=arr=>{
-  if(arr.length<2) return null;
-  const a=arr[0], b=arr[arr.length-1];
-  const d=(new Date(b.timestamp)-new Date(a.timestamp))/86400000;
-  return d>=0.25 ? (b.value-a.value)/d : null;
- };
+ const inRange=e=>{ if(e.value==null) return false; const tt=new Date(e.timestamp).getTime(); return tt>=lo && tt<=hi; };
+ const pick=arr=>{ if(arr.length<2) return null; const a=arr[0], b=arr[arr.length-1]; const d=(new Date(b.timestamp)-new Date(a.timestamp))/86400000; return d>=0.25 ? (b.value-a.value)/d : null; };
  const viaRegister=pick(eventsOfCode('800').filter(inRange));
  if(viaRegister!=null) return viaRegister;
  const month=startTs.slice(0,7);
  return pick(eventsOfCode('814').filter(inRange).filter(e=>e.timestamp.slice(0,7)===month));
 }
-// Projette un solde 801 observé vers l'avant (recharges livrées - consommation mesurée sur CETTE période).
-// Sans mesure de consommation sur la période, KËR ne devine pas : il renvoie null (données insuffisantes).
 function calculateEstimatedBalance(fromEvent, asOfTs){
  if(!fromEvent) return null;
  const burn=burnRateBetween(fromEvent.timestamp, asOfTs);
  if(burn==null) return null;
- let bal=fromEvent.value;
- const base=fromEvent.timestamp;
+ let bal=fromEvent.value; const base=fromEvent.timestamp;
  state.events.filter(e=>e.type==='recharge' && e.timestamp>base && e.timestamp<=asOfTs).forEach(e=>bal+=e.deliveredKwh);
  const days=(new Date(asOfTs)-new Date(base))/86400000;
  return bal-burn*Math.max(0,days);
 }
-function classifyVariance(v){
- const av=Math.abs(v);
- if(av<0.5) return 'matched';
- if(av<3) return 'minor_difference';
- return 'significant_difference';
-}
+function classifyVariance(v){ const av=Math.abs(v); if(av<0.5) return 'matched'; if(av<3) return 'minor_difference'; return 'significant_difference'; }
 function reconcileBalance(){
  const readings=eventsOfCode('801');
  if(readings.length<2) return {status:'insufficient_data'};
@@ -970,18 +1111,10 @@ function reconcileBalance(){
 // ---- UI ----
 function confidenceTag(c){
  const map={observed:'OBSERVÉ',high:'OBSERVÉ',calculated:'CALCULÉ',estimated:'ESTIMATION',low:'À CONFIRMER'};
- return map[c]||(c?String(c).toUpperCase():'');
+ return map[c]?t(map[c]):(c?String(c).toUpperCase():'');
 }
 function tagClass(c){return (c==='low')?'tag warn':'tag';}
 
-// ---- Préférences d'affichage : style (Compteur / Clarté), mode (clair / sombre / système), texte plus grand ----
-// Gardées à part des données (clé distincte) : changer d'apparence ne touche jamais au ledger.
-const PREF_KEY='ker_prefs';
-function loadPrefs(){
- const d={style:'compteur',mode:'system',largeText:false};
- try{ return Object.assign(d, JSON.parse(localStorage.getItem(PREF_KEY)||'{}')||{}); }catch(e){ return d; }
-}
-let prefs=loadPrefs();
 const darkQuery=window.matchMedia?window.matchMedia('(prefers-color-scheme: dark)'):null;
 function resolvedMode(){ return prefs.mode==='system' ? ((darkQuery&&darkQuery.matches)?'dark':'light') : prefs.mode; }
 function applyPrefs(){
@@ -997,10 +1130,16 @@ function applyPrefs(){
  });
  const lt=document.getElementById('largeText'); if(lt) lt.checked=!!prefs.largeText;
 }
-function setPref(k,v){ prefs[k]=v; try{localStorage.setItem(PREF_KEY,JSON.stringify(prefs));}catch(e){} applyPrefs(); }
+function setPref(k,v){ prefs[k]=v; savePrefs(); applyPrefs(); if(k==='lang') applyLang(); }
 if(darkQuery){
  const onSys=()=>{ if(prefs.mode==='system') applyPrefs(); };
  if(darkQuery.addEventListener) darkQuery.addEventListener('change',onSys); else if(darkQuery.addListener) darkQuery.addListener(onSys);
+}
+window.addEventListener('languagechange',()=>{ if(!LANGS.includes(prefs.lang)) applyLang(); });
+function applyLang(){
+ LANG=resolveLang();
+ translateStatic(); populateCodeUI(); renderAll(); renderInstall(); renderMeters(); renderNotifBox(); applyPrefs();
+ const v=document.getElementById('appVersion'); if(v) v.textContent=APP_VERSION;
 }
 
 // ---- Chiffres à segments (comme l'écran du compteur) ----
@@ -1012,45 +1151,40 @@ function segSVG(str){
  chars.forEach((ch,i)=>{
   if(ch==='.'||ch===','){ parts.push(`<rect class="on" x="${x+1}" y="65" width="8" height="8"/>`); x+=12; }
   else if(/\s/.test(ch)){ x+=16; }
-  else {
-   const m=SEG_MAP[ch]||'';
-   for(const k in SEG_POLY) parts.push(`<polygon class="${m.indexOf(k)>=0?'on':'off'}" points="${SEG_POLY[k].map(p=>(p[0]+x)+','+p[1]).join(' ')}"/>`);
-   x+=44;
-  }
+  else { const m=SEG_MAP[ch]||''; for(const k in SEG_POLY) parts.push(`<polygon class="${m.indexOf(k)>=0?'on':'off'}" points="${SEG_POLY[k].map(p=>(p[0]+x)+','+p[1]).join(' ')}"/>`); x+=44; }
   if(i<chars.length-1) x+=6;
  });
  const w=x+8;
  return `<svg class="seg" viewBox="0 0 ${w} 76" style="width:${(w/76).toFixed(3)}em;height:1em" aria-hidden="true" focusable="false"><g transform="translate(7 0) skewX(-5)">${parts.join('')}</g></svg>`;
 }
-// Écrit un nombre : segments (style Compteur) + texte français (style Clarté et lecteurs d'écran).
 function num(target,value,opts){
  const el=typeof target==='string'?document.getElementById(target):target; if(!el) return;
  const o=opts||{}; const d=o.dec||0; let txt, seg;
  const nil=(value==null || !isFinite(value)); el.classList.toggle('nil',nil);
  if(nil){ txt=o.nilText||'—'; seg=o.dashes||'--'; }
- else {
-  txt=new Intl.NumberFormat('fr-FR',{minimumFractionDigits:d,maximumFractionDigits:d}).format(value);
-  seg=o.group ? Math.round(value).toString().replace(/\B(?=(\d{3})+(?!\d))/g,' ') : value.toFixed(d);
- }
+ else { txt=new Intl.NumberFormat(LOC(),{minimumFractionDigits:d,maximumFractionDigits:d}).format(value); seg=o.group ? Math.round(value).toString().replace(/\B(?=(\d{3})+(?!\d))/g,' ') : value.toFixed(d); }
  el.innerHTML=`<span class="segw">${segSVG(seg)}</span><span class="txtw">${txt}</span>`;
 }
-const fmt1=n=>new Intl.NumberFormat('fr-FR',{minimumFractionDigits:1,maximumFractionDigits:1}).format(n);
-function fmtLongDate(ms){ try{ return new Date(ms).toLocaleDateString('fr-FR',{day:'numeric',month:'long'}); }catch(e){ return ''; } }
+const fmt=n=>new Intl.NumberFormat(LOC()).format(Math.round(n));
+const fmt1=n=>new Intl.NumberFormat(LOC(),{minimumFractionDigits:1,maximumFractionDigits:1}).format(n);
+const fmt2=n=>new Intl.NumberFormat(LOC(),{minimumFractionDigits:2,maximumFractionDigits:2}).format(n);
+function fmtDate(ts){ const d=new Date(ts); if(isNaN(d)) return String(ts); if(LANG==='wo') return String(d.getDate()).padStart(2,'0')+' '+WO_MONTHS[d.getMonth()].slice(0,3)+'.'; return d.toLocaleDateString(LOC(),{day:'2-digit',month:'short'}); }
+function fmtTime(ts){ return new Date(ts).toLocaleTimeString(LOC(),{hour:'2-digit',minute:'2-digit'}); }
+function fmtDateTime(ts){ try{ return fmtDate(ts)+' · '+fmtTime(ts); }catch(e){ return ts; } }
+function fmtLongDate(ms){ const d=new Date(ms); if(isNaN(d)) return ''; if(LANG==='wo') return d.getDate()+' '+WO_MONTHS[d.getMonth()]; return d.toLocaleDateString(LOC(),{day:'numeric',month:'long'}); }
+function monthName(ms){ const d=new Date(ms); if(LANG==='wo') return WO_MONTHS[d.getMonth()]; return d.toLocaleDateString(LOC(),{month:'long'}); }
+const plural=(n,one,many,v)=>t(Math.abs(n)>=2?many:one,Object.assign({n},v||{}));
 
-// Jauge : 25 cases de 10 kWh (0 à 250). "used" = déjà consommé ce mois, "after" = position après une recharge simulée.
 function renderGauge(id,used,after){
  const el=document.getElementById(id); if(!el) return;
  let h='';
  for(let i=0;i<25;i++){
-  const lo=i*10;
-  const uf=Math.min(1,Math.max(0,(used-lo)/10));
-  const af=after==null?uf:Math.min(1,Math.max(0,(after-lo)/10));
-  const pf=Math.max(0,af-uf);
+  const lo=i*10, uf=Math.min(1,Math.max(0,(used-lo)/10));
+  const af=after==null?uf:Math.min(1,Math.max(0,(after-lo)/10)), pf=Math.max(0,af-uf);
   h+=`<span class="cell${i>=15?' t2':''}${i===15?' first':''}"><i class="u" style="width:${(uf*100).toFixed(1)}%"></i><i class="p" style="width:${(pf*100).toFixed(1)}%"></i></span>`;
  }
  el.innerHTML=h;
 }
-
 function firstRechargeThisMonth(nowTs){
  const m=String(nowTs).slice(0,7);
  const list=state.events.filter(e=>e.type==='recharge' && String(e.timestamp).slice(0,7)===m && String(e.timestamp)<String(nowTs)).sort((a,b)=>a.timestamp.localeCompare(b.timestamp));
@@ -1061,54 +1195,44 @@ let lastCeiling=null;
 function simulate(){
  const a=+document.getElementById('amount').value||0;
  const u=+document.getElementById('simKwh').value||0;
- const applyArrears=false; // 808 en observation : unité inconnue, jamais déduit
- const arrears=latestArrears();
- let net=a, arrearsNote='';
- if(applyArrears && arrears && arrears.value){
-  const applied=Math.min(a,arrears.value);
-  net=a-applied;
-  arrearsNote=`${fmt(applied)} F retenus pour le découvert (confirmé manuellement). `;
- }
  const now=nowIso();
- const r=rechargeKwhNet(net,u,now);
+ const r=rechargeKwhNet(a,u,now);
  const k=r.kwh, after=u+k;
  num('simResult',k,{dec:1,dashes:'---.-'});
  num('simResultText',k,{dec:1});
  renderDial('simDial',u,u+k);
  renderGauge('simGauge',u,after);
- document.getElementById('simUsedLbl').textContent=fmt1(u)+' déjà achetés';
- document.getElementById('simAfter').innerHTML = `Tu finis à ${fmt1(after)} kWh : ` + (after<150 ? 'tu restes en <b class="blue">tranche 1</b>.' : (after<=250 ? (u<150?'une partie passe en <b>tranche 2</b>.':'tu es en <b>tranche 2</b>.') : 'tu dépasses 250 kWh, la <b>TVA</b> s\'applique.'));
-
- let msg=arrearsNote;
- if(r.fee>0) msg+=`Retenue de début de mois estimée : ~${fmt(r.fee)} F (1ère recharge de ${new Date(now).toLocaleDateString('fr-FR',{month:'long'})}, hypothèse non confirmée). `;
- msg+= u<150?'Départ en 1ère tranche. ':u<250?'Départ en 2ème tranche. ':'Départ au-delà de 250 kWh (TVA déjà active). ';
- if(u<150 && after>=150){ msg+=`Répartition : ${(150-u).toFixed(1)} kWh en T1, ${(after-150).toFixed(1)} kWh en T2+. `; }
- if(u<250 && after>250){ msg+='Cette recharge te fera franchir 250 kWh : une partie sera facturée avec la TVA. '; }
- msg+=`Achats du mois après recharge (estimés) : ${after.toFixed(1)} kWh. La tranche suit les kWh achetés dans le mois (hypothèse confirmée une fois).`;
+ document.getElementById('simUsedLbl').textContent=t('{v} déjà achetés',{v:fmt1(u)});
+ document.getElementById('simAfter').innerHTML = t('Tu finis à {v} kWh :',{v:fmt1(after)})+' '+(after<150 ? t('tu restes en <b class="blue">tranche 1</b>.') : (after<=250 ? (u<150?t('une partie passe en <b>tranche 2</b>.'):t('tu es en <b>tranche 2</b>.')) : t("tu dépasses 250 kWh, la <b>TVA</b> s'applique.")));
+ let msg='';
+ if(r.fee>0) msg+=t('Retenue de début de mois estimée : ~{f} F (1ère recharge de {m}, hypothèse non confirmée).',{f:fmt(r.fee),m:monthName(now)})+' ';
+ msg+=(u<150?t('Départ en 1ère tranche.'):u<250?t('Départ en 2ème tranche.'):t('Départ au-delà de 250 kWh (TVA déjà active).'))+' ';
+ if(u<150 && after>=150) msg+=t('Répartition : {a} kWh en T1, {b} kWh en T2+.',{a:fmt1(150-u),b:fmt1(after-150)})+' ';
+ if(u<250 && after>250) msg+=t('Cette recharge te fera franchir 250 kWh : une partie sera facturée avec la TVA.')+' ';
+ msg+=t('Achats du mois après recharge (estimés) : {v} kWh. La tranche suit les kWh achetés dans le mois (hypothèse confirmée une fois).',{v:fmt1(after)});
  document.getElementById('simMessage').textContent=msg;
-
  num('rowPrice',unitPrice(u,today()),{dec:0});
  num('rowFee',r.fee,{dec:0});
  const first=firstRechargeThisMonth(now);
  document.getElementById('feeNote').textContent = r.fee>0
-  ? "Première recharge du mois : KËR retire environ 430 F (hypothèse tirée de tes reçus). Après la recharge, compose 817 pour vérifier."
-  : (first ? `Déjà prélevée le ${fmtDate(first.timestamp)} (hypothèse). Après la recharge, compose 817 pour vérifier.` : 'Après la recharge, compose 817 pour vérifier.');
-
+  ? t('Première recharge du mois : KËR retire environ 430 F (hypothèse tirée de tes reçus). Après la recharge, compose 817 pour vérifier.')
+  : (first ? t('Déjà prélevée le {d} (hypothèse). Après la recharge, compose 817 pour vérifier.',{d:fmtDate(first.timestamp)}) : t('Après la recharge, compose 817 pour vérifier.'));
  const ce=document.getElementById('t1Ceiling'); const chip=document.getElementById('ceilChip');
  if(u<150){
   const room=150-u; const fee=firstTopUpFeeFor(now);
   lastCeiling=room*unitPrice(u,today())+fee;
   num('rowCeil',lastCeiling,{dec:0,group:true});
-  ce.textContent='Plafond tranche 1 : environ '+fmt(lastCeiling)+' F ('+room.toFixed(1)+' kWh)'+(fee?', dont ~'+fmt(fee)+' F de retenue de début de mois (hypothèse)':'')+'. Au-delà, le kWh passe de ~'+fmt(unitPrice(u,today()))+' F à ~'+fmt(unitPrice(150,today()))+' F.';
+  ce.textContent=t('Plafond tranche 1 : environ {f} F ({k} kWh).',{f:fmt(lastCeiling),k:fmt1(room)})+(fee?' '+t('Dont ~{f} F de retenue de début de mois (hypothèse).',{f:fmt(fee)}):'')+' '+t('Au-delà, le kWh passe de ~{a} F à ~{b} F.',{a:fmt(unitPrice(u,today())),b:fmt(unitPrice(150,today()))});
   chip.disabled=false;
  } else {
-  lastCeiling=null; num('rowCeil',null,{dashes:'--'}); ce.textContent='Tranche 1 déjà dépassée par tes achats de ce mois.'; chip.disabled=true;
+  lastCeiling=null; num('rowCeil',null,{dashes:'--'}); ce.textContent=t('Tranche 1 déjà dépassée par tes achats de ce mois.'); chip.disabled=true;
  }
  const ceilAmt=lastCeiling?Math.floor(lastCeiling/100)*100:null;
  document.querySelectorAll('.chip[data-amt]').forEach(c=>c.classList.toggle('sel',+c.dataset.amt===a));
  chip.classList.toggle('sel',ceilAmt!=null && a===ceilAmt);
 }
 function setAmount(v){document.getElementById('amount').value=v;simulate()}
+
 // ---- Conseiller « Combien recharger ? » ----
 let advAmount=null;
 function daysLeftInMonth(nowMs){ const d=new Date(nowMs??Date.now()); const next=new Date(d.getFullYear(),d.getMonth()+1,1); return Math.max(1,Math.ceil((next-d)/86400000)); }
@@ -1116,13 +1240,14 @@ function creditNowEstimate(){
  const bal=latestBalance(); if(!bal) return {kwh:0,known:false};
  const age=Math.max(0,balanceAgeDays(bal));
  let k=bal.value; state.events.filter(e=>e.type==='recharge' && e.timestamp>bal.timestamp).forEach(e=>k+=+e.deliveredKwh||0);
- k-= (dailyKwh()||0)*age;
- return {kwh:Math.max(0,k),known:true,ageDays:age};
+ k-=(dailyKwh()||0)*age;
+ return {kwh:Math.max(0,k),known:true,ageDays:age,bal};
 }
+function resetAdvisorInputs(){ ['advDays','advBase'].forEach(id=>{const el=document.getElementById(id); if(el) delete el.dataset.touched;}); }
 function renderAdvisor(){
  const dl=daysLeftInMonth();
  const d=document.getElementById('advDays'); if(d && !d.dataset.touched){ d.value=dl; }
- const b=document.getElementById('advBase'); if(b && !b.dataset.touched){ const r=dailyKwh(); b.value=String(r>0?Math.round(r*2)/2:3).replace('.',','); }
+ const b=document.getElementById('advBase'); if(b && !b.dataset.touched){ const r=dailyKwh(); b.value=new Intl.NumberFormat(LOC(),{maximumFractionDigits:1}).format(r>0?Math.round(r*2)/2:3); }
  ['advDays','advAc','advBase','advAcKwh'].forEach(id=>{const el=document.getElementById(id); if(el && !el.dataset.bound){ el.dataset.bound=1; el.addEventListener('input',()=>el.dataset.touched=1); }});
  computeAdvisor();
 }
@@ -1142,130 +1267,234 @@ function computeAdvisor(){
  const base=Math.max(0,parseNum(document.getElementById('advBase').value)||0);
  const acKwh=Math.max(0,parseNum(document.getElementById('advAcKwh').value)||0);
  const now=nowIso(), pos=tranchePosition(now), cr=creditNowEstimate(), dl=daysLeftInMonth();
- let effDays=days, effAc=ac, w='';
+ let effDays=days, effAc=ac; const w=[];
  if(days>dl){
   effDays=dl; effAc=Math.round(ac*dl/days);
-  w=`Ta période dépasse la fin du mois. Le 1er, la tranche repart à zéro et le kWh redescend à ~${fmt(unitPrice(0,now))} F : achète seulement pour les ${dl} jour${dl>1?'s':''} qui restent, puis recharge le 1er.`;
+  w.push(plural(dl,'Ta période dépasse la fin du mois. Le 1er, la tranche repart à zéro et le kWh redescend à ~{p} F : achète seulement pour le dernier jour, puis recharge le 1er.','Ta période dépasse la fin du mois. Le 1er, la tranche repart à zéro et le kWh redescend à ~{p} F : achète seulement pour les {n} jours qui restent, puis recharge le 1er.',{p:fmt(unitPrice(0,now))}));
  }
  const a=adviseFor(effDays,effAc,base,acKwh,cr.kwh,pos,now);
- const creditTxt = cr.known ? `moins ~${fmt1(cr.kwh)} kWh de crédit` : 'sans crédit connu (compose 801 pour affiner)';
  if(a.amount===0){
-  out.innerHTML=`Ton crédit (~${fmt1(cr.kwh)} kWh) suffit pour ${effDays} jour${effDays>1?'s':''}. Pas besoin de recharger.`;
+  out.innerHTML=plural(effDays,'Ton crédit (~{c} kWh) suffit pour {n} jour. Pas besoin de recharger.','Ton crédit (~{c} kWh) suffit pour {n} jours. Pas besoin de recharger.',{c:fmt1(cr.kwh)});
   btn.hidden=true; advAmount=null;
  } else {
-  out.innerHTML=`Il te faut ~${fmt1(a.need)} kWh (${effDays} j × ${fmt1(base)}${effAc?` + ${effAc} nuit${effAc>1?'s':''} de clim × ${fmt1(acKwh)}`:''}, ${creditTxt}). <b>Mets environ ${fmt(a.amount)} F</b> : tu recevras ~${fmt1(a.kwh)} kWh.`;
+  const parts=t('{d} j × {b}',{d:effDays,b:fmt1(base)})+(effAc?' + '+plural(effAc,'{n} nuit de clim × {k}','{n} nuits de clim × {k}',{k:fmt1(acKwh)}):'');
+  const creditTxt=cr.known?t('moins ~{c} kWh de crédit',{c:fmt1(cr.kwh)}):t('sans crédit connu (compose 801 pour affiner)');
+  out.innerHTML=t('Il te faut ~{need} kWh ({parts}, {credit}).',{need:fmt1(a.need),parts,credit:creditTxt})+' '+t('<b>Mets environ {f} F</b> : tu recevras ~{k} kWh.',{f:fmt(a.amount),k:fmt1(a.kwh)});
   btn.hidden=false; advAmount=a.amount;
-  if(a.fee) w=(w?w+' ':'')+`Inclut ~${fmt(a.fee)} F de retenue de début de mois (hypothèse).`;
-  const P=pos, after=P+a.kwh;
-  if(P<150 && after>150) w=(w?w+' ':'')+`Une partie passera au prix fort (~${fmt(unitPrice(150,now))} F) : ${fmt1(after-150)} kWh au delà de 150 achetés.`;
-  if(P<250 && after>250) w=(w?w+' ':'')+`Au delà de 250 kWh achetés, la TVA s'ajoute (~${fmt(unitPrice(250,now))} F).`;
+  if(a.fee) w.push(t('Inclut ~{f} F de retenue de début de mois (hypothèse).',{f:fmt(a.fee)}));
+  const after=pos+a.kwh;
+  if(pos<150 && after>150) w.push(t('Une partie passera au prix fort (~{p} F) : {k} kWh au delà de 150 achetés.',{p:fmt(unitPrice(150,now)),k:fmt1(after-150)}));
+  if(pos<250 && after>250) w.push(t("Au delà de 250 kWh achetés, la TVA s'ajoute (~{p} F).",{p:fmt(unitPrice(250,now))}));
  }
- warn.textContent=w;
+ warn.textContent=w.join(' ');
 }
 function useAdvice(){ if(advAmount) setAmount(advAmount); document.getElementById('amount').scrollIntoView({behavior:'smooth',block:'center'}); }
 function renderBaselineBox(){
  const box=document.getElementById('baselineBox'); if(!box) return;
- const known=hasPurchaseData();
- box.innerHTML = known ? '' : `<p class="note" style="margin:8px 0 0">Aucun achat enregistré ce mois-ci : KËR utilise ta consommation (814) comme approximation. Corrige le nombre ci-dessus si tu le connais, puis :</p><button class="btn ghost" onclick="saveBaselineFromSim()">Enregistrer comme achats du mois <span aria-hidden="true">✓</span></button>`;
+ box.innerHTML = hasPurchaseData() ? '' : `<p class="note" style="margin:8px 0 0">${t('Aucun achat enregistré ce mois-ci : KËR utilise ta consommation (814) comme approximation. Corrige le nombre ci-dessus si tu le connais, puis :')}</p><button class="btn ghost" onclick="saveBaselineFromSim()">${t('Enregistrer comme achats du mois')} <span aria-hidden="true">✓</span></button>`;
 }
 function saveBaselineFromSim(){ const v=parseNum(document.getElementById('simKwh').value); if(v==null||isNaN(v)) return; saveBaseline(v); save(); renderAll(); show('recharge'); }
 function setCeiling(){ if(lastCeiling) setAmount(Math.floor(lastCeiling/100)*100); }
 
+// ---- Alertes et conseils ----
+// Calculées à partir du ledger du compteur actif. Chaque alerte « notify » peut aussi partir en notification système,
+// une seule fois par clé (notifyKey), pour ne pas répéter la même alerte.
+function isAc(a){ return /clim|air/i.test(a.name||''); }
+function isHeater(a){ return a.mode==='cycling' || /chauffe/i.test(a.name||''); }
+function computeAlerts(){
+ const out=[]; if(isBlank(state)) return out;
+ const now=nowIso(), P=tranchePosition(now), has=hasPurchaseData(now), rate=dailyKwh(), bal=latestBalance(), month=monthOf(now);
+ const p1=unitPrice(0,now), p2=unitPrice(150,now), p3=unitPrice(250,now);
+ if(bal && rate>0){
+  const cr=creditNowEstimate(), hours=cr.kwh/(rate/24), since=fmtDateTime(bal.timestamp);
+  if(hours<=0.5){
+   out.push({id:'out',level:'urgent',notify:true,notifyKey:'out:'+bal.timestamp,title:t('Ton crédit est sans doute épuisé'),body:t('À ton rythme (~{r} kWh par jour depuis ton 801 du {d}), il ne reste presque plus rien. Compose 801 pour vérifier, ou 811 pour le crédit d’urgence.',{r:fmt1(rate),d:since})});
+  } else if(hours<24){
+   const h=Math.max(1,Math.round(hours));
+   out.push({id:'hours',level:'urgent',notify:true,notifyKey:(hours<=3?'h3:':'h24:')+bal.timestamp,title:plural(h,'Il te reste environ 1 heure à ce rythme','Il te reste environ {n} heures à ce rythme'),body:t('Estimation : ~{k} kWh à ~{r} kWh par jour, depuis ton 801 du {d}. La clim fait fondre ce délai. Recharge bientôt.',{k:fmt1(cr.kwh),r:fmt1(rate),d:since})});
+  } else if(hours<72){
+   const d=Math.max(1,Math.round(hours/24));
+   out.push({id:'days',level:'warn',notify:true,notifyKey:'d3:'+bal.timestamp,title:plural(d,'Plus que ~{n} jour de crédit','Plus que ~{n} jours de crédit'),body:t('~{k} kWh restants à ~{r} kWh par jour. Le bouton « Combien recharger ? » te dit combien mettre.',{k:fmt1(cr.kwh),r:fmt1(rate)})});
+  }
+  const age=balanceAgeDays(bal);
+  if(age>3) out.push({id:'stale',level:'info',notify:false,title:plural(Math.floor(age),'Ton dernier 801 date d’hier','Ton dernier 801 date de {n} jours'),body:t('Compose 801 sur le compteur pour que les alertes restent justes.')});
+ } else if(!bal){
+  out.push({id:'no801',level:'info',notify:false,title:t('Aucun relevé 801'),body:t('Compose 801 sur le compteur et note-le : KËR pourra te prévenir avant que ton crédit finisse.')});
+ }
+ if(has){
+  if(P>=250) out.push({id:'tva',level:'warn',notify:true,notifyKey:'tva:'+month,title:t('Tu es au 3e palier : TVA comprise'),body:t('Tu as acheté {k} kWh ce mois. Chaque kWh acheté coûte maintenant ~{p} F jusqu’au 1er. Si tu peux, ne recharge que le nécessaire.',{k:fmt1(P),p:fmt(p3)})});
+  else if(P>=150) out.push({id:'t2',level:'warn',notify:true,notifyKey:'t2:'+month,title:t('Tu es passé en tranche 2'),body:t('Au delà de 150 kWh achetés, le kWh coûte ~{p2} F au lieu de ~{p1} F, jusqu’au 1er. Encore {k} kWh avant la TVA.',{p1:fmt(p1),p2:fmt(p2),k:fmt1(250-P)})});
+  else if(150-P<=30) out.push({id:'near150',level:'info',notify:true,notifyKey:'n150:'+month,title:t('Plus que {k} kWh à ~{p} F',{k:fmt1(150-P),p:fmt(p1)}),body:t('Ensuite le kWh passe à ~{p} F jusqu’au 1er. Le bouton « Plafond » de la recharge achète pile ce qu’il reste.',{p:fmt(p2)})});
+ }
+ const dl=daysLeftInMonth();
+ if(dl<=3 && has && P>=150){
+  const next=new Date(); next.setMonth(next.getMonth()+1,1);
+  out.push({id:'monthEnd',level:'tip',notify:true,notifyKey:'me:'+month,title:t('Le 1er approche'),body:t('Le {d}, la tranche repart à zéro et le kWh redescend à ~{p} F. Si tu dois recharger avant, prends juste ce qu’il faut.',{d:fmtLongDate(next.getTime()),p:fmt(p1)})});
+ }
+ if(new Date().getDate()<=5 && !has){
+  out.push({id:'monthStart',level:'tip',notify:false,title:t('Nouveau mois'),body:t('Les 150 premiers kWh achetés sont à ~{p} F. Ta 1ère recharge du mois inclut ~430 F de retenue (hypothèse).',{p:fmt(p1)})});
+ }
+ // Économies par appareil : estimations de « Mon foyer » ramenées à ta consommation réelle mesurée.
+ const measured=rate*30, total=state.appliances.reduce((s,a)=>s+applianceKwhMonth(a),0);
+ if(measured>0 && total>0){
+  const scale=Math.min(1,measured/total), price=unitPrice(Math.max(P,0),now);
+  const heater=state.appliances.find(a=>isHeater(a) && (a.mode!=='cycling' || a.active));
+  if(heater){ const k=applianceKwhMonth(heater)*scale; if(k>=5) out.push({id:'heater',level:'tip',notify:false,title:t('Éteindre le chauffe-eau te ferait économiser ~{f} F par mois',{f:fmt(k*price)}),body:t('≈ {k} kWh par mois, estimés d’après « Mon foyer » et ta conso réelle. Allume-le 1 h avant la douche plutôt que toute la journée.',{k:fmt1(k)})}); }
+  const ac=state.appliances.find(a=>isAc(a) && a.mode!=='cycling' && (a.h||0)>0);
+  if(ac){ const k=ac.w*30/1000*scale; out.push({id:'ac',level:'tip',notify:false,title:t('1 h de clim en moins par jour : ~{f} F par mois',{f:fmt(k*price)}),body:t('≈ {k} kWh par mois. Régler la clim sur 26 °C au lieu de 18 °C économise aussi beaucoup.',{k:fmt1(k)})}); }
+ }
+ return out;
+}
+function renderAlerts(){
+ const card=document.getElementById('alertsCard'), list=document.getElementById('alertList'); if(!card||!list) return;
+ const al=computeAlerts();
+ card.hidden=!al.length;
+ list.innerHTML=al.map(a=>`<div class="alert lv-${a.level}"><span class="adot" aria-hidden="true"></span><div><b>${esc(a.title)}</b><p>${esc(a.body)}</p></div></div>`).join('');
+}
+
+// ---- Notifications système ----
+const NOTIF_KEY='ker_notified';
+let notifyTimer=null;
+function notifSupported(){ return 'Notification' in window && 'serviceWorker' in navigator; }
+let grantedByRequest=false;
+function notifAllowed(){ return notifSupported() && (Notification.permission==='granted' || grantedByRequest); }
+function isIOS(){ return /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform==='MacIntel' && navigator.maxTouchPoints>1); }
+function scheduleNotifyCheck(){ clearTimeout(notifyTimer); notifyTimer=setTimeout(()=>{ checkAndNotify(); writeSnapshot(); },800); }
+function readSent(){ try{ return JSON.parse(localStorage.getItem(NOTIF_KEY)||'{}')||{}; }catch(e){ return {}; } }
+async function showNote(title,body,tag){
+ try{
+  const reg=await navigator.serviceWorker.getRegistration();
+  if(reg && reg.showNotification){ await reg.showNotification(title,{body,tag,icon:'icons/icon-192.png',badge:'icons/icon-192.png'}); return true; }
+  new Notification(title,{body,tag,icon:'icons/icon-192.png'}); return true;
+ }catch(e){ return false; }
+}
+function checkAndNotify(){
+ if(!prefs.notify || !notifAllowed()) return [];
+ const sent=readSent(), fired=[];
+ store.meters.forEach(m=>{
+  if(isBlank(m)) return;
+  withState(m,()=>computeAlerts()).filter(a=>a.notify).forEach(a=>{
+   const key=m.id+':'+a.notifyKey; if(sent[key]) return;
+   sent[key]=Date.now();
+   const title=(store.meters.length>1?meterName(m)+' · ':'')+a.title;
+   fired.push(title); showNote(title,a.body,key);
+  });
+ });
+ const cutoff=Date.now()-45*86400000; Object.keys(sent).forEach(k=>{ if(sent[k]<cutoff) delete sent[k]; });
+ try{ localStorage.setItem(NOTIF_KEY,JSON.stringify(sent)); }catch(e){}
+ return fired;
+}
+// Instantané lu par le service worker (vérification en arrière-plan sur Android, app installée).
+async function writeSnapshot(){
+ try{
+  if(!('caches' in window)) return;
+  const meters=store.meters.filter(m=>!isBlank(m)).map(m=>withState(m,()=>{ const b=latestBalance(), cr=creditNowEstimate(); return {id:m.id,label:meterName(m),creditKwh:cr.kwh,asOf:nowIso(),burnPerDay:dailyKwh(),balTs:b?b.timestamp:null}; }));
+  const c=await caches.open('ker-snapshot');
+  await c.put('./ker-snapshot.json',new Response(JSON.stringify({lang:LANG,notify:!!prefs.notify,multi:store.meters.length>1,sent:readSent(),meters}),{headers:{'content-type':'application/json'}}));
+  const swSent=await c.match('./ker-sw-sent.json');
+  if(swSent){ const s=await swSent.json(); const mine=readSent(); let ch=false; Object.keys(s).forEach(k=>{ if(!mine[k]){ mine[k]=s[k]; ch=true; } }); if(ch) localStorage.setItem(NOTIF_KEY,JSON.stringify(mine)); }
+ }catch(e){}
+}
+async function registerPeriodic(){
+ try{
+  const reg=await navigator.serviceWorker.ready;
+  if(!('periodicSync' in reg)) return false;
+  if(!prefs.notify){ await reg.periodicSync.unregister('ker-check'); return false; }
+  const st=await navigator.permissions.query({name:'periodic-background-sync'});
+  if(st.state!=='granted') return false;
+  await reg.periodicSync.register('ker-check',{minInterval:6*3600*1000}); return true;
+ }catch(e){ return false; }
+}
+async function toggleNotifs(on){
+ if(on){
+  if(!notifSupported()){ prefs.notify=false; savePrefs(); renderNotifBox(); return; }
+  let p=Notification.permission;
+  if(p!=='granted'){ try{ p=await Notification.requestPermission(); }catch(e){} }
+  grantedByRequest=(p==='granted'); prefs.notify=grantedByRequest; savePrefs();
+  if(prefs.notify){ showNote(t('KËR · Notifications activées'),t('Tu seras prévenu quand ton crédit va bientôt finir ou quand tu changes de tranche.'),'ker-on'); checkAndNotify(); writeSnapshot(); registerPeriodic(); }
+ } else { prefs.notify=false; savePrefs(); registerPeriodic(); }
+ renderNotifBox();
+}
+function renderNotifBox(){
+ const sw=document.getElementById('notifSwitch'), st=document.getElementById('notifStatus'); if(!sw||!st) return;
+ sw.checked=!!prefs.notify && notifAllowed();
+ let msg;
+ if(!notifSupported()) msg = (isIOS() && !isStandalone()) ? t("Sur iPhone, installe d'abord KËR sur l'écran d'accueil pour recevoir des notifications.") : t("Ce navigateur ne permet pas les notifications. Les conseils restent visibles sur l'accueil.");
+ else if(Notification.permission==='denied' && !notifAllowed()) msg=t('Notifications bloquées pour KËR dans les réglages du téléphone. Les conseils restent visibles sur l’accueil.');
+ else if(sw.checked) msg=t('Activées. KËR vérifie à chaque ouverture et toutes les 10 minutes quand l’app est ouverte. Sur Android, avec l’app installée, il vérifie aussi en arrière-plan, environ deux fois par jour.');
+ else msg=t('Les conseils s’affichent toujours sur l’accueil. Active les notifications pour être prévenu aussi quand KËR est en arrière-plan.');
+ st.textContent=msg;
+}
+
 function renderHome(){
- const bal=latestBalance();
- const c=latestConsumption();
- const k=currentKwh();
- const forecast=calculateForecast();
- const age=bal?balanceAgeDays(bal):null;
- const stale=bal && age>1.5;
- const fresh=bal && !stale;
-
+ const bal=latestBalance(), c=latestConsumption(), k=currentKwh(), forecast=calculateForecast();
+ const age=bal?balanceAgeDays(bal):null, stale=bal && age>1.5, fresh=bal && !stale;
  const d=new Date();
- document.getElementById('headDate').innerHTML=`<span class="segw">${segSVG(String(d.getDate()).padStart(2,'0')+'.'+String(d.getMonth()+1).padStart(2,'0'))}</span><span class="txtw">${d.toLocaleDateString('fr-FR',{day:'numeric',month:'long'})}</span>`;
-
- num('balance', fresh?bal.value:null, {dec:2,dashes:'---.--',nilText:'À relever'});
- num('balanceText', fresh?bal.value:null, {dec:2,nilText:'À relever'});
+ document.getElementById('headDate').innerHTML=`<span class="segw">${segSVG(String(d.getDate()).padStart(2,'0')+'.'+String(d.getMonth()+1).padStart(2,'0'))}</span><span class="txtw">${fmtLongDate(d.getTime())}</span>`;
+ num('balance', fresh?bal.value:null, {dec:2,dashes:'---.--',nilText:t('À relever')});
+ num('balanceText', fresh?bal.value:null, {dec:2,nilText:t('À relever')});
  renderDial('dial',k,null);
  const tag=document.getElementById('balanceTag');
- tag.textContent = !bal ? 'Aucun relevé' : (stale ? 'Ancien' : confidenceTag(bal.confidence));
+ tag.textContent = !bal ? t('Aucun relevé') : (stale ? t('Ancien') : confidenceTag(bal.confidence));
  tag.classList.toggle('dim',!fresh);
- document.getElementById('balanceMeta').textContent = !bal ? 'Je ne sais pas encore : compose 801 sur le compteur.' : (stale ? `Dernier 801 : ${fmt2(bal.value)} kWh le ${fmtDateTime(bal.timestamp)}. Trop ancien, compose 801.` : `Code 801 · relevé le ${fmtDateTime(bal.timestamp)}`);
- document.getElementById('balanceValue').textContent = fresh ? '≈ '+fmt(bal.value*costPerKwh(k))+' F au tarif actuel' : '';
-
+ document.getElementById('balanceMeta').textContent = !bal ? t('Je ne sais pas encore : compose 801 sur le compteur.') : (stale ? t('Dernier 801 : {v} kWh le {d}. Trop ancien, compose 801.',{v:fmt2(bal.value),d:fmtDateTime(bal.timestamp)}) : t('Code 801 · relevé le {d}',{d:fmtDateTime(bal.timestamp)}));
+ document.getElementById('balanceValue').textContent = fresh ? t('≈ {f} F au tarif actuel',{f:fmt(bal.value*costPerKwh(k))}) : '';
  const burn = forecast.burnRateKwhPerDay ?? (dailyKwh()||null);
  if(forecast.status==='ok'){
   num('days',forecast.remainingDays,{dec:0});
   const until=new Date(bal.timestamp).getTime()+forecast.remainingDays*86400000;
-  document.getElementById('untilDate').innerHTML='jusqu\'au<br><b>'+fmtLongDate(until)+'</b>';
-  document.getElementById('daysBasis').textContent=`À ${fmt1(forecast.burnRateKwhPerDay)} kWh par jour, ${forecast.basis}.`;
+  document.getElementById('untilDate').innerHTML=t('jusqu’au<br><b>{d}</b>',{d:fmtLongDate(until)});
+  document.getElementById('daysBasis').textContent=t(forecast.basis==='recent'?'À {r} kWh par jour, basé sur les derniers relevés.':'À {r} kWh par jour, moyenne du mois, données limitées.',{r:fmt1(forecast.burnRateKwhPerDay)});
  } else {
   num('days',null,{dashes:'--'});
   document.getElementById('untilDate').textContent='';
-  document.getElementById('daysBasis').textContent = forecast.status==='stale_balance' ? 'Relevé 801 trop ancien pour estimer. Compose 801.' : 'Données insuffisantes pour estimer.';
+  document.getElementById('daysBasis').textContent = forecast.status==='stale_balance' ? t('Relevé 801 trop ancien pour estimer. Compose 801.') : t('Données insuffisantes pour estimer.');
  }
  num('dailyCost', burn?burn*costPerKwh(k):null, {dec:0,dashes:'---'});
-
  num('monthKwh', c?c.value:null, {dec:1,dashes:'--.-'});
- document.getElementById('monthKwhMeta').textContent = c ? `Code 814 · ${fmtDateTime(c.timestamp)}` : 'Aucun relevé 814';
- document.getElementById('avgKwh').textContent = dailyKwh() ? fmt1(dailyKwh())+' kWh par jour' : '—';
-
- const room = k<150 ? 150-k : (k<250 ? 250-k : null);
+ document.getElementById('monthKwhMeta').textContent = c ? t('Code 814 · {d}',{d:fmtDateTime(c.timestamp)}) : t('Aucun relevé 814');
+ document.getElementById('avgKwh').textContent = dailyKwh() ? t('{r} kWh par jour',{r:fmt1(dailyKwh())}) : '—';
+ const P=tranchePosition(), has=hasPurchaseData();
+ const pos=has?P:k;
+ const room = pos<150 ? 150-pos : (pos<250 ? 250-pos : null);
  num('roomKwh', room, {dec:1,dashes:'--'});
- document.getElementById('roomLabel').textContent = k<150 ? 'Avant prix fort' : (k<250 ? 'Avant la TVA' : 'TVA active');
-
+ document.getElementById('roomLabel').textContent = pos<150 ? t('Avant prix fort') : (pos<250 ? t('Avant la TVA') : t('TVA active'));
  renderGauge('gauge',k,null);
- const dv=250-k;
- document.getElementById('thresholdText').textContent = k<150 ? `${fmt1(k)} sur 150 kWh ce mois. Encore ${fmt1(150-k)} kWh à ~${fmt(unitPrice(k,today()))} F, ensuite ~${fmt(unitPrice(150,today()))} F.` : (dv>0 ? `${fmt1(k)} kWh ce mois, au prix fort. Encore ${fmt1(dv)} kWh avant la TVA.` : `${fmt1(k)} kWh ce mois : la TVA de 18 % s'applique.`);
- {const P=tranchePosition(), has=hasPurchaseData();
+ let thr;
  if(has){
-  const roomP = P<150 ? 150-P : (P<250 ? 250-P : null);
-  num('roomKwh', roomP, {dec:1,dashes:'--'});
-  document.getElementById('roomLabel').textContent = P<150 ? 'Avant prix fort' : (P<250 ? 'Avant la TVA' : 'TVA active');
-  document.getElementById('thresholdText').textContent = `Tu as acheté ${fmt1(P)} kWh ce mois (consommé : ${fmt1(k)}). La tranche suit les kWh achetés. ` + (P<150 ? `Encore ${fmt1(150-P)} kWh à ~${fmt(unitPrice(P,today()))} F, ensuite ~${fmt(unitPrice(150,today()))} F.` : (P<250 ? `Prochain kWh acheté : ~${fmt(unitPrice(P,today()))} F. Encore ${fmt1(250-P)} kWh avant la TVA.` : `Prochain kWh acheté : ~${fmt(unitPrice(P,today()))} F, TVA de 18 % comprise.`));
-  document.getElementById('statusPill').textContent = P<150?'Tranche 1':P<250?'Tranche 2':'TVA active';
+  thr=t('Tu as acheté {p} kWh ce mois (consommé : {k}). La tranche suit les kWh achetés.',{p:fmt1(P),k:fmt1(k)})+' '+(P<150 ? t('Encore {r} kWh à ~{a} F, ensuite ~{b} F.',{r:fmt1(150-P),a:fmt(unitPrice(P,today())),b:fmt(unitPrice(150,today()))}) : (P<250 ? t('Prochain kWh acheté : ~{a} F. Encore {r} kWh avant la TVA.',{a:fmt(unitPrice(P,today())),r:fmt1(250-P)}) : t('Prochain kWh acheté : ~{a} F, TVA de 18 % comprise.',{a:fmt(unitPrice(P,today()))})));
  } else {
-  document.getElementById('statusPill').textContent = k<150?'Tranche 1':k<=250?'Tranche 2':'TVA active';
- } }
-
+  const dv=250-k;
+  thr = k<150 ? t('{k} sur 150 kWh ce mois. Encore {r} kWh à ~{a} F, ensuite ~{b} F.',{k:fmt1(k),r:fmt1(150-k),a:fmt(unitPrice(k,today())),b:fmt(unitPrice(150,today()))}) : (dv>0 ? t('{k} kWh ce mois, au prix fort. Encore {r} kWh avant la TVA.',{k:fmt1(k),r:fmt1(dv)}) : t("{k} kWh ce mois : la TVA de 18 % s'applique.",{k:fmt1(k)}));
+ }
+ document.getElementById('thresholdText').textContent=thr;
+ document.getElementById('statusPill').textContent = pos<150?t('Tranche 1'):pos<250?t('Tranche 2'):t('TVA active');
  const nudge=document.getElementById('nudge');
- if(!fresh){
-  nudge.hidden=false;
-  document.getElementById('nudgeText').textContent = !bal ? 'Aucun relevé 801. Compose 801 pour commencer.' : `Relevé vieux de ${Math.floor(age)} jour${Math.floor(age)>1?'s':''}. Compose 801 pour recaler.`;
- } else nudge.hidden=true;
-
- const rec=reconcileBalance();
- const recEl=document.getElementById('reconcileText');
- if(rec.status==='insufficient_data'){
-  recEl.textContent="Pas encore assez de relevés 801 comparables pour comparer l'estimation de KËR au compteur.";
- } else {
-  const sign=rec.varianceKwh>=0?'+':'';
-  const statusLabel={matched:'concordant',minor_difference:'écart mineur',significant_difference:'écart important'}[rec.status]||rec.status;
-  recEl.textContent=`KËR estimait ${rec.estimatedKwh.toFixed(2)} kWh avant ce relevé · compteur a montré ${rec.observedKwh.toFixed(2)} kWh · écart ${sign}${rec.varianceKwh.toFixed(2)} kWh (${statusLabel}).`;
+ if(!fresh){ nudge.hidden=false; document.getElementById('nudgeText').textContent = !bal ? t('Aucun relevé 801. Compose 801 pour commencer.') : plural(Math.floor(age),'Relevé vieux de {n} jour. Compose 801 pour recaler.','Relevé vieux de {n} jours. Compose 801 pour recaler.'); }
+ else nudge.hidden=true;
+ const rec=reconcileBalance(), recEl=document.getElementById('reconcileText');
+ if(rec.status==='insufficient_data') recEl.textContent=t("Pas encore assez de relevés 801 comparables pour comparer l'estimation de KËR au compteur.");
+ else {
+  const statusLabel={matched:t('concordant'),minor_difference:t('écart mineur'),significant_difference:t('écart important')}[rec.status]||rec.status;
+  recEl.textContent=t('KËR estimait {e} kWh avant ce relevé · le compteur a montré {o} kWh · écart {v} kWh ({s}).',{e:fmt2(rec.estimatedKwh),o:fmt2(rec.observedKwh),v:(rec.varianceKwh>=0?'+':'')+fmt2(rec.varianceKwh),s:statusLabel});
  }
-
- const arrears=latestArrears();
- const decText=document.getElementById('decouvertText'), decPill=document.getElementById('decouvertPill');
- if(!arrears){
-  decText.textContent='Aucun relevé 808 pour le moment.'; decPill.textContent='—'; decPill.className='pill';
- } else {
-  decText.textContent=`Valeur brute : ${arrears.value}, unité non confirmée. KËR ne la déduit pas automatiquement de tes recharges tant que ce n'est pas validé.`;
-  decPill.textContent='À CONFIRMER'; decPill.className='pill warn';
- }
- document.getElementById('todayKwh').textContent = c ? `Dernière lecture (814) : ${fmt1(c.value)} kWh, ${fmtDate(c.timestamp)}` : 'Ajoute une lecture avec le code 814.';
+ const arrears=latestArrears(), decText=document.getElementById('decouvertText'), decPill=document.getElementById('decouvertPill');
+ if(!arrears){ decText.textContent=t('Aucun relevé 808 pour le moment.'); decPill.textContent='—'; decPill.className='pill'; }
+ else { decText.textContent=t("Valeur brute : {v}, unité non confirmée. KËR ne la déduit pas de tes recharges tant que ce n'est pas validé.",{v:arrears.value}); decPill.textContent=t('À CONFIRMER'); decPill.className='pill warn'; }
+ document.getElementById('todayKwh').textContent = c ? t('Dernière lecture (814) : {v} kWh, {d}',{v:fmt1(c.value),d:fmtDate(c.timestamp)}) : t('Ajoute une lecture avec le code 814.');
+ renderAlerts(); renderMeters();
 }
-const fmt2=n=>new Intl.NumberFormat('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2}).format(n);
 
 function addReading(){
- const v=+document.getElementById('reading').value; if(!v) return;
+ const v=parseNum(document.getElementById('reading').value); if(!v) return;
  state.events.unshift({id:uid(),timestamp:nowIso(),type:'reading',code:'814',value:v,unit:'kWh',source:'user',confidence:'observed'});
  save(); document.getElementById('reading').value=''; renderAll();
 }
-
 // Un 817 saisi dans les 3 jours suivant une recharge remplace son estimation par la valeur réelle du compteur.
 function apply817(ev){
  if(ev.code!=='817' || ev.value==null) return null;
- const t=new Date(ev.timestamp).getTime();
- const cands=state.events.filter(e=>e.type==='recharge' && new Date(e.timestamp).getTime()<=t+3600000 && t-new Date(e.timestamp).getTime()<3*86400000).sort((a,b)=>b.timestamp.localeCompare(a.timestamp));
+ const tt=new Date(ev.timestamp).getTime();
+ const cands=state.events.filter(e=>e.type==='recharge' && new Date(e.timestamp).getTime()<=tt+3600000 && tt-new Date(e.timestamp).getTime()<3*86400000).sort((a,b)=>b.timestamp.localeCompare(a.timestamp));
  const r=cands[0]; if(!r) return null;
  const est = r.estimatedKwh!=null ? r.estimatedKwh : r.deliveredKwh;
  r.estimatedKwh=est; r.deliveredKwh=ev.value; r.kwhSource='817'; r.confidence='observed';
@@ -1283,25 +1512,20 @@ function addLog(){
  if(!code) return;
  if(!textual && rawValue!=='' && isNaN(value)) return;
  const timestamp=dateVal+'T'+new Date().toTimeString().slice(0,8);
- const ev={id:uid(),timestamp,type:'reading',code,value,
-  unit: code==='808' ? 'unknown' : (['800','801','813','814','817','820'].includes(code) ? 'kWh' : ''),
-  source:'user', confidence: code==='808' ? 'low' : 'observed', note};
+ const ev={id:uid(),timestamp,type:'reading',code,value,unit: code==='808' ? 'unknown' : (['800','801','813','814','817','820'].includes(code) ? 'kWh' : ''),source:'user', confidence: code==='808' ? 'low' : 'observed', note};
  if(code==='808') ev.interpretation='pending_validation';
  if(textual && rawValue) ev.valueText=rawValue;
  if(code==='801' && value!=null){
   const prevObs=latestBalance();
-  if(prevObs){
-   const estimate=calculateEstimatedBalance(prevObs, timestamp);
-   if(estimate!=null){ const variance=value-estimate; ev.reconciliation={estimatedKwh:estimate,observedKwh:value,varianceKwh:variance,status:classifyVariance(variance)}; }
-  }
+  if(prevObs){ const estimate=calculateEstimatedBalance(prevObs, timestamp); if(estimate!=null){ const variance=value-estimate; ev.reconciliation={estimatedKwh:estimate,observedKwh:value,varianceKwh:variance,status:classifyVariance(variance)}; } }
  }
  const fixed=apply817(ev);
  state.events.unshift(ev);
  save();
  const out=document.getElementById('logResult');
  if(out){
-  if(fixed){ const v=fixed.correction.varianceKwh; out.textContent=`Recharge du ${fmtDate(fixed.timestamp)} corrigée : prévu ${fmt1(fixed.correction.estimatedKwh)} kWh, reçu ${fmt1(fixed.correction.observedKwh)} kWh (${v>=0?'+':''}${fmt1(v)}). Tes prix du mois sont recalculés.`; }
-  else out.textContent = code==='817' ? 'Ajouté. Aucune recharge des 3 derniers jours à corriger.' : 'Ajouté au journal.';
+  if(fixed){ const v=fixed.correction.varianceKwh; out.textContent=t('Recharge du {d} corrigée : prévu {e} kWh, reçu {o} kWh ({v}). Tes prix du mois sont recalculés.',{d:fmtDate(fixed.timestamp),e:fmt1(fixed.correction.estimatedKwh),o:fmt1(fixed.correction.observedKwh),v:(v>=0?'+':'')+fmt1(v)}); }
+  else out.textContent = code==='817' ? t('Ajouté. Aucune recharge des 3 derniers jours à corriger.') : t('Ajouté au journal.');
  }
  document.getElementById('logValue').value=''; document.getElementById('logNote').value='';
  renderAll();
@@ -1309,19 +1533,19 @@ function addLog(){
 
 let pendingReceipt=null;
 function parseReceipt(text){
- let t=String(text||'').replace(/\u00a0|\u202f/g,' ');
+ let tx=String(text||'').replace(/ | /g,' ');
  const out={};
  // retire le code de recharge (20 chiffres en groupes de 4) avant toute lecture
- t=t.replace(/\b\d{4}(?:[\s-]\d{4}){4}\b/g,' ');
- const meter=t.match(/\b(\d{11})\b/) || t.match(/\b(\d{4}\s?\d{4}\s?\d{3})\b/);
- if(meter){ out.meter=meter[1].replace(/\s/g,''); t=t.replace(meter[0],' '); }
- const kwh=t.match(/(\d+(?:[.,]\d+)?)\s*kwh/i);
- if(kwh){ out.kwh=parseFloat(kwh[1].replace(',','.')); t=t.replace(kwh[0],' '); }
- const num=x=>Number(x.replace(/[\s.]/g,'').replace(/,\d{1,2}$/,''));
- let am=t.match(/(?:montant|pay[ée]e?|total|somme|achat)\D{0,20}?(\d{1,3}(?:[\s.]\d{3})+|\d{3,7})(?:,\d{1,2})?/i) || t.match(/(\d{1,3}(?:[\s.]\d{3})+|\d{3,7})(?:,\d{1,2})?\s*(?:f\s?cfa|fcfa|xof|cfa|f)\b/i);
- if(am){ const v=num(am[1]); if(v>=100 && v<=1000000) out.amount=v; }
- const d=t.match(/\b(\d{2})[\/.-](\d{2})[\/.-](\d{2}|\d{4})\b/);
- if(d){ const y=d[3].length===2?'20'+d[3]:d[3]; const hm=t.match(/\b(\d{1,2})[:h](\d{2})\b/);
+ tx=tx.replace(/\b\d{4}(?:[\s-]\d{4}){4}\b/g,' ');
+ const meter=tx.match(/\b(\d{11})\b/) || tx.match(/\b(\d{4}\s?\d{4}\s?\d{3})\b/);
+ if(meter){ out.meter=meter[1].replace(/\s/g,''); tx=tx.replace(meter[0],' '); }
+ const kwh=tx.match(/(\d+(?:[.,]\d+)?)\s*kwh/i);
+ if(kwh){ out.kwh=parseFloat(kwh[1].replace(',','.')); tx=tx.replace(kwh[0],' '); }
+ const numv=x=>Number(x.replace(/[\s.]/g,'').replace(/,\d{1,2}$/,''));
+ const am=tx.match(/(?:montant|pay[ée]e?|total|somme|achat|amount|paid)\D{0,20}?(\d{1,3}(?:[\s.,]\d{3})+|\d{3,7})(?:,\d{1,2})?/i) || tx.match(/(\d{1,3}(?:[\s.]\d{3})+|\d{3,7})(?:,\d{1,2})?\s*(?:f\s?cfa|fcfa|xof|cfa|f)\b/i);
+ if(am){ const v=numv(am[1].replace(/,(?=\d{3}\b)/g,'')); if(v>=100 && v<=1000000) out.amount=v; }
+ const d=tx.match(/\b(\d{2})[\/.-](\d{2})[\/.-](\d{2}|\d{4})\b/);
+ if(d){ const y=d[3].length===2?'20'+d[3]:d[3]; const hm=tx.match(/\b(\d{1,2})[:h](\d{2})\b/);
   const iso=`${y}-${d[2]}-${d[1]}T${hm?hm[1].padStart(2,'0')+':'+hm[2]:'12:00'}:00`;
   const ms=new Date(iso).getTime(); if(!isNaN(ms) && ms<=Date.now()+86400000 && Date.now()-ms<60*86400000) out.timestamp=iso; }
  return out;
@@ -1330,112 +1554,98 @@ function readReceipt(){
  const r=parseReceipt(document.getElementById('receiptText').value);
  const res=document.getElementById('receiptResult'), parts=[];
  if(r.amount){ document.getElementById('amount').value=r.amount; parts.push(fmt(r.amount)+' F'); }
- if(r.kwh!=null){ document.getElementById('obsKwh').value=String(r.kwh).replace('.',','); parts.push(fmt2(r.kwh)+' kWh'); }
- if(r.meter) parts.push('compteur '+r.meter);
+ if(r.kwh!=null){ document.getElementById('obsKwh').value=new Intl.NumberFormat(LOC(),{maximumFractionDigits:2}).format(r.kwh); parts.push(fmt2(r.kwh)+' kWh'); }
+ if(r.meter) parts.push(t('compteur {n}',{n:r.meter}));
  if(r.timestamp) parts.push(fmtDateTime(r.timestamp));
  pendingReceipt=r.timestamp?{timestamp:r.timestamp}:null;
- let msg = parts.length ? 'Lu : '+parts.join(' · ')+'.' : "Je n'ai rien trouvé de lisible. Saisis le montant à la main.";
- if(parts.length && !r.amount) msg+=' Montant introuvable : saisis-le.';
- if(parts.length && r.kwh==null) msg+=' kWh introuvables : compose 817 après la recharge.';
- if(r.meter && state.meter && state.meter.number && r.meter!==state.meter.number) msg+=` Attention : ton compteur enregistré est le ${state.meter.number}.`;
- res.textContent=msg;
+ let msg = parts.length ? t('Lu : {p}.',{p:parts.join(' · ')}) : t("Je n'ai rien trouvé de lisible. Saisis le montant à la main.");
+ if(parts.length && !r.amount) msg+=' '+t('Montant introuvable : saisis-le.');
+ if(parts.length && r.kwh==null) msg+=' '+t('kWh introuvables : compose 817 après la recharge.');
+ let extra='';
+ if(r.meter && state.meter && state.meter.number && r.meter!==state.meter.number){
+  const other=store.meters.find(m=>m.id!==state.id && m.meter && m.meter.number===r.meter);
+  if(other){ msg+=' '+t('Ce reçu est pour ton compteur « {l} ».',{l:meterName(other)}); extra=`<button class="btn ghost" onclick="switchForReceipt('${other.id}')">${esc(t('Passer à « {l} »',{l:meterName(other)}))} <span aria-hidden="true">→</span></button>`; }
+  else msg+=' '+t('Attention : ton compteur enregistré est le {n}.',{n:state.meter.number});
+ }
+ res.innerHTML=esc(msg)+extra;
  document.getElementById('receiptText').value='';
+ simulate();
+}
+function switchForReceipt(id){
+ const a=document.getElementById('amount').value, o=document.getElementById('obsKwh').value, pr=pendingReceipt;
+ switchMeter(id); show('recharge');
+ document.getElementById('amount').value=a; document.getElementById('obsKwh').value=o; pendingReceipt=pr;
+ document.getElementById('receiptResult').textContent=t('Compteur changé. Vérifie puis enregistre la recharge.');
  simulate();
 }
 function saveRecharge(){
  const amount=+document.getElementById('amount').value; if(!amount) return;
- const used=+document.getElementById('simKwh').value || tranchePosition();
- const applyArrears=false; // 808 en observation : unité inconnue, jamais déduit
- const arrears=latestArrears();
- let net=amount, note='';
- if(applyArrears && arrears && arrears.value){
-  const applied=Math.min(amount,arrears.value); net=amount-applied;
-  note=`${fmt(applied)} F déduits pour découvert (confirmé manuellement par l'utilisateur).`;
- }
+ const used=parseNum(document.getElementById('simKwh').value) ?? tranchePosition();
  const when=(pendingReceipt&&pendingReceipt.timestamp)||nowIso();
- const r=rechargeKwhNet(net,used,when);
+ const r=rechargeKwhNet(amount,used,when);
  const obs=parseNum(document.getElementById('obsKwh').value);
  const k=(obs!=null && !isNaN(obs) && obs>0)?obs:r.kwh;
- if(r.fee>0) note=(note?note+' ':'')+`Estimation incluant une retenue de début de mois de ~${fmt(r.fee)} F (hypothèse). Compose 817 pour corriger.`;
- const ev={id:uid(),timestamp:when,type:'recharge',amountFcfa:amount,deliveredKwh:k,tranchePositionKwh:used,consumptionAtRechargeKwh:currentKwh()||null,estimatedFeeFcfa:r.fee,source:'user',confidence:'observed',note};
+ const ev={id:uid(),timestamp:when,type:'recharge',amountFcfa:amount,deliveredKwh:k,tranchePositionKwh:used,consumptionAtRechargeKwh:currentKwh()||null,estimatedFeeFcfa:r.fee,source:'user',confidence:'observed',note:''};
  if(k!==r.kwh){ ev.estimatedKwh=r.kwh; ev.kwhSource='receipt'; ev.correction={estimatedKwh:r.kwh,observedKwh:k,varianceKwh:k-r.kwh}; }
+ const before=tranchePosition(when);
  state.events.unshift(ev);
  pendingReceipt=null; document.getElementById('obsKwh').value=''; document.getElementById('receiptResult').textContent='';
- // deliveredKwh est une ESTIMATION du crédit acheté — ce n'est pas un relevé de solde observé (800),
- // donc on ne touche à aucun "solde" ici. Le prochain relevé 800 servira à réconcilier.
- save(); renderAll(); showMoment(ev);
+ save(); renderAll(); showMoment(ev,before);
 }
 
 function renderReadings(){
  const list=eventsOfCode('814').slice().reverse();
  document.getElementById('readingCount').textContent=list.length;
- document.getElementById('readingList').innerHTML=list.map(x=>`<div class="item"><b>${x.value.toFixed(1)} kWh</b><small>${fmtDateTime(x.timestamp)}</small></div>`).join('');
+ document.getElementById('readingList').innerHTML=list.map(x=>`<div class="item"><b>${fmt1(x.value)} kWh</b><small>${fmtDateTime(x.timestamp)}</small></div>`).join('');
 }
-
 function renderEventItem(e){
  const dt=fmtDateTime(e.timestamp);
- if(e.type==='purchase_baseline'){
-  return `<div class="item"><div class="row"><b>Achats du mois</b><b>${fmt1(+e.value)} kWh</b></div><small>${dt} · ${e.note||'déclaré'}</small></div>`;
- }
+ const note=e.note?' · '+esc(t(e.note)):'';
+ if(e.type==='purchase_baseline') return `<div class="item"><div class="row"><b>${t('Achats du mois')}</b><b>${fmt1(+e.value)} kWh</b></div><small>${dt}${e.note?' · '+esc(t(e.note)):' · '+t('déclaré')}</small></div>`;
  if(e.type==='recharge'){
   let extra='';
-  if(e.reconciliation && e.reconciliation.status==='unexplained'){
-   extra=`<br>Écart détecté : ~${fmt(e.reconciliation.varianceFcfa)} F — KËR n'a pas encore identifié la cause avec certitude (${e.reconciliation.hypotheses.join(', ')}).`;
-  }
-  if(e.reconciliation && e.reconciliation.status==='probable_monthly_fee'){
-   extra=`<br>Écart ~${fmt(e.reconciliation.varianceFcfa)} F vs tarif pur : probablement la retenue de début de mois (hypothèse, non prouvée).`;
-  }
-  if(e.validation && e.validation.status==='fee_inferred'){
-   extra=`<br>Coût réel ${e.validation.observedUnitCost} F/kWh vs ${e.validation.modeledUnitCost} F/kWh au tarif pur : ~${fmt(-e.validation.varianceFcfa)} F retenus (hypothèse : retenue de début de mois).`;
-  }
-  if(e.correction){
-   const v=e.correction.varianceKwh;
-   extra+=`<br>Corrigé par le 817 : prévu ${fmt1(e.correction.estimatedKwh)} kWh, reçu ${fmt1(e.correction.observedKwh)} kWh (${v>=0?'+':''}${fmt1(v)}).`;
-  }
-  if(e.validation && e.validation.status==='strong_match'){
-   extra=`<br>Cas de calibration : coût observé ${e.validation.observedUnitCost} F/kWh vs modèle ${e.validation.modeledUnitCost} F/kWh.`;
-  }
-  const usedTxt = e.tranchePositionKwh!=null ? `déjà acheté ce mois : ${(+e.tranchePositionKwh).toFixed(1)} kWh` : (e.consumptionAtRechargeKwh!=null ? `conso. au moment : ${(+e.consumptionAtRechargeKwh).toFixed(1)} kWh` : 'position tranche inconnue');
-  return `<div class="item"><div class="row"><b>${fmt(e.amountFcfa)} F</b><b>+${e.deliveredKwh.toFixed(1)} kWh<span class="${tagClass(e.confidence)}">${confidenceTag(e.confidence)}</span></b></div><small>${dt} · recharge · ${usedTxt}${e.note?' · '+e.note:''}${extra}</small></div>`;
+  if(e.reconciliation && e.reconciliation.status==='unexplained') extra=`<br>${t("Écart détecté : ~{f} F. KËR n'a pas encore identifié la cause avec certitude.",{f:fmt(e.reconciliation.varianceFcfa)})}`;
+  if(e.reconciliation && e.reconciliation.status==='probable_monthly_fee') extra=`<br>${t('Écart ~{f} F vs tarif pur : probablement la retenue de début de mois (hypothèse, non prouvée).',{f:fmt(e.reconciliation.varianceFcfa)})}`;
+  if(e.validation && e.validation.status==='fee_inferred') extra=`<br>${t('Coût réel {o} F/kWh vs {m} F/kWh au tarif pur : ~{f} F retenus (hypothèse : retenue de début de mois).',{o:fmt1(e.validation.observedUnitCost),m:fmt1(e.validation.modeledUnitCost),f:fmt(-e.validation.varianceFcfa)})}`;
+  if(e.validation && e.validation.status==='strong_match') extra=`<br>${t('Cas de calibration : coût observé {o} F/kWh vs modèle {m} F/kWh.',{o:fmt1(e.validation.observedUnitCost),m:fmt1(e.validation.modeledUnitCost)})}`;
+  if(e.estimatedFeeFcfa>0 && !/retenue/i.test(e.note||'')) extra+=`<br>${t('Estimation incluant une retenue de début de mois de ~{f} F (hypothèse).',{f:fmt(e.estimatedFeeFcfa)})}`;
+  if(e.correction){ const v=e.correction.varianceKwh; extra+=`<br>${t(e.kwhSource==='receipt'?'Selon le reçu : prévu {e} kWh, reçu {o} kWh ({v}).':'Corrigé par le 817 : prévu {e} kWh, reçu {o} kWh ({v}).',{e:fmt1(e.correction.estimatedKwh),o:fmt1(e.correction.observedKwh),v:(v>=0?'+':'')+fmt1(v)})}`; }
+  const usedTxt = e.tranchePositionKwh!=null ? t('déjà acheté ce mois : {k} kWh',{k:fmt1(+e.tranchePositionKwh)}) : (e.consumptionAtRechargeKwh!=null ? t('conso. au moment : {k} kWh',{k:fmt1(+e.consumptionAtRechargeKwh)}) : t('position tranche inconnue'));
+  return `<div class="item"><div class="row"><b>${fmt(e.amountFcfa)} F</b><b>+${fmt1(e.deliveredKwh)} kWh<span class="${tagClass(e.confidence)}">${confidenceTag(e.confidence)}</span></b></div><small>${dt} · ${t('recharge')} · ${usedTxt}${note}${extra}</small></div>`;
  }
- const label=CODES[e.code]||e.code;
+ const label=CODES[e.code]?t(CODES[e.code]):e.code;
  let extra='';
- if(e.reconciliation){
-  const s=e.reconciliation.varianceKwh>=0?'+':'';
-  extra=`<br>KËR estimait ${e.reconciliation.estimatedKwh.toFixed(2)} kWh avant ce relevé · écart ${s}${e.reconciliation.varianceKwh.toFixed(2)} kWh`;
- }
- return `<div class="item"><div class="row"><b>${e.code} — ${label}<span class="${tagClass(e.confidence)}">${confidenceTag(e.confidence)}</span></b><b>${e.valueText?e.valueText:(e.value!=null?e.value:'—')}</b></div><small>${dt}${e.note?' · '+e.note:''}${extra}</small></div>`;
+ if(e.reconciliation){ const s=e.reconciliation.varianceKwh>=0?'+':''; extra=`<br>${t('KËR estimait {e} kWh avant ce relevé · écart {v} kWh',{e:fmt2(e.reconciliation.estimatedKwh),v:s+fmt2(e.reconciliation.varianceKwh)})}`; }
+ if(e.linkedRechargeId) extra+=`<br>${t('A corrigé la recharge associée.')}`;
+ const val=e.valueText?esc(e.valueText):(e.value!=null?(e.code==='804'?e.value:new Intl.NumberFormat(LOC(),{maximumFractionDigits:4}).format(e.value)):'—');
+ return `<div class="item"><div class="row"><b>${e.code} · ${label}<span class="${tagClass(e.confidence)}">${confidenceTag(e.confidence)}</span></b><b>${val}</b></div><small>${dt}${note}${extra}</small></div>`;
 }
 function renderHistory(){
  const el=document.getElementById('historyList');
  const items=state.events.slice().sort((a,b)=>b.timestamp.localeCompare(a.timestamp));
- if(!items.length){el.innerHTML='<div class="empty">Aucun événement enregistré.</div>';return}
+ if(!items.length){el.innerHTML=`<div class="empty">${t('Aucun événement enregistré.')}</div>`;return}
  el.innerHTML=items.map(renderEventItem).join('');
 }
 
-function applianceKwhMonth(a){
- if(a.mode==='cycling') return a.active?a.w*24*a.duty*30/1000:0;
- return a.w*(a.h||0)*30/1000;
-}
+function applianceKwhMonth(a){ if(a.mode==='cycling') return a.active?a.w*24*a.duty*30/1000:0; return a.w*(a.h||0)*30/1000; }
 function renderAppliances(){
  const el=document.getElementById('applianceList');el.innerHTML='';
  state.appliances.forEach((a,i)=>{
   const d=document.createElement('div');d.className='appliance '+(a.mode==='cycling'?'appliance-cycling':'');
-  const monthly=applianceKwhMonth(a).toFixed(1);
-  const id='app'+i;
+  const monthly=fmt1(applianceKwhMonth(a)), id='app'+i, nm=esc(t(a.name));
   if(a.mode==='cycling'){
-   d.innerHTML=`<div class="rowx"><div><b class="h4">${a.name}</b><div class="muted">${a.w} W · toujours branché, chauffe par cycles</div></div><div class="checkline" style="margin:0"><input type="checkbox" id="${id}a" ${a.active?'checked':''}><label for="${id}a">Actif</label></div></div>
-   <label class="field" for="${id}s">Intensité des cycles</label>
+   d.innerHTML=`<div class="rowx"><div><b class="h4">${nm}</b><div class="muted">${t('{w} W · toujours branché, chauffe par cycles',{w:a.w})}</div></div><div class="checkline" style="margin:0"><input type="checkbox" id="${id}a" ${a.active?'checked':''}><label for="${id}a">${t('Actif')}</label></div></div>
+   <label class="field" for="${id}s">${t('Intensité des cycles')}</label>
    <select id="${id}s">
-    <option value=".2" ${a.duty===.2?'selected':''}>Faible : bien isolé, peu utilisé (~20 %)</option>
-    <option value=".35" ${a.duty===.35?'selected':''}>Moyenne : usage courant (~35 %)</option>
-    <option value=".5" ${a.duty===.5?'selected':''}>Élevée : gros volume ou mal isolé (~50 %)</option>
+    <option value=".2" ${a.duty===.2?'selected':''}>${t('Faible : bien isolé, peu utilisé (~20 %)')}</option>
+    <option value=".35" ${a.duty===.35?'selected':''}>${t('Moyenne : usage courant (~35 %)')}</option>
+    <option value=".5" ${a.duty===.5?'selected':''}>${t('Élevée : gros volume ou mal isolé (~50 %)')}</option>
    </select>
-   <div class="muted" style="margin-top:6px">≈ ${monthly} kWh par mois estimés</div>`;
+   <div class="muted" style="margin-top:6px">${t('≈ {k} kWh par mois estimés',{k:monthly})}</div>`;
    d.querySelector('input[type=checkbox]').onchange=e=>{state.appliances[i].active=e.target.checked;save();calcApps();renderAppliances()};
    d.querySelector('select').onchange=e=>{state.appliances[i].duty=+e.target.value;save();calcApps();renderAppliances()};
   } else {
-   d.innerHTML=`<label for="${id}h"><b class="h4">${a.name}</b><div class="muted">${a.w} W · heures par jour</div></label><input id="${id}h" type="number" inputmode="decimal" min="0" step=".25" value="${a.h}">`;
+   d.innerHTML=`<label for="${id}h"><b class="h4">${nm}</b><div class="muted">${t('{w} W · heures par jour',{w:a.w})}</div></label><input id="${id}h" type="number" inputmode="decimal" min="0" step=".25" value="${a.h}">`;
    d.querySelector('input').oninput=e=>{state.appliances[i].h=+e.target.value||0;save();calcApps()};
   }
   el.appendChild(d);
@@ -1443,48 +1653,57 @@ function renderAppliances(){
 }
 function calcApps(){
  const k=state.appliances.reduce((s,a)=>s+applianceKwhMonth(a),0);
- document.getElementById('appKwh').textContent=fmt1(k)+' kWh/mois';
- document.getElementById('appCost').textContent='Ordre de grandeur : '+fmt(k*costPerKwh(currentKwh()))+' F/mois';
+ document.getElementById('appKwh').textContent=t('{k} kWh/mois',{k:fmt1(k)});
+ const measured=dailyKwh()*30;
+ document.getElementById('appCost').textContent=t('Ordre de grandeur : {f} F/mois',{f:fmt(k*costPerKwh(currentKwh()))})+(measured>0?' · '+t('ta conso réelle mesurée : ~{m} kWh/mois',{m:fmt(measured)}):'');
 }
-
 function populateCodeUI(){
- const sel=document.getElementById('logCode');
- sel.innerHTML='<option value="">Choisir un code</option>'+Object.keys(CODES).map(c=>`<option value="${c}">${c} · ${CODES[c]}</option>`).join('');
- document.getElementById('logDate').value=today();
- document.getElementById('codeTable').innerHTML=Object.keys(CODES).map(c=>`<div class="codeRow"><b>${c}</b><span>${CODES[c]}${PRINTED.includes(c)?'':' <span class="tag">non imprimé sur le compteur</span>'}</span></div>`).join('');
+ const sel=document.getElementById('logCode'), cur=sel.value;
+ sel.innerHTML=`<option value="">${t('Choisir un code')}</option>`+Object.keys(CODES).map(c=>`<option value="${c}">${c} · ${t(CODES[c])}</option>`).join('');
+ sel.value=cur;
+ if(!document.getElementById('logDate').value) document.getElementById('logDate').value=today();
+ document.getElementById('codeTable').innerHTML=Object.keys(CODES).map(c=>`<div class="codeRow"><b>${c}</b><span>${t(CODES[c])}${PRINTED.includes(c)?'':` <span class="tag">${t('non imprimé sur le compteur')}</span>`}</span></div>`).join('');
  const pv=document.getElementById('pvSeg'); if(pv) pv.innerHTML=segSVG('113.97');
 }
 
 // ---- Export / import (local-first : les données ne quittent le téléphone que si l'utilisateur le décide) ----
-function exportData(){
- const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'});
- const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='ker-donnees-'+today()+'.json';
- document.body.appendChild(a); a.click(); setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},500);
-}
+function backupJson(){ return JSON.stringify({exportedAt:nowIso(),appVersion:APP_VERSION,schemaVersion:6,activeId:state.id,meters:store.meters},null,2); }
+function exportData(){ downloadFile(backupJson(),'ker-donnees-'+today()+'.json'); }
 function importData(ev){
  const f=ev.target.files&&ev.target.files[0]; if(!f) return;
  const rd=new FileReader();
  rd.onload=()=>{
   try{
    const raw=JSON.parse(rd.result);
-   if(!raw || !(Array.isArray(raw.events)||Array.isArray(raw.readings))) throw new Error('format');
-   if(state.events.length && !confirm('Remplacer tes données actuelles par celles de ce fichier ?')) return;
-   state=migrateState(raw); save(); requestPersist(); exitWelcome(); renderAll(); show('home'); alert('Données importées.');
-  }catch(e){ alert("Ce fichier n'est pas une sauvegarde KËR."); }
+   if(raw && Array.isArray(raw.meters)){
+    const hasData=store.meters.some(m=>!isBlank(m));
+    if(hasData && !confirm(t('Remplacer tous tes compteurs par ceux de ce fichier ?'))) return;
+    store=normalizeStore(raw); state=store.meters.find(m=>m.id===store.activeId);
+   } else {
+    if(!raw || !(Array.isArray(raw.events)||Array.isArray(raw.readings))) throw new Error('format');
+    const s=migrateState(raw), numb=s.meter&&s.meter.number;
+    const same=numb && store.meters.find(m=>m.meter && m.meter.number===numb);
+    if(isBlank(state)){ s.id=state.id; }
+    else if(same){ if(!confirm(t('Remplacer les données du compteur « {l} » par celles de ce fichier ?',{l:meterName(same)}))) return; s.id=same.id; }
+    else { if(!confirm(t('Ajouter ce fichier comme un nouveau compteur ?'))) return; s.id=newId(); }
+    const i=store.meters.findIndex(m=>m.id===s.id); if(i>=0) store.meters[i]=s; else store.meters.push(s);
+    state=s;
+   }
+   save(); requestPersist(); exitWelcome(); resetAdvisorInputs(); renderAll(); renderMeters(); show('home'); alert(t('Données importées.'));
+  }catch(e){ alert(t("Ce fichier n'est pas une sauvegarde KËR.")); }
  };
  rd.readAsText(f); ev.target.value='';
 }
 
-function renderAll(){
- renderHome();renderReadings();renderHistory();renderAppliances();simulate();
-}
-const TAB_OF={home:'home',recharge:'recharge',consumption:'consumption',history:'consumption',appliances:'home',settings:'settings',welcome:null,done:null};
+function renderAll(){ renderHome();renderReadings();renderHistory();renderAppliances();simulate(); }
+const TAB_OF={home:'home',recharge:'recharge',consumption:'consumption',history:'consumption',appliances:'home',settings:'settings',meters:'settings',welcome:null,done:null};
 function show(id){
  document.querySelectorAll('main > section').forEach(s=>s.classList.toggle('active',s.id===id));
  document.querySelectorAll('nav.tabbar button').forEach(b=>{const on=b.dataset.screen===TAB_OF[id]; b.classList.toggle('on',on); if(on) b.setAttribute('aria-current','page'); else b.removeAttribute('aria-current');});
  if(id==='recharge'){ document.getElementById('simKwh').value=tranchePosition().toFixed(1); renderBaselineBox(); renderAdvisor(); simulate(); }
  if(id==='home') renderHome();
- if(id==='settings') renderInstall();
+ if(id==='settings'){ renderInstall(); renderNotifBox(); }
+ if(id==='meters') renderMeters();
  window.scrollTo(0,0);
 }
 // ---- Cadran de tranche : 25 points de 10 kWh, de 0 à 250 ----
@@ -1504,44 +1723,61 @@ function renderDial(id,used,after){
  el.innerHTML=h;
 }
 // ---- Moment bleu : confirmation après une recharge ----
-function showMoment(ev){
+function showMoment(ev,before){
  const fee=ev.estimatedFeeFcfa||0;
  document.getElementById('mWhen').textContent='KËR · '+fmtDateTime(ev.timestamp).toUpperCase();
  document.getElementById('mKwh').textContent='+'+fmt1(ev.deliveredKwh);
  document.getElementById('mAmount').textContent=fmt(ev.amountFcfa)+' F';
- document.getElementById('mAvg').textContent=ev.deliveredKwh>0?fmt1(ev.amountFcfa/ev.deliveredKwh)+' F / kWh':'—';
- document.getElementById('mFee').textContent=fee?('≈ '+fmt(fee)+' F (estimée)'):'0 F';
+ document.getElementById('mAvg').textContent=ev.deliveredKwh>0?t('{p} F / kWh',{p:fmt1(ev.amountFcfa/ev.deliveredKwh)}):'—';
+ document.getElementById('mFee').textContent=fee?t('≈ {f} F (estimée)',{f:fmt(fee)}):'0 F';
  num('m817',ev.deliveredKwh,{dec:2});
+ const tr=document.getElementById('mTranche');
+ if(tr){
+  const after=(before||0)+ev.deliveredKwh; let msg='';
+  if(before!=null && before<150 && after>=150 && after<250) msg=t('Avec cette recharge, tu passes en tranche 2 : le prochain kWh acheté coûtera ~{p} F jusqu’au 1er.',{p:fmt(unitPrice(150,ev.timestamp))});
+  else if(before!=null && before<250 && after>=250) msg=t('Avec cette recharge, tu passes au 3e palier (TVA) : le prochain kWh acheté coûtera ~{p} F jusqu’au 1er.',{p:fmt(unitPrice(250,ev.timestamp))});
+  tr.textContent=msg; tr.hidden=!msg;
+ }
  document.body.classList.add('moment'); show('done');
 }
 function closeMoment(){ document.body.classList.remove('moment'); show('home'); }
 function log817(){ document.body.classList.remove('moment'); show('consumption'); const s=document.getElementById('logCode'); if(s) s.value='817'; const v=document.getElementById('logValue'); if(v) v.focus(); }
 
 // ---- Version, premier lancement, test, installation ----
-const APP_VERSION='0.10.0';
+const APP_VERSION='0.11.0';
 const TESTER_NAME='Papi';
-function parseNum(v){ v=String(v==null?'':v).trim().replace(/[\s  ]/g,'').replace(',','.'); if(v==='') return null; const n=Number(v); return isFinite(n)?n:NaN; }
+function parseNum(v){ v=String(v==null?'':v).trim().replace(/[\s  ]/g,'').replace(',','.'); if(v==='') return null; const n=Number(v); return isFinite(n)?n:NaN; }
 function requestPersist(){ try{ if(navigator.storage && navigator.storage.persist) navigator.storage.persist(); }catch(e){} }
-function isNewUser(){ return !state.meter && state.events.length===0; }
-function showWelcome(){ document.body.classList.add('onboarding'); const h=document.getElementById('howtoSeg'); if(h) h.innerHTML=`<span class="segw">${segSVG('801')}</span><span class="txtw">801</span>`; show('welcome'); }
+function isNewUser(){ return isBlank(state); }
+function clearWelcome(){ ['wLabel','w801','w814','wBought','w800','wMeter'].forEach(id=>{const el=document.getElementById(id); if(el) el.value='';}); const e=document.getElementById('wError'); if(e) e.textContent=''; }
+function showWelcome(){
+ document.body.classList.add('onboarding');
+ const h=document.getElementById('howtoSeg'); if(h) h.innerHTML=`<span class="segw">${segSVG('801')}</span><span class="txtw">801</span>`;
+ const c=document.getElementById('wCancel'); if(c) c.hidden=!otherMeters().length;
+ const lb=document.getElementById('wLabelBox'); if(lb) lb.hidden=!otherMeters().length && store.meters.length<=1;
+ show('welcome');
+}
 function exitWelcome(){ document.body.classList.remove('onboarding'); }
 function finishWelcome(skip){
  const err=document.getElementById('wError'); err.textContent='';
  const meter=(document.getElementById('wMeter').value||'').replace(/\D/g,'');
  const v801=parseNum(document.getElementById('w801').value), v814=parseNum(document.getElementById('w814').value), v800=parseNum(document.getElementById('w800').value), vBought=parseNum(document.getElementById('wBought').value);
  if(!skip){
-  if([v801,v814,v800,vBought].some(x=>Number.isNaN(x)||(x!=null&&x<0))){ err.textContent='Vérifie les nombres : uniquement des chiffres, avec une virgule ou un point.'; return; }
-  if(v801==null && v814==null){ err.textContent="Entre au moins le crédit restant (801) ou la consommation du mois (814). Sinon, touche « Passer pour l'instant »."; return; }
+  if([v801,v814,v800,vBought].some(x=>Number.isNaN(x)||(x!=null&&x<0))){ err.textContent=t('Vérifie les nombres : uniquement des chiffres, avec une virgule ou un point.'); return; }
+  if(v801==null && v814==null){ err.textContent=t("Entre au moins le crédit restant (801) ou la consommation du mois (814). Sinon, touche « Passer pour l'instant »."); return; }
  }
  const ts=nowIso();
- state.meter={number:meter,label:'Mon compteur',createdAt:ts};
+ const typed=(document.getElementById('wLabel').value||'').trim().slice(0,40);
+ const idx=store.meters.findIndex(m=>m.id===state.id);
+ const label=typed || (store.meters.length>1 ? t('Compteur {n}',{n:idx+1}) : 'Mon compteur');
+ state.meter={number:meter,label,createdAt:ts};
  if(!skip){
   if(v801!=null) state.events.push({id:uid(),timestamp:ts,type:'reading',code:'801',value:v801,unit:'kWh',source:'user',confidence:'observed',note:'Premier relevé'});
   if(v814!=null) state.events.push({id:uid(),timestamp:ts,type:'reading',code:'814',value:v814,unit:'kWh',source:'user',confidence:'observed',note:'Premier relevé'});
   if(v800!=null) state.events.push({id:uid(),timestamp:ts,type:'reading',code:'800',value:v800,unit:'kWh',source:'user',confidence:'observed',note:'Premier relevé'});
-  if(vBought!=null) saveBaseline(vBought,'kWh déjà achetés ce mois (déclaré à l\'installation)');
+  if(vBought!=null) saveBaseline(vBought,"kWh déjà achetés ce mois (déclaré à l'installation)");
  }
- save(); requestPersist(); exitWelcome(); renderAll(); show('home');
+ save(); requestPersist(); exitWelcome(); resetAdvisorInputs(); renderAll(); renderMeters(); show('home');
 }
 
 function downloadFile(text,name){
@@ -1549,26 +1785,30 @@ function downloadFile(text,name){
  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=name;
  document.body.appendChild(a); a.click(); setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},500);
 }
-function backupJson(){ return JSON.stringify(Object.assign({exportedAt:nowIso(),appVersion:APP_VERSION},state),null,2); }
 function dataSummary(){
- const b=latestBalance(), c=latestConsumption(); const rec=state.events.filter(e=>e.type==='recharge');
- return `KËR v${APP_VERSION} · mes données de test\n`+
-  `Relevés : ${state.events.filter(e=>e.type==='reading').length} · recharges : ${rec.length}\n`+
-  `Dernier 801 : ${b?fmt2(b.value)+' kWh ('+fmtDate(b.timestamp)+')':'aucun'}\n`+
-  `Dernier 814 : ${c?fmt1(c.value)+' kWh ('+fmtDate(c.timestamp)+')':'aucun'}\n\nMon avis : `;
+ const lines=[t('KËR v{v} · mes données de test',{v:APP_VERSION})];
+ store.meters.filter(m=>!isBlank(m)).forEach(m=>withState(m,()=>{
+  const b=latestBalance(), c=latestConsumption(), rec=state.events.filter(e=>e.type==='recharge');
+  lines.push((store.meters.length>1?meterName(m)+' · ':'')+t('Relevés : {r} · recharges : {n}',{r:state.events.filter(e=>e.type==='reading').length,n:rec.length}));
+  lines.push(t('Dernier 801 : {v}',{v:b?fmt2(b.value)+' kWh ('+fmtDate(b.timestamp)+')':t('aucun')}));
+  lines.push(t('Dernier 814 : {v}',{v:c?fmt1(c.value)+' kWh ('+fmtDate(c.timestamp)+')':t('aucun')}));
+ }));
+ return lines.join('\n')+'\n\n'+t('Mon avis :')+' ';
 }
 async function sendToTester(){
  const json=backupJson(), name='ker-donnees-'+today()+'.json', text=dataSummary();
  try{
   const file=new File([json],name,{type:'application/json'});
-  if(navigator.canShare && navigator.canShare({files:[file]})){ await navigator.share({files:[file],title:'Mes données KËR',text}); return; }
+  if(navigator.canShare && navigator.canShare({files:[file]})){ await navigator.share({files:[file],title:t('Mes données KËR'),text}); return; }
  }catch(e){ if(e && e.name==='AbortError') return; }
  downloadFile(json,name);
- window.open('https://wa.me/?text='+encodeURIComponent(text+'\n\n(Le fichier '+name+' vient d\'être téléchargé : joins-le à ce message.)'),'_blank','noopener');
+ window.open('https://wa.me/?text='+encodeURIComponent(text+'\n\n'+t('(Le fichier {n} vient d’être téléchargé : joins-le à ce message.)',{n:name})),'_blank','noopener');
 }
 function wipeData(){
- if(!confirm('Effacer toutes tes données KËR sur ce téléphone ? Exporte-les avant si tu veux les garder.')) return;
- state=createInitialState(); save(); renderAll(); showWelcome();
+ if(!confirm(t('Effacer toutes tes données KËR sur ce téléphone, pour tous les compteurs ? Exporte-les avant si tu veux les garder.'))) return;
+ const s=createInitialState(); s.id=newId(); store={schemaVersion:6,activeId:s.id,meters:[s]}; state=s;
+ try{ localStorage.removeItem(NOTIF_KEY); }catch(e){}
+ save(); renderAll(); renderMeters(); clearWelcome(); showWelcome();
 }
 
 let deferredInstall=null;
@@ -1580,11 +1820,10 @@ function renderInstall(){
  const standalone=isStandalone(), web=/^https?:/.test(location.protocol);
  if(nudge) nudge.hidden = standalone || !web || !!prefs.installDismissed;
  if(!box) return;
- const ios=/iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform==='MacIntel' && navigator.maxTouchPoints>1);
- if(standalone){ box.innerHTML='<p class="note" style="margin:0">KËR est installée sur ce téléphone.</p>'; return; }
- if(deferredInstall){ box.innerHTML='<p class="note" style="margin:0">Ajoute KËR à ton écran d\'accueil : elle s\'ouvre comme une app et marche sans connexion.</p><button class="btn" onclick="doInstall()">Installer KËR</button>'; return; }
- if(ios){ box.innerHTML='<p class="note" style="margin:0">Sur iPhone : ouvre ce lien dans Safari, touche le bouton Partager (le carré avec une flèche), puis « Sur l\'écran d\'accueil ». C\'est important : sur iPhone, c\'est ce qui protège tes données.</p>'; return; }
- box.innerHTML='<p class="note" style="margin:0">Dans le menu du navigateur (⋮), choisis « Installer l\'application » ou « Ajouter à l\'écran d\'accueil ».</p>';
+ if(standalone){ box.innerHTML=`<p class="note" style="margin:0">${t('KËR est installée sur ce téléphone.')}</p>`; return; }
+ if(deferredInstall){ box.innerHTML=`<p class="note" style="margin:0">${t("Ajoute KËR à ton écran d'accueil : elle s'ouvre comme une app et marche sans connexion.")}</p><button class="btn" onclick="doInstall()">${t('Installer KËR')}</button>`; return; }
+ if(isIOS()){ box.innerHTML=`<p class="note" style="margin:0">${t("Sur iPhone : ouvre ce lien dans Safari, touche le bouton Partager (le carré avec une flèche), puis « Sur l'écran d'accueil ». C'est important : sur iPhone, c'est ce qui protège tes données.")}</p>`; return; }
+ box.innerHTML=`<p class="note" style="margin:0">${t("Dans le menu du navigateur (⋮), choisis « Installer l'application » ou « Ajouter à l'écran d'accueil ».")}</p>`;
 }
 async function doInstall(){ if(!deferredInstall) return; deferredInstall.prompt(); try{ await deferredInstall.userChoice; }catch(e){} deferredInstall=null; renderInstall(); }
 
@@ -1596,6 +1835,7 @@ if('serviceWorker' in navigator && /^https?:/.test(location.protocol)){
     const nw=reg.installing; if(!nw) return;
     nw.addEventListener('statechange',()=>{ if(nw.state==='installed' && navigator.serviceWorker.controller) document.getElementById('updateToast').hidden=false; });
    });
+   if(prefs.notify) registerPeriodic();
   }).catch(()=>{});
  });
 }
@@ -1605,15 +1845,22 @@ function applyUpdate(){
  navigator.serviceWorker.getRegistration().then(r=>{ if(r && r.waiting) r.waiting.postMessage('skipWaiting'); else go(); });
  setTimeout(go,2500);
 }
+document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='visible'){ renderHome(); checkAndNotify(); writeSnapshot(); } });
+setInterval(()=>{ if(document.visibilityState==='visible') renderAlerts(); checkAndNotify(); writeSnapshot(); },10*60*1000);
 function boot(){
- const v=document.getElementById('appVersion'); if(v) v.textContent=APP_VERSION;
  renderInstall();
  if(isNewUser()) showWelcome(); else { if(state.events.length) requestPersist(); show('home'); }
 }
 
 applyPrefs();
+LANG=resolveLang();
+translateStatic();
 populateCodeUI();
+save();
 renderAll();
+renderMeters();
+renderNotifBox();
+document.getElementById('appVersion').textContent=APP_VERSION;
 boot();
 </script>
 </body>
