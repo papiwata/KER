@@ -1,11 +1,12 @@
 // KËR service worker : l'app fonctionne sans connexion. Changer VERSION à chaque publication déclenche la mise à jour.
-const VERSION='ker-v0.14.0';
+const VERSION='ker-v0.15.0';
 const FONTS='ker-fonts';
+const OCR='ker-ocr-v1'; // moteur de lecture des reçus en image : téléchargé une fois, gardé entre les versions
 const SNAP='ker-snapshot'; // instantané écrit par l'app pour les alertes en arrière-plan
 const SHELL=['./','./index.html','./manifest.webmanifest','./icons/icon-192.png','./icons/icon-512.png','./icons/icon-maskable-512.png','./icons/apple-touch-icon.png'];
 self.addEventListener('install',e=>{ e.waitUntil(caches.open(VERSION).then(c=>c.addAll(SHELL))); });
 self.addEventListener('activate',e=>{
- e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==VERSION && k!==FONTS && k!==SNAP).map(k=>caches.delete(k)))).then(()=>self.clients.claim()));
+ e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==VERSION && k!==FONTS && k!==SNAP && k!==OCR).map(k=>caches.delete(k)))).then(()=>self.clients.claim()));
 });
 self.addEventListener('message',e=>{ if(e.data==='skipWaiting') self.skipWaiting(); });
 self.addEventListener('fetch',e=>{
@@ -13,6 +14,7 @@ self.addEventListener('fetch',e=>{
  const url=new URL(req.url);
  if(url.origin===self.location.origin){
   if(url.pathname.endsWith('/ker-snapshot.json') || url.pathname.endsWith('/ker-sw-sent.json')) return;
+  if(url.pathname.includes('/ocr/')){ e.respondWith(caches.open(OCR).then(c=>c.match(req).then(r=>r||fetch(req).then(res=>{ if(res.ok) c.put(req,res.clone()); return res; })))); return; }
   if(req.mode==='navigate'){
    e.respondWith(caches.open(VERSION).then(c=>c.match('./index.html')).then(r=>r||fetch(req)));
    return;
