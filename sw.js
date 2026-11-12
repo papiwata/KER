@@ -1,5 +1,5 @@
 // KËR service worker : l'app fonctionne sans connexion. Changer VERSION à chaque publication déclenche la mise à jour.
-const VERSION='ker-v0.20.0';
+const VERSION='ker-v0.21.0';
 const FONTS='ker-fonts';
 const OCR='ker-ocr-v1'; // moteur de lecture des reçus en image : téléchargé une fois, gardé entre les versions
 const SNAP='ker-snapshot'; // instantané écrit par l'app pour les alertes en arrière-plan
